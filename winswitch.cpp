@@ -26,24 +26,24 @@ stacked_window_list(const x_connection & c);
 std::vector<x_client>
 make_thumbnails(const x_connection & c, const std::vector<xcb_window_t> & windows);
 
-struct Size {
-  Size(void) {}
-  Size(unsigned int w, unsigned int h) : width(w), height(h) {}
+struct dimension_t {
+  dimension_t(void) {}
+  dimension_t(unsigned int w, unsigned int h) : width(w), height(h) {}
   unsigned int width, height;
 };
 
-struct Position {
-  Position(void) {}
-  Position(int x, int y) : x(x), y(y) {}
+struct position_t {
+  position_t(void) {}
+  position_t(int x, int y) : x(x), y(y) {}
   int x, y;
 };
 
-struct Rectangle {
-  Rectangle(void) {}
-  Rectangle(Size _size, Position _position)
-    : size(_size), position(_position) {}
-  Size size;
-  Position position;
+struct rectangle_t {
+  rectangle_t(void) {}
+  rectangle_t(dimension_t size, position_t position)
+    : size(size), position(position) {}
+  dimension_t size;
+  position_t position;
 };
 
 class x_event_handler {
@@ -204,8 +204,8 @@ class x_client : public x_event_handler {
     }
 
     double &       scale(void)    { return _scale; }
-    Size &         size(void)     { return _size; }
-    Position &     position(void) { return _position; }
+    dimension_t &         size(void)     { return _size; }
+    position_t &     position(void) { return _position; }
     xcb_window_t & window(void)   { return _window; }
 
     void handle(xcb_generic_event_t * ge)
@@ -277,8 +277,8 @@ class x_client : public x_event_handler {
   private:
     const x_connection & _c;
     double _scale;
-    Size _size;
-    Position _position;
+    dimension_t _size;
+    position_t _position;
     xcb_window_t _window;
     xcb_window_t _parent;
     xcb_pixmap_t _window_pixmap;
@@ -432,7 +432,7 @@ int main(int argc, char ** argv)
     c.register_x_event_handler(&xc);
     xc.scale() = 0.2;
     if (xo * 300 + 10 > 1200) { xo = 0; ++yo; }
-    xc.position() = Position(xo++ * 300 + 10, yo * 300 + 10);
+    xc.position() = position_t(xo++ * 300 + 10, yo * 300 + 10);
     xc.render();
   }
 
