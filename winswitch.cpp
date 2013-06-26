@@ -3,8 +3,10 @@
 #include <unistd.h>
 #include <iostream>
 #include <vector>
+#include <X11/keysym.h>
 #include <xcb/xcb.h>
 #include <xcb/xcb_atom.h>
+#include <xcb/xcb_keysyms.h>
 #include <xcb/damage.h>
 #include <xcb/composite.h>
 
@@ -127,6 +129,35 @@ class x_connection {
     }
 
     uint8_t damage_event_id(void) const { return _damage_event_id; }
+
+    xcb_keysym_t
+    keycode_to_keysym(const x_connection & c, xcb_keycode_t keycode) const
+    {
+      xcb_key_symbols_t * keysyms;
+      xcb_keysym_t keysym;
+
+      if (!(keysyms = xcb_key_symbols_alloc(c()))) { return 0; }
+      keysym = xcb_key_symbols_get_keysym(keysyms, keycode, 0);
+      xcb_key_symbols_free(keysyms);
+
+      return keysym;
+    }
+
+    xcb_keycode_t
+    keysym_to_keycode(const x_connection & c, xcb_keysym_t keysym) const
+    {
+      xcb_key_symbols_t * keysyms;
+      xcb_keycode_t keycode, * keycode_reply;
+
+      if (!(keysyms = xcb_key_symbols_alloc(c()))) { return 0; }
+      keycode_reply = xcb_key_symbols_get_keycode(keysyms, keysym);
+      xcb_key_symbols_free(keysyms);
+
+      keycode = *keycode_reply;
+      delete keycode_reply;
+
+      return keycode;
+    }
 
   private:
     uint8_t _damage_event_id;
