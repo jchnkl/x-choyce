@@ -341,6 +341,7 @@ class x_client : public x_event_handler {
     double _preview_scale;
     rectangle_t _rectangle;
     position_t _preview_position;
+    unsigned int _net_wm_desktop;
     xcb_window_t _window;
     xcb_window_t _preview;
     xcb_render_picture_t _window_picture;
