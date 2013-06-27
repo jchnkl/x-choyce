@@ -258,10 +258,10 @@ class x_client : public x_event_handler {
       xcb_render_free_picture(_c(), _preview_picture);
     }
 
-    double &       scale(void)     { return _scale; }
-    rectangle_t &  rectangle(void) { return _rectangle; }
+    double &       scale(void)                { return _scale; }
+    rectangle_t &  rectangle(void)            { return _rectangle; }
     unsigned int   net_wm_desktop(void) const { return _net_wm_desktop; }
-    xcb_window_t & window(void)    { return _window; }
+    xcb_window_t & window(void)               { return _window; }
 
     void handle(xcb_generic_event_t * ge)
     {
