@@ -243,7 +243,7 @@ class x_client : public x_event_handler {
       if (_c.damage_event_id() == (ge->response_type & ~0x80)) {
         xcb_damage_notify_event_t * e = (xcb_damage_notify_event_t *)ge;
         xcb_damage_subtract(_c(), e->damage, XCB_NONE, XCB_NONE);
-        update();
+        compose();
       }
     }
 
@@ -286,7 +286,7 @@ class x_client : public x_event_handler {
       // update();
     }
 
-    void update(void)
+    void compose(void)
     {
       uint8_t op = XCB_RENDER_PICT_OP_OVER;
       xcb_render_composite(_c(), op,
