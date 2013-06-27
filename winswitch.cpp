@@ -234,6 +234,12 @@ class x_client : public x_event_handler {
                         XCB_DAMAGE_REPORT_LEVEL_BOUNDING_BOX);
     }
 
+    ~x_client(void)
+    {
+      xcb_render_free_picture(_c(), _window_picture);
+      xcb_render_free_picture(_c(), _parent_picture);
+    }
+
     double &       scale(void)     { return _scale; }
     rectangle_t &  rectangle(void) { return _rectangle; }
     xcb_window_t & window(void)    { return _window; }
