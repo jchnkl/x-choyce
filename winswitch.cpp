@@ -261,8 +261,9 @@ class x_client : public x_event_handler {
       xcb_render_free_picture(_c(), _preview_picture);
     }
 
-    double &       scale(void)                { return _scale; }
+    double &       preview_scale(void)        { return _preview_scale; }
     rectangle_t &  rectangle(void)            { return _rectangle; }
+    position_t &   preview_position(void)     { return _preview_position; }
     unsigned int   net_wm_desktop(void) const { return _net_wm_desktop; }
     xcb_window_t & window(void)               { return _window; }
 
@@ -275,22 +276,20 @@ class x_client : public x_event_handler {
       }
     }
 
-    void render(void)
+    void preview(void)
     {
       xcb_get_geometry_reply_t * geometry_reply =
         xcb_get_geometry_reply(_c(), xcb_get_geometry(_c(), _window), NULL);
-
-      _rectangle.size.width  = geometry_reply->width  * _scale;
-      _rectangle.size.height = geometry_reply->height * _scale;
 
       delete geometry_reply;
 
       uint32_t mask = XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y
                     | XCB_CONFIG_WINDOW_WIDTH | XCB_CONFIG_WINDOW_HEIGHT
                     | XCB_CONFIG_WINDOW_STACK_MODE;
-      uint32_t values[] = { (uint32_t)_rectangle.position.x,
-                            (uint32_t)_rectangle.position.y,
-                            _rectangle.size.width, _rectangle.size.height,
+      uint32_t values[] = { (uint32_t)_preview_position.x,
+                            (uint32_t)_preview_position.y,
+                            (uint32_t)(_rectangle.size.width * _preview_scale),
+                            (uint32_t)(_rectangle.size.height * _preview_scale),
                             XCB_STACK_MODE_ABOVE };
 
       xcb_configure_window(_c(), _preview, mask, values);
@@ -303,9 +302,9 @@ class x_client : public x_event_handler {
       // xcb_render_picture_t _dst = make_picture(_c, _preview);
 
       xcb_render_transform_t transform_matrix =
-        { DOUBLE_TO_FIXED(1), DOUBLE_TO_FIXED(0), DOUBLE_TO_FIXED(     0)
-        , DOUBLE_TO_FIXED(0), DOUBLE_TO_FIXED(1), DOUBLE_TO_FIXED(     0)
-        , DOUBLE_TO_FIXED(0), DOUBLE_TO_FIXED(0), DOUBLE_TO_FIXED(_scale)
+        { DOUBLE_TO_FIXED(1), DOUBLE_TO_FIXED(0), DOUBLE_TO_FIXED(             0)
+        , DOUBLE_TO_FIXED(0), DOUBLE_TO_FIXED(1), DOUBLE_TO_FIXED(             0)
+        , DOUBLE_TO_FIXED(0), DOUBLE_TO_FIXED(0), DOUBLE_TO_FIXED(_preview_scale)
         };
 
       // xcb_render_set_picture_transform(_c(), _src, transform_matrix);
@@ -345,9 +344,9 @@ class x_client : public x_event_handler {
 
   private:
     const x_connection & _c;
-    double _scale;
+    double _preview_scale;
     rectangle_t _rectangle;
-    unsigned int _net_wm_desktop;
+    position_t _preview_position;
     xcb_window_t _window;
     xcb_window_t _preview;
     xcb_render_picture_t _window_picture;
@@ -538,10 +537,11 @@ int main(int argc, char ** argv)
   int xo = 0, yo = 0;
   for (auto & xc : x_clients) {
     c.register_x_event_handler(&xc);
-    xc.scale() = 0.2;
+
     if (xo * 300 + 10 > 1200) { xo = 0; ++yo; }
-    xc.rectangle().position = position_t(xo++ * 300 + 10, yo * 300 + 10);
-    xc.render();
+    xc.preview_scale() = 0.2;
+    xc.preview_position() = position_t(xo++ * 300 + 10, yo * 300 + 10);
+    xc.preview();
   }
 
   x_user_input xui(c);
