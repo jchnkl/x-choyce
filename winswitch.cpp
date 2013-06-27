@@ -230,6 +230,8 @@ class x_connection {
 
 class x_client : public x_event_handler {
   public:
+    friend std::ostream & operator<<(std::ostream &, const x_client &);
+
     x_client(const x_connection & c, xcb_window_t window)
       : _c(c), _window(window)
     {
@@ -375,6 +377,16 @@ class x_client : public x_event_handler {
       delete property_reply;
     }
 };
+
+std::ostream & operator<<(std::ostream & os, const x_client & xc)
+{
+  return os << "0x" << std::hex << xc._window << std::dec << " @ "
+            << xc._rectangle.position.x << "x"
+            << xc._rectangle.position.y << "+"
+            << xc._rectangle.size.width << "+"
+            << xc._rectangle.size.height
+            << " on desktop " << xc._net_wm_desktop;
+}
 
 class x_user_input : public x_event_handler {
   public:
