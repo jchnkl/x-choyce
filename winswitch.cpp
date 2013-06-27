@@ -236,6 +236,7 @@ class x_client : public x_event_handler {
 
     ~x_client(void)
     {
+      xcb_damage_destroy(_c(), _damage);
       xcb_render_free_picture(_c(), _window_picture);
       xcb_render_free_picture(_c(), _preview_picture);
     }
