@@ -332,6 +332,15 @@ class x_user_input : public x_event_handler {
   public:
     x_user_input(const x_connection & c) : _c(c) {}
 
+    void grab_key(uint16_t modifiers, xcb_keysym_t keysym)
+    {
+      xcb_keycode_t keycode = _c.keysym_to_keycode(_c, keysym);
+      if (keycode != 0) {
+        xcb_grab_key(_c(), false, _c.root_window(), modifiers, keycode,
+                     XCB_GRAB_MODE_ASYNC, XCB_GRAB_MODE_ASYNC);
+      }
+    }
+
     void grab_keyboard(void)
     {
       xcb_grab_keyboard_cookie_t grab_keyboard_cookie =
