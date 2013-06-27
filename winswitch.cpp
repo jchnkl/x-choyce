@@ -351,6 +351,11 @@ class x_user_input : public x_event_handler {
       delete grab_keyboard_reply;
     }
 
+    void ungrab_keyboard(void)
+    {
+      xcb_ungrab_keyboard(_c(), XCB_TIME_CURRENT_TIME);
+    }
+
     void handle(xcb_generic_event_t * ge)
     {
       if (XCB_KEY_PRESS == (ge->response_type & ~0x80)) {
