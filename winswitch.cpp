@@ -288,11 +288,8 @@ class x_client : public x_event_handler {
 
     void update(void)
     {
-      // xcb_render_picture_t src = make_picture(_c, _window);
-
       uint8_t op = XCB_RENDER_PICT_OP_OVER;
       xcb_render_composite(_c(), op,
-                           // _src, XCB_NONE, _dst,
                            _window_picture, XCB_NONE, _parent_picture,
                            // int16_t src_x, int16_t src_y,
                            0, 0,
