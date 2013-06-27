@@ -234,10 +234,9 @@ class x_client : public x_event_handler {
                         XCB_DAMAGE_REPORT_LEVEL_BOUNDING_BOX);
     }
 
-    double &       scale(void)    { return _scale; }
-    dimension_t &         size(void)     { return _size; }
-    position_t &     position(void) { return _position; }
-    xcb_window_t & window(void)   { return _window; }
+    double &       scale(void)     { return _scale; }
+    rectangle_t &  rectangle(void) { return _rectangle; }
+    xcb_window_t & window(void)    { return _window; }
 
     void handle(xcb_generic_event_t * ge)
     {
@@ -253,16 +252,17 @@ class x_client : public x_event_handler {
       xcb_get_geometry_reply_t * geometry_reply =
         xcb_get_geometry_reply(_c(), xcb_get_geometry(_c(), _window), NULL);
 
-      _size.width  = geometry_reply->width  * _scale;
-      _size.height = geometry_reply->height * _scale;
+      _rectangle.size.width  = geometry_reply->width  * _scale;
+      _rectangle.size.height = geometry_reply->height * _scale;
 
       delete geometry_reply;
 
       uint32_t mask = XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y
                     | XCB_CONFIG_WINDOW_WIDTH | XCB_CONFIG_WINDOW_HEIGHT
                     | XCB_CONFIG_WINDOW_STACK_MODE;
-      uint32_t values[] = { (uint32_t)_position.x, (uint32_t)_position.y,
-                            _size.width, _size.height,
+      uint32_t values[] = { (uint32_t)_rectangle.position.x,
+                            (uint32_t)_rectangle.position.y,
+                            _rectangle.size.width, _rectangle.size.height,
                             XCB_STACK_MODE_ABOVE };
 
       xcb_configure_window(_c(), _parent, mask, values);
@@ -302,14 +302,26 @@ class x_client : public x_event_handler {
                            0, 0,
                            // _position.x, _position.y,
                            // uint16_t width, uint16_t height
-                           _size.width, _size.height);
+                           _rectangle.size.width, _rectangle.size.height);
+    }
+
+    void update_geometry(void)
+    {
+      xcb_get_geometry_reply_t * geometry_reply =
+        xcb_get_geometry_reply(_c(), xcb_get_geometry(_c(), _window), NULL);
+
+      _rectangle.position.x  = geometry_reply->x;
+      _rectangle.position.y  = geometry_reply->y;
+      _rectangle.size.width  = geometry_reply->width;
+      _rectangle.size.height = geometry_reply->height;
+
+      delete geometry_reply;
     }
 
   private:
     const x_connection & _c;
     double _scale;
-    dimension_t _size;
-    position_t _position;
+    rectangle_t _rectangle;
     xcb_window_t _window;
     xcb_window_t _parent;
     xcb_pixmap_t _window_pixmap;
@@ -463,7 +475,7 @@ int main(int argc, char ** argv)
     c.register_x_event_handler(&xc);
     xc.scale() = 0.2;
     if (xo * 300 + 10 > 1200) { xo = 0; ++yo; }
-    xc.position() = position_t(xo++ * 300 + 10, yo * 300 + 10);
+    xc.rectangle().position = position_t(xo++ * 300 + 10, yo * 300 + 10);
     xc.render();
   }
 
