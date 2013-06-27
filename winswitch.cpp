@@ -22,9 +22,6 @@ render_find_visual_format(const x_connection & c, xcb_visualid_t visual);
 xcb_render_picture_t
 make_picture(const x_connection & c, xcb_window_t window);
 
-std::vector<xcb_window_t>
-stacked_window_list(const x_connection & c);
-
 std::vector<x_client>
 make_thumbnails(const x_connection & c, const std::vector<xcb_window_t> & windows);
 
@@ -157,6 +154,33 @@ class x_connection {
       delete keycode_reply;
 
       return keycode;
+    }
+
+    std::vector<xcb_window_t>
+    net_client_list_stacking(void)
+    {
+      std::string atom_name = "_NET_CLIENT_LIST_STACKING";
+      xcb_intern_atom_cookie_t atom_cookie =
+        xcb_intern_atom(_c, false, atom_name.length(), atom_name.c_str());
+      xcb_intern_atom_reply_t * atom_reply =
+        xcb_intern_atom_reply(_c, atom_cookie, NULL);
+
+      xcb_get_property_cookie_t property_cookie =
+        xcb_get_property(_c, false, _root_window,
+                         atom_reply->atom, XCB_ATOM_WINDOW, 0, UINT_MAX);
+
+      delete atom_reply;
+
+      xcb_get_property_reply_t * property_reply =
+        xcb_get_property_reply(_c, property_cookie, NULL);
+
+      xcb_window_t * windows =
+        (xcb_window_t *)xcb_get_property_value(property_reply);
+
+      std::vector<xcb_window_t> result(windows, windows + property_reply->length);
+
+      delete property_reply;
+      return result;
     }
 
   private:
@@ -448,33 +472,6 @@ make_picture(const x_connection & c, xcb_window_t window)
   return picture;
 }
 
-std::vector<xcb_window_t>
-stacked_window_list(const x_connection & c)
-{
-  std::string atom_name = "_NET_CLIENT_LIST_STACKING";
-  xcb_intern_atom_cookie_t atom_cookie =
-    xcb_intern_atom(c(), false, atom_name.length(), atom_name.c_str());
-  xcb_intern_atom_reply_t * atom_reply =
-    xcb_intern_atom_reply(c(), atom_cookie, NULL);
-
-  xcb_get_property_cookie_t property_cookie =
-    xcb_get_property(c(), false, c.root_window(),
-                     atom_reply->atom, XCB_ATOM_WINDOW, 0, UINT_MAX);
-
-  delete atom_reply;
-
-  xcb_get_property_reply_t * property_reply =
-    xcb_get_property_reply(c(), property_cookie, NULL);
-
-  xcb_window_t * windows =
-    (xcb_window_t *)xcb_get_property_value(property_reply);
-
-  std::vector<xcb_window_t> result(windows, windows + property_reply->length);
-
-  delete property_reply;
-  return result;
-}
-
 std::vector<x_client>
 make_x_clients(x_connection & c, const std::vector<xcb_window_t> & windows)
 {
@@ -507,7 +504,7 @@ int main(int argc, char ** argv)
 {
   x_connection c;
 
-  auto x_clients = make_x_clients(c, stacked_window_list(c));
+  auto x_clients = make_x_clients(c, c.net_client_list_stacking());
 
   int xo = 0, yo = 0;
   for (auto & xc : x_clients) {
