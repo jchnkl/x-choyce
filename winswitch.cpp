@@ -233,6 +233,7 @@ class x_client : public x_event_handler {
     x_client(const x_connection & c, xcb_window_t window)
       : _c(c), _window(window)
     {
+      update_geometry();
       get_net_wm_desktop();
 
       uint32_t mask = XCB_CW_BACK_PIXEL | XCB_CW_OVERRIDE_REDIRECT;
