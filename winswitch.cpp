@@ -233,12 +233,6 @@ class x_client : public x_event_handler {
     x_client(const x_connection & c, xcb_window_t window)
       : _c(c), _window(window)
     {
-      std::cerr << "c'tor for 0x" << std::hex << window << std::dec;
-      std::cerr << " and " << this << std::endl;
-      // const_cast<x_connection &>(_c).register_x_event_handler(this);
-      // c.register_x_event_handler(this);
-      _window_pixmap = xcb_generate_id(_c());
-      xcb_composite_name_window_pixmap(_c(), _window, _window_pixmap);
 
       uint32_t mask = XCB_CW_BACK_PIXEL | XCB_CW_OVERRIDE_REDIRECT;
       uint32_t values[] = { 0, true };
@@ -250,8 +244,6 @@ class x_client : public x_event_handler {
                         XCB_WINDOW_CLASS_INPUT_OUTPUT,
                         _c.default_screen()->root_visual, mask, values);
 
-      _preview_pixmap = xcb_generate_id(_c());
-      xcb_composite_name_window_pixmap(_c(), _preview, _preview_pixmap);
 
       _damage = xcb_generate_id(_c());
       xcb_damage_create(_c(), _damage, _window,
@@ -352,8 +344,6 @@ class x_client : public x_event_handler {
     rectangle_t _rectangle;
     xcb_window_t _window;
     xcb_window_t _preview;
-    xcb_pixmap_t _window_pixmap;
-    xcb_pixmap_t _preview_pixmap;
     xcb_render_picture_t _window_picture;
     xcb_render_picture_t _preview_picture;
     xcb_damage_damage_t _damage;
