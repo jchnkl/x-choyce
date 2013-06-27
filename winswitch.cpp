@@ -461,13 +461,18 @@ stacked_window_list(const x_connection & c)
     xcb_get_property(c(), false, c.root_window(),
                      atom_reply->atom, XCB_ATOM_WINDOW, 0, UINT_MAX);
 
+  delete atom_reply;
+
   xcb_get_property_reply_t * property_reply =
     xcb_get_property_reply(c(), property_cookie, NULL);
 
   xcb_window_t * windows =
     (xcb_window_t *)xcb_get_property_value(property_reply);
 
-  return std::vector<xcb_window_t>(windows, windows + property_reply->length);
+  std::vector<xcb_window_t> result(windows, windows + property_reply->length);
+
+  delete property_reply;
+  return result;
 }
 
 std::vector<x_client>
