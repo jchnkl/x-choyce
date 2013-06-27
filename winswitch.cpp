@@ -507,7 +507,8 @@ int main(int argc, char ** argv)
   }
 
   x_user_input xui(c);
-  xui.grab_keyboard();
+  xui.grab_key(XCB_MOD_MASK_4, XK_Tab);
+  xui.grab_key(0, XK_Escape);
   c.register_x_event_handler(&xui);
 
   c.run_event_loop();
