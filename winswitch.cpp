@@ -233,6 +233,7 @@ class x_client : public x_event_handler {
     x_client(const x_connection & c, xcb_window_t window)
       : _c(c), _window(window)
     {
+      get_net_wm_desktop();
 
       uint32_t mask = XCB_CW_BACK_PIXEL | XCB_CW_OVERRIDE_REDIRECT;
       uint32_t values[] = { 0, true };
@@ -259,6 +260,7 @@ class x_client : public x_event_handler {
 
     double &       scale(void)     { return _scale; }
     rectangle_t &  rectangle(void) { return _rectangle; }
+    unsigned int   net_wm_desktop(void) const { return _net_wm_desktop; }
     xcb_window_t & window(void)    { return _window; }
 
     void handle(xcb_generic_event_t * ge)
@@ -342,11 +344,35 @@ class x_client : public x_event_handler {
     const x_connection & _c;
     double _scale;
     rectangle_t _rectangle;
+    unsigned int _net_wm_desktop;
     xcb_window_t _window;
     xcb_window_t _preview;
     xcb_render_picture_t _window_picture;
     xcb_render_picture_t _preview_picture;
     xcb_damage_damage_t _damage;
+
+    void
+    get_net_wm_desktop(void)
+    {
+      std::string atom_name = "_NET_WM_DESKTOP";
+      xcb_intern_atom_cookie_t atom_cookie =
+        xcb_intern_atom(_c(), false, atom_name.length(), atom_name.c_str());
+      xcb_intern_atom_reply_t * atom_reply =
+        xcb_intern_atom_reply(_c(), atom_cookie, NULL);
+
+      xcb_get_property_cookie_t property_cookie =
+        xcb_get_property(_c(), false, _c.root_window(),
+                         atom_reply->atom, XCB_ATOM_WINDOW, 0, 32);
+
+      delete atom_reply;
+
+      xcb_get_property_reply_t * property_reply =
+        xcb_get_property_reply(_c(), property_cookie, NULL);
+
+      _net_wm_desktop = *(unsigned int *)xcb_get_property_value(property_reply);
+
+      delete property_reply;
+    }
 };
 
 class x_user_input : public x_event_handler {
