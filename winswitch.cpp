@@ -39,20 +39,20 @@ struct position_t {
 
 struct rectangle_t {
   rectangle_t(void) {}
-  rectangle_t(dimension_t size, position_t position)
-    : size(size), position(position) {}
+  rectangle_t(dimension_t dimension, position_t position)
+    : dimension(dimension), position(position) {}
 
   int & x(void) { return position.x; }
   int const & x(void) const { return position.x; }
   int & y(void) { return position.y; }
   int const & y(void) const { return position.y; }
-  unsigned int & width(void) { return size.width; }
-  unsigned int const & width(void) const { return size.width; }
-  unsigned int & height(void) { return size.height; }
-  unsigned int const & height(void) const { return size.height; }
+  unsigned int & width(void) { return dimension.width; }
+  unsigned int const & width(void) const { return dimension.width; }
+  unsigned int & height(void) { return dimension.height; }
+  unsigned int const & height(void) const { return dimension.height; }
 
-  dimension_t size;
   position_t position;
+  dimension_t dimension;
 };
 
 class x_event_handler {
