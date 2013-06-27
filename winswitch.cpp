@@ -359,7 +359,23 @@ class x_user_input : public x_event_handler {
     void handle(xcb_generic_event_t * ge)
     {
       if (XCB_KEY_PRESS == (ge->response_type & ~0x80)) {
-        std::exit(EXIT_SUCCESS);
+        xcb_key_press_event_t * e = (xcb_key_press_event_t *)ge;
+        xcb_keysym_t keysym = _c.keycode_to_keysym(_c, e->detail);
+        if (keysym == XK_Escape && e->state == 0) {
+          std::exit(EXIT_SUCCESS);
+
+        } else if (keysym == XK_Tab && e->state == XCB_MOD_MASK_4) {
+          grab_keyboard();
+          std::cerr << "XK_Tab + XCB_MOD_MASK_4" << std::endl;
+        }
+
+      } else if (XCB_KEY_RELEASE == (ge->response_type & ~0x80)) {
+        xcb_key_release_event_t * e = (xcb_key_release_event_t *)ge;
+        xcb_keysym_t keysym = _c.keycode_to_keysym(_c, e->detail);
+        if (keysym == XK_Super_L) {
+          ungrab_keyboard();
+          std::cerr << "release" << std::endl;
+        }
       }
     }
 
