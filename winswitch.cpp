@@ -298,19 +298,13 @@ class x_client : public x_event_handler {
       _window_picture = make_picture(_c, _window);
       _preview_picture = make_picture(_c, _preview);
 
-      // xcb_render_picture_t _src = make_picture(_c, _window);
-      // xcb_render_picture_t _dst = make_picture(_c, _preview);
-
       xcb_render_transform_t transform_matrix =
         { DOUBLE_TO_FIXED(1), DOUBLE_TO_FIXED(0), DOUBLE_TO_FIXED(             0)
         , DOUBLE_TO_FIXED(0), DOUBLE_TO_FIXED(1), DOUBLE_TO_FIXED(             0)
         , DOUBLE_TO_FIXED(0), DOUBLE_TO_FIXED(0), DOUBLE_TO_FIXED(_preview_scale)
         };
 
-      // xcb_render_set_picture_transform(_c(), _src, transform_matrix);
       xcb_render_set_picture_transform(_c(), _window_picture, transform_matrix);
-
-      // update();
     }
 
     void compose(void)
