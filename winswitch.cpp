@@ -41,6 +41,8 @@ struct rectangle_t {
   rectangle_t(void) {}
   rectangle_t(dimension_t dimension, position_t position)
     : dimension(dimension), position(position) {}
+  rectangle_t(int x, int y, unsigned int width, unsigned int height)
+    : position(x, y), dimension(width, height) {}
 
   int & x(void) { return position.x; }
   int const & x(void) const { return position.x; }
