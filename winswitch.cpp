@@ -41,6 +41,16 @@ struct rectangle_t {
   rectangle_t(void) {}
   rectangle_t(dimension_t size, position_t position)
     : size(size), position(position) {}
+
+  int & x(void) { return position.x; }
+  int const & x(void) const { return position.x; }
+  int & y(void) { return position.y; }
+  int const & y(void) const { return position.y; }
+  unsigned int & width(void) { return size.width; }
+  unsigned int const & width(void) const { return size.width; }
+  unsigned int & height(void) { return size.height; }
+  unsigned int const & height(void) const { return size.height; }
+
   dimension_t size;
   position_t position;
 };
@@ -288,8 +298,8 @@ class x_client : public x_event_handler {
                     | XCB_CONFIG_WINDOW_STACK_MODE;
       uint32_t values[] = { (uint32_t)_preview_position.x,
                             (uint32_t)_preview_position.y,
-                            (uint32_t)(_rectangle.size.width * _preview_scale),
-                            (uint32_t)(_rectangle.size.height * _preview_scale),
+                            (uint32_t)(_rectangle.width() * _preview_scale),
+                            (uint32_t)(_rectangle.height() * _preview_scale),
                             XCB_STACK_MODE_ABOVE };
 
       xcb_configure_window(_c(), _preview, mask, values);
@@ -320,7 +330,7 @@ class x_client : public x_event_handler {
                            0, 0,
                            // _position.x, _position.y,
                            // uint16_t width, uint16_t height
-                           _rectangle.size.width, _rectangle.size.height);
+                           _rectangle.width(), _rectangle.height());
     }
 
     void update_geometry(void)
@@ -328,10 +338,10 @@ class x_client : public x_event_handler {
       xcb_get_geometry_reply_t * geometry_reply =
         xcb_get_geometry_reply(_c(), xcb_get_geometry(_c(), _window), NULL);
 
-      _rectangle.position.x  = geometry_reply->x;
-      _rectangle.position.y  = geometry_reply->y;
-      _rectangle.size.width  = geometry_reply->width;
-      _rectangle.size.height = geometry_reply->height;
+      _rectangle.x()      = geometry_reply->x;
+      _rectangle.y()      = geometry_reply->y;
+      _rectangle.width()  = geometry_reply->width;
+      _rectangle.height() = geometry_reply->height;
 
       delete geometry_reply;
     }
@@ -375,10 +385,10 @@ class x_client : public x_event_handler {
 std::ostream & operator<<(std::ostream & os, const x_client & xc)
 {
   return os << "0x" << std::hex << xc._window << std::dec << " @ "
-            << xc._rectangle.position.x << "x"
-            << xc._rectangle.position.y << "+"
-            << xc._rectangle.size.width << "+"
-            << xc._rectangle.size.height
+            << xc._rectangle.x()     << "x"
+            << xc._rectangle.y()     << "+"
+            << xc._rectangle.width() << "+"
+            << xc._rectangle.height()
             << " on desktop " << xc._net_wm_desktop;
 }
 
