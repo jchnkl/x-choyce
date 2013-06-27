@@ -39,8 +39,8 @@ struct position_t {
 
 struct rectangle_t {
   rectangle_t(void) {}
-  rectangle_t(dimension_t dimension, position_t position)
-    : dimension(dimension), position(position) {}
+  rectangle_t(position_t position, dimension_t dimension)
+    : position(position), dimension(dimension) {}
   rectangle_t(int x, int y, unsigned int width, unsigned int height)
     : position(x, y), dimension(width, height) {}
 
