@@ -218,16 +218,16 @@ class x_client : public x_event_handler {
 
       uint32_t mask = XCB_CW_BACK_PIXEL | XCB_CW_OVERRIDE_REDIRECT;
       uint32_t values[] = { 0, true };
-      _parent = xcb_generate_id(c());
-      xcb_create_window(_c(), XCB_COPY_FROM_PARENT, _parent,
+      _preview = xcb_generate_id(c());
+      xcb_create_window(_c(), XCB_COPY_FROM_PARENT, _preview,
                         _c.default_screen()->root,
                         0, 0, 1, 1, 0,
                         // _position.x, _position.y, _size.width, _size.height, 0,
                         XCB_WINDOW_CLASS_INPUT_OUTPUT,
                         _c.default_screen()->root_visual, mask, values);
 
-      _parent_pixmap = xcb_generate_id(_c());
-      xcb_composite_name_window_pixmap(_c(), _parent, _parent_pixmap);
+      _preview_pixmap = xcb_generate_id(_c());
+      xcb_composite_name_window_pixmap(_c(), _preview, _preview_pixmap);
 
       _damage = xcb_generate_id(_c());
       xcb_damage_create(_c(), _damage, _window,
@@ -237,7 +237,7 @@ class x_client : public x_event_handler {
     ~x_client(void)
     {
       xcb_render_free_picture(_c(), _window_picture);
-      xcb_render_free_picture(_c(), _parent_picture);
+      xcb_render_free_picture(_c(), _preview_picture);
     }
 
     double &       scale(void)     { return _scale; }
@@ -271,14 +271,14 @@ class x_client : public x_event_handler {
                             _rectangle.size.width, _rectangle.size.height,
                             XCB_STACK_MODE_ABOVE };
 
-      xcb_configure_window(_c(), _parent, mask, values);
-      xcb_map_window(_c(), _parent);
+      xcb_configure_window(_c(), _preview, mask, values);
+      xcb_map_window(_c(), _preview);
 
       _window_picture = make_picture(_c, _window);
-      _parent_picture = make_picture(_c, _parent);
+      _preview_picture = make_picture(_c, _preview);
 
       // xcb_render_picture_t _src = make_picture(_c, _window);
-      // xcb_render_picture_t _dst = make_picture(_c, _parent);
+      // xcb_render_picture_t _dst = make_picture(_c, _preview);
 
       xcb_render_transform_t transform_matrix =
         { DOUBLE_TO_FIXED(1), DOUBLE_TO_FIXED(0), DOUBLE_TO_FIXED(     0)
@@ -296,7 +296,7 @@ class x_client : public x_event_handler {
     {
       uint8_t op = XCB_RENDER_PICT_OP_OVER;
       xcb_render_composite(_c(), op,
-                           _window_picture, XCB_NONE, _parent_picture,
+                           _window_picture, XCB_NONE, _preview_picture,
                            // int16_t src_x, int16_t src_y,
                            0, 0,
                            // int16_t mask_x, int16_t mask_y,
@@ -326,11 +326,11 @@ class x_client : public x_event_handler {
     double _scale;
     rectangle_t _rectangle;
     xcb_window_t _window;
-    xcb_window_t _parent;
+    xcb_window_t _preview;
     xcb_pixmap_t _window_pixmap;
-    xcb_pixmap_t _parent_pixmap;
+    xcb_pixmap_t _preview_pixmap;
     xcb_render_picture_t _window_picture;
-    xcb_render_picture_t _parent_picture;
+    xcb_render_picture_t _preview_picture;
     xcb_damage_damage_t _damage;
 };
 
