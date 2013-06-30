@@ -620,9 +620,109 @@ std::ostream & operator<<(std::ostream & os, const x_client & xc)
             << " on desktop " << xc._net_wm_desktop;
 }
 
+class x_client_container {
   public:
+    typedef std::list<x_client> container_t;
+    typedef container_t::iterator iterator;
+    typedef container_t::const_iterator const_iterator;
+    typedef container_t::reverse_iterator reverse_iterator;
+    typedef container_t::const_reverse_iterator const_reverse_iterator;
 
+    iterator begin(void)                      { return _x_clients.begin(); }
+    iterator end(void)                        { return _x_clients.end(); }
+    const_iterator begin(void) const          { return _x_clients.cbegin(); }
+    const_iterator end(void) const            { return _x_clients.cend(); }
+    reverse_iterator rbegin(void)             { return _x_clients.rbegin(); }
+    reverse_iterator rend(void)               { return _x_clients.rend(); }
+    const_reverse_iterator rbegin(void) const { return _x_clients.crbegin(); }
+    const_reverse_iterator rend(void) const   { return _x_clients.crend(); }
+    const size_t size(void) const             { return _x_clients.size(); }
+
+    x_client_container(const x_connection & c, x_event_source & es)
+      : _c(c), _x_event_source(es) {}
+
+    void update(void)
     {
+      for (auto & xc : _x_clients) { _x_event_source.unregister_handler(&xc); }
+      _x_clients.clear();
+      _windows.clear();
+      _windows = _c.net_client_list_stacking();
+      _x_clients = make_x_clients(_c, _windows);
+      for (auto & xc : _x_clients) { _x_event_source.register_handler(&xc); }
+    }
+
+  private:
+    container_t _x_clients;
+    std::vector<xcb_window_t> _windows;
+    const x_connection & _c;
+    x_event_source & _x_event_source;
+};
+
+class layout_t {
+  public:
+    virtual void arrange(const rectangle_t &, x_client_container &) const = 0;
+};
+
+class grid_t : public layout_t {
+  public:
+    void arrange(const rectangle_t & screen, x_client_container & clients) const
+    {
+      int gap = 5;
+
+      int factor = std::round(std::sqrt(clients.size()));
+      int rest = (factor * factor) - clients.size();
+
+      auto cells = decompose(factor, factor * factor);
+
+      if (rest >= 0) {
+        for (auto rit = cells.rbegin(); rit != cells.rend(); ) {
+          if (rest == 0) {
+            break;
+          } else if (rest < *rit) {
+            *rit -= rest;
+            break;
+          } else if (rest >= *rit) {
+            rest -= *rit;
+            ++rit;
+            cells.pop_back();
+          }
+        }
+      } else {
+        cells.push_back((-1) * rest);
+      }
+
+      int ncol = cells.size();
+      int colw = screen.width() / ncol;
+
+      std::vector<rectangle_t> rects;
+      for (int c = 0; c < ncol; ++c) {
+        int nrow = cells[c];
+        int rowh = screen.height() / nrow;
+        for (int r = 0; r < nrow; ++r) {
+          rects.push_back(rectangle_t(c * colw + screen.x() + gap,
+                                      r * rowh + screen.y() + gap,
+                                      colw - 2 * gap, rowh - 2 * gap));
+        }
+      }
+
+      int i = 0;
+      for (auto & client : clients) {
+        double scale_x = (double)rects[i].width() / (double)client.rectangle().width();
+        double scale_y = (double)rects[i].height() / (double)client.rectangle().height();
+        client.preview_scale() = std::min(scale_x, scale_y);
+        client.preview_position().x = rects[i].x();
+        client.preview_position().y = rects[i].y();
+
+        unsigned int realwidth  = client.rectangle().width() * client.preview_scale();
+        unsigned int realheight = client.rectangle().height() * client.preview_scale();
+
+        if (realwidth < rects[i].width()) {
+          client.preview_position().x += (rects[i].width() - realwidth) / 2;
+        }
+        if (realheight < rects[i].height()) {
+          client.preview_position().y += (rects[i].height() - realheight) / 2;
+        }
+        i++;
       }
     }
 
@@ -653,6 +753,13 @@ std::ostream & operator<<(std::ostream & os, const x_client & xc)
         }
       }
     }
+
+  private:
+    container_t _x_clients;
+    std::vector<xcb_window_t> _windows;
+    const x_connection & _c;
+    x_event_source & _x_event_source;
+};
 
   private:
     const x_connection & _c;
