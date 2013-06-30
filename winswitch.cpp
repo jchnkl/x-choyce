@@ -503,8 +503,22 @@ class x_client : public x_event_handler {
       }
     }
 
-    void preview(void)
+    void hide_preview(void) const {
+      xcb_unmap_window(_c(), _preview);
+      xcb_render_free_picture(_c(), _window_picture);
+      xcb_render_free_picture(_c(), _preview_picture);
+    }
+
+    void update_preview(bool is_active)
     {
+      _preview_is_active = is_active;
+      compose(rectangle_t(0, 0, _rectangle.width(), _rectangle.height()));
+    }
+
+    void show_preview(bool is_active)
+    {
+      _preview_is_active = is_active;
+
       xcb_get_geometry_reply_t * geometry_reply =
         xcb_get_geometry_reply(_c(), xcb_get_geometry(_c(), _window), NULL);
 
@@ -532,6 +546,8 @@ class x_client : public x_event_handler {
         };
 
       xcb_render_set_picture_transform(_c(), _window_picture, transform_matrix);
+
+      compose(rectangle_t(0, 0, _rectangle.width(), _rectangle.height()));
     }
 
     void compose(const rectangle_t & rectangle)
@@ -569,6 +585,7 @@ class x_client : public x_event_handler {
 
   private:
     const x_connection & _c;
+    bool _preview_is_active = false;
     double _preview_scale;
     rectangle_t _rectangle;
     rectangle_t _preview_rectangle;
