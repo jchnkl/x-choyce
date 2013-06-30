@@ -589,15 +589,22 @@ class x_client : public x_event_handler {
         xcb_intern_atom_reply(_c(), atom_cookie, NULL);
 
       xcb_get_property_cookie_t property_cookie =
-        xcb_get_property(_c(), false, _c.root_window(),
-                         atom_reply->atom, XCB_ATOM_WINDOW, 0, 32);
+        xcb_get_property(_c(), false, _window,
+                         atom_reply->atom, XCB_ATOM_CARDINAL, 0, 32);
 
       delete atom_reply;
 
+      xcb_generic_error_t * error = NULL;
       xcb_get_property_reply_t * property_reply =
-        xcb_get_property_reply(_c(), property_cookie, NULL);
+        xcb_get_property_reply(_c(), property_cookie, &error);
 
-      _net_wm_desktop = *(unsigned int *)xcb_get_property_value(property_reply);
+      if (error || property_reply->value_len == 0) {
+        delete error;
+        _net_wm_desktop = 0;
+      } else {
+        _net_wm_desktop =
+          *(unsigned int *)xcb_get_property_value(property_reply);
+      }
 
       delete property_reply;
     }
