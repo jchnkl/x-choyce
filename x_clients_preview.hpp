@@ -26,6 +26,7 @@ class x_clients_preview : public x_event_handler {
     x_client_container::iterator _current_client;
 
     void move_client(bool next);
+    void configure_clients_preview(void);
 };
 
 #endif
