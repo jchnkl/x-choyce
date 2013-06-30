@@ -85,7 +85,11 @@ class x_connection {
 
     xcb_connection_t * operator()(void) const { return _c; }
 
+    void select_input(xcb_window_t window, xcb_event_mask_t event_mask) const
     {
+      uint32_t mask = XCB_CW_EVENT_MASK;
+      const uint32_t values[] = { event_mask };
+      xcb_change_window_attributes(_c, window, mask, values);
     }
 
     xcb_visualtype_t * default_visual_of_screen(void)
