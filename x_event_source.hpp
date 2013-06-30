@@ -1,0 +1,43 @@
+#ifndef _X_EVENT_SOURCE
+#define _X_EVENT_SOURCE
+
+#include <list>
+
+#include "x_connection.hpp"
+
+class x_event_source {
+  public:
+    x_event_source(const x_connection & c) : _c(c) {}
+
+    virtual void register_handler(x_event_handler * eh)
+    {
+      _handler_list.push_back(eh);
+    }
+
+    virtual void unregister_handler(x_event_handler * eh)
+    {
+      _handler_list.remove(eh);
+    }
+
+    void run_event_loop(void)
+    {
+      xcb_generic_event_t * ge = NULL;
+      while (true) {
+        _c.flush();
+        ge = xcb_wait_for_event(_c());
+
+        if (! ge) {
+          continue;
+        } else {
+          for (auto eh : _handler_list) { eh->handle(ge); }
+          delete ge;
+        }
+      }
+    }
+
+  private:
+    const x_connection & _c;
+    std::list<x_event_handler *> _handler_list;
+};
+
+#endif

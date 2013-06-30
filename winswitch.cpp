@@ -19,11 +19,10 @@
 #include "x_event_handler.hpp"
 #include "x_connection.hpp"
 #include "x_client.hpp"
+#include "x_event_source.hpp"
 
 // http://svn.enlightenment.org/svn/e/tags/evas-1.0.2/src/modules/engines/xrender_x11/evas_engine_xcb_render.c
 #define DOUBLE_TO_FIXED(d) ((xcb_render_fixed_t) ((d) * 65536))
-
-class x_event_source;
 
 xcb_render_pictformat_t
 render_find_visual_format(const x_connection & c, xcb_visualid_t visual);
@@ -36,41 +35,6 @@ make_x_clients(const x_connection & c, const std::vector<xcb_window_t> & windows
 
 std::vector<x_client>
 make_thumbnails(const x_connection & c, const std::vector<xcb_window_t> & windows);
-
-class x_event_source {
-  public:
-    x_event_source(const x_connection & c) : _c(c) {}
-
-    virtual void register_handler(x_event_handler * eh)
-    {
-      _handler_list.push_back(eh);
-    }
-
-    virtual void unregister_handler(x_event_handler * eh)
-    {
-      _handler_list.remove(eh);
-    }
-
-    void run_event_loop(void)
-    {
-      xcb_generic_event_t * ge = NULL;
-      while (true) {
-        _c.flush();
-        ge = xcb_wait_for_event(_c());
-
-        if (! ge) {
-          continue;
-        } else {
-          for (auto eh : _handler_list) { eh->handle(ge); }
-          delete ge;
-        }
-      }
-    }
-
-  private:
-    const x_connection & _c;
-    std::list<x_event_handler *> _handler_list;
-};
 
 class x_client_container {
   public:
