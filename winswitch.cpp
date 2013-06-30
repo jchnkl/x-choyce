@@ -180,7 +180,7 @@ class x_connection {
     }
 
     std::vector<xcb_window_t>
-    net_client_list_stacking(void)
+    net_client_list_stacking(void) const
     {
       std::string atom_name = "_NET_CLIENT_LIST_STACKING";
       xcb_intern_atom_cookie_t atom_cookie =
