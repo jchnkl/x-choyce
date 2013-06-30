@@ -856,18 +856,23 @@ make_picture(const x_connection & c, xcb_window_t window)
                                     xcb_get_window_attributes(c(), window),
                                     NULL);
 
-  xcb_render_pictformat_t format =
-    render_find_visual_format(c, window_attributes_reply->visual);
+  if (window_attributes_reply) {
+    xcb_render_pictformat_t format =
+      render_find_visual_format(c, window_attributes_reply->visual);
 
-  delete window_attributes_reply;
+    delete window_attributes_reply;
 
-  uint32_t mask = XCB_RENDER_CP_REPEAT;
-  uint32_t list[] = { XCB_RENDER_REPEAT_NONE };
+    uint32_t mask = XCB_RENDER_CP_REPEAT | XCB_RENDER_CP_SUBWINDOW_MODE;
+    uint32_t list[] = { XCB_RENDER_REPEAT_NONE,
+                        XCB_SUBWINDOW_MODE_INCLUDE_INFERIORS };
 
-  xcb_render_picture_t picture = xcb_generate_id(c());
-  xcb_render_create_picture(c(), picture, window, format, mask, list);
+    xcb_render_picture_t picture = xcb_generate_id(c());
+    xcb_render_create_picture(c(), picture, window, format, mask, list);
 
-  return picture;
+    return picture;
+  }
+
+  return XCB_NONE;
 }
 
 std::list<x_client>
