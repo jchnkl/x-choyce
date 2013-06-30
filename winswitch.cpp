@@ -569,6 +569,16 @@ class x_client : public x_event_handler {
                            x, y,
                            // uint16_t width, uint16_t height
                            width, height);
+
+      if (_preview_is_active) { return; }
+
+      op = XCB_RENDER_PICT_OP_OVER;
+      xcb_render_color_t color = { (uint16_t)(0.0f * 0xffff),
+                                   (uint16_t)(0.0f * 0xffff),
+                                   (uint16_t)(0.0f * 0xffff),
+                                   (uint16_t)(0.25f * 0xffff) };
+      xcb_rectangle_t r = { x, y, width, height };
+      xcb_render_fill_rectangles(_c(), op, _preview_picture, color, 1, &r);
     }
 
     void update_geometry(void)
