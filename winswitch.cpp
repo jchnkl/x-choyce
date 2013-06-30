@@ -485,6 +485,8 @@ class x_client : public x_event_handler {
       xcb_destroy_window(_c(), _preview);
     }
 
+    bool operator==(const xcb_window_t & window) { return _window == window; }
+
     double &       preview_scale(void)        { return _preview_scale; }
     rectangle_t &  rectangle(void)            { return _rectangle; }
     position_t &   preview_position(void)     { return _preview_position; }
