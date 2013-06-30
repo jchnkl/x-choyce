@@ -74,7 +74,7 @@ void
 x_clients_preview::configure_clients_preview(void)
 {
   int i = 0;
-  auto rects = _layout->arrange(_c.current_screen(), _x_clients);
+  auto rects = _layout->arrange(_c.current_screen(), _x_clients.size());
 
   for (auto & client : _x_clients) {
     double scale_x = (double)rects[i].width()

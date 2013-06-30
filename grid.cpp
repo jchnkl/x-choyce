@@ -3,12 +3,12 @@
 #include <cmath>
 
 std::deque<rectangle_t>
-grid_t::arrange(const rectangle_t & screen, x_client_container & clients) const
+grid_t::arrange(const rectangle_t & screen, unsigned int nrects) const
 {
   int gap = 5;
 
-  int factor = std::round(std::sqrt(clients.size()));
-  int rest = (factor * factor) - clients.size();
+  int factor = std::round(std::sqrt(nrects));
+  int rest = (factor * factor) - nrects;
 
   auto cells = decompose(factor, factor * factor);
 

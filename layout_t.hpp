@@ -9,7 +9,7 @@
 class layout_t {
   public:
     virtual std::deque<rectangle_t>
-    arrange(const rectangle_t &, x_client_container &) const = 0;
+    arrange(const rectangle_t &, unsigned int) const = 0;
 };
 
 #endif
