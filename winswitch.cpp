@@ -988,19 +988,13 @@ int main(int argc, char ** argv)
   c.grab_key(XCB_MOD_MASK_4, XK_Tab);
 
   x_event_source es(c);
+  x_client_container cc(c, es);
 
-  int xo = 0, yo = 0;
-  for (auto & xc : x_clients) {
-    es.register_handler(&xc);
+  grid_t grid();
+  x_clients_preview cp(c, &grid, cc);
 
-    if (xo * 300 + 10 > 1200) { xo = 0; ++yo; }
-    xc.preview_scale() = 0.2;
-    xc.preview_position() = position_t(xo++ * 300 + 10, yo * 300 + 10);
-    xc.preview();
-  }
-
-  x_user_input xui(c);
-  es.register_handler(&xui);
+  es.register_handler(&c);
+  es.register_handler(&cp);
 
   es.run_event_loop();
 
