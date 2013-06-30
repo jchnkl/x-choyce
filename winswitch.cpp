@@ -85,27 +85,7 @@ class x_connection {
 
     xcb_connection_t * operator()(void) const { return _c; }
 
-    void register_x_event_handler(x_event_handler * eh)
     {
-      _x_event_handler_list.push_back(eh);
-    }
-
-    void run_event_loop(void)
-    {
-      xcb_generic_event_t * ge = NULL;
-      while (true) {
-        flush();
-        ge = xcb_wait_for_event(_c);
-
-        if (! ge) {
-          continue;
-        } else {
-          for (auto eh : _x_event_handler_list) {
-            eh->handle(ge);
-          }
-          delete ge;
-        }
-      }
     }
 
     xcb_visualtype_t * default_visual_of_screen(void)
@@ -205,7 +185,6 @@ class x_connection {
     xcb_connection_t * _c = NULL;
     xcb_screen_t * _default_screen = NULL;
 
-    std::vector<x_event_handler *> _x_event_handler_list;
     std::vector<const xcb_query_extension_reply_t *> _extension_reply_list;
 
 
@@ -241,6 +220,41 @@ class x_connection {
 
     void init_render(void) { xcb_prefetch_extension_data(_c, &xcb_render_id); }
 
+};
+
+class x_event_source {
+  public:
+    x_event_source(const x_connection & c) : _c(c) {}
+
+    virtual void register_handler(x_event_handler * eh)
+    {
+      _handler_list.push_back(eh);
+    }
+
+    virtual void unregister_handler(x_event_handler * eh)
+    {
+      _handler_list.remove(eh);
+    }
+
+    void run_event_loop(void)
+    {
+      xcb_generic_event_t * ge = NULL;
+      while (true) {
+        _c.flush();
+        ge = xcb_wait_for_event(_c());
+
+        if (! ge) {
+          continue;
+        } else {
+          for (auto eh : _handler_list) { eh->handle(ge); }
+          delete ge;
+        }
+      }
+    }
+
+  private:
+    const x_connection & _c;
+    std::list<x_event_handler *> _handler_list;
 };
 
 class x_client : public x_event_handler {
@@ -543,10 +557,11 @@ int main(int argc, char ** argv)
   x_connection c;
 
   auto x_clients = make_x_clients(c, c.net_client_list_stacking());
+  x_event_source es(c);
 
   int xo = 0, yo = 0;
   for (auto & xc : x_clients) {
-    c.register_x_event_handler(&xc);
+    es.register_handler(&xc);
 
     if (xo * 300 + 10 > 1200) { xo = 0; ++yo; }
     xc.preview_scale() = 0.2;
@@ -557,9 +572,9 @@ int main(int argc, char ** argv)
   x_user_input xui(c);
   xui.grab_key(XCB_MOD_MASK_4, XK_Tab);
   xui.grab_key(0, XK_Escape);
-  c.register_x_event_handler(&xui);
+  es.register_handler(&xui);
 
-  c.run_event_loop();
+  es.run_event_loop();
 
   return 0;
 }
