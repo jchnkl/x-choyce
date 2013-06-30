@@ -342,3 +342,86 @@ class x_connection : public x_event_handler {
       }
     }
 };
+
+xcb_render_pictformat_t
+render_find_visual_format(const x_connection & c, xcb_visualid_t visual)
+{
+  // http://lists.freedesktop.org/archives/xcb/2004-December/000236.html
+
+  xcb_render_query_pict_formats_reply_t * query_pict_formats_reply =
+    xcb_render_query_pict_formats_reply(
+        c(), xcb_render_query_pict_formats(c()), NULL);
+
+  xcb_render_pictscreen_iterator_t pictscreen_iterator =
+    xcb_render_query_pict_formats_screens_iterator(query_pict_formats_reply);
+
+  while (pictscreen_iterator.rem) {
+    xcb_render_pictdepth_iterator_t pictdepth_iterator =
+      xcb_render_pictscreen_depths_iterator(pictscreen_iterator.data);
+
+    while (pictdepth_iterator.rem) {
+      xcb_render_pictvisual_iterator_t pictvisual_iterator =
+        xcb_render_pictdepth_visuals_iterator(pictdepth_iterator.data);
+
+      while (pictvisual_iterator.rem) {
+        if (pictvisual_iterator.data->visual == visual) {
+          delete query_pict_formats_reply;
+          return pictvisual_iterator.data->format;
+        }
+        xcb_render_pictvisual_next(&pictvisual_iterator);
+      }
+      xcb_render_pictdepth_next(&pictdepth_iterator);
+    }
+    xcb_render_pictscreen_next(&pictscreen_iterator);
+  }
+
+  delete query_pict_formats_reply;
+  return 0;
+}
+
+xcb_render_picture_t
+make_picture(const x_connection & c, xcb_window_t window)
+{
+  xcb_get_window_attributes_reply_t * window_attributes_reply =
+    xcb_get_window_attributes_reply(c(),
+                                    xcb_get_window_attributes(c(), window),
+                                    NULL);
+
+  if (window_attributes_reply) {
+    xcb_render_pictformat_t format =
+      render_find_visual_format(c, window_attributes_reply->visual);
+
+    delete window_attributes_reply;
+
+    uint32_t mask = XCB_RENDER_CP_REPEAT | XCB_RENDER_CP_SUBWINDOW_MODE;
+    uint32_t list[] = { XCB_RENDER_REPEAT_NONE,
+                        XCB_SUBWINDOW_MODE_INCLUDE_INFERIORS };
+
+    xcb_render_picture_t picture = xcb_generate_id(c());
+    xcb_render_create_picture(c(), picture, window, format, mask, list);
+
+    return picture;
+  }
+
+  return XCB_NONE;
+}
+
+xcb_visualtype_t *
+argb_visual(const x_connection & c)
+{
+  xcb_depth_iterator_t depth_iter =
+    xcb_screen_allowed_depths_iterator(c.default_screen());
+
+  if (depth_iter.data) {
+    for (; depth_iter.rem; xcb_depth_next (&depth_iter)) {
+      if (depth_iter.data->depth == 32) {
+        xcb_visualtype_iterator_t visual_iter = xcb_depth_visuals_iterator(depth_iter.data);
+        for (; visual_iter.rem; xcb_visualtype_next(&visual_iter)) {
+          return visual_iter.data;
+        }
+      }
+    }
+  }
+
+  return NULL;
+}

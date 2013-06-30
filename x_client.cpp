@@ -203,3 +203,11 @@ std::ostream & operator<<(std::ostream & os, const x_client & xc)
             << (uint)(xc._rectangle.height() * xc._preview_scale)
             ;
 }
+
+std::list<x_client>
+make_x_clients(const x_connection & c, const std::vector<xcb_window_t> & windows)
+{
+  std::list<x_client> x_clients;
+  for (auto & window : windows) { x_clients.emplace_back(c, window); }
+  return x_clients;
+}

@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <xcb/xcb.h>
+#include <xcb/render.h>
 
 #include "data_types.hpp"
 #include "x_event_handler.hpp"
@@ -34,5 +35,15 @@ class x_connection : public x_event_handler {
     rectangle_t current_screen(void) const;
     void handle(xcb_generic_event_t * ge);
 };
+
+
+xcb_render_pictformat_t
+render_find_visual_format(const x_connection & c, xcb_visualid_t visual);
+
+xcb_render_picture_t
+make_picture(const x_connection & c, xcb_window_t window);
+
+xcb_visualtype_t *
+argb_visual(const x_connection & c);
 
 #endif

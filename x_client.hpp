@@ -1,6 +1,7 @@
 #ifndef _X_CLIENT
 #define _X_CLIENT
 
+#include <list>
 #include <xcb/xcb.h>
 
 #include "data_types.hpp"
@@ -32,5 +33,8 @@ class x_client : public x_event_handler {
 };
 
 std::ostream & operator<<(std::ostream & os, const x_client & xc);
+
+std::list<x_client>
+make_x_clients(const x_connection & c, const std::vector<xcb_window_t> & windows);
 
 #endif
