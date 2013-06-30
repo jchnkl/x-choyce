@@ -34,8 +34,23 @@ class x_connection : public x_event_handler {
     void request_change_active_window(xcb_window_t window) const;
     rectangle_t current_screen(void) const;
     void handle(xcb_generic_event_t * ge);
-};
 
+  private:
+    uint8_t _damage_event_id;
+    int _screen_number = 0;
+    xcb_window_t _root_window = 0;
+    xcb_connection_t * _c = NULL;
+    xcb_screen_t * _default_screen = NULL;
+
+    std::vector<rectangle_t> _screens;
+    std::vector<const xcb_query_extension_reply_t *> _extension_reply_list;
+
+    void find_default_screen(void);
+    void init_damage(void);
+    void init_render(void);
+    void init_xinerama(void);
+    void update_xinerama(void);
+};
 
 xcb_render_pictformat_t
 render_find_visual_format(const x_connection & c, xcb_visualid_t visual);

@@ -3,6 +3,7 @@
 
 #include <list>
 #include <xcb/xcb.h>
+#include <xcb/damage.h>
 
 #include "data_types.hpp"
 #include "x_event_handler.hpp"
@@ -33,6 +34,22 @@ class x_client : public x_event_handler {
     void show_preview(bool is_active);
     void compose(const rectangle_t & rectangle);
     void update_geometry(void);
+
+  private:
+    const x_connection & _c;
+    bool _preview_is_active = false;
+    double _preview_scale;
+    rectangle_t _rectangle;
+    rectangle_t _preview_rectangle;
+    position_t _preview_position;
+    unsigned int _net_wm_desktop;
+    xcb_window_t _window;
+    xcb_window_t _preview;
+    xcb_render_picture_t _window_picture;
+    xcb_render_picture_t _preview_picture;
+    xcb_damage_damage_t _damage;
+
+    void get_net_wm_desktop(void);
 };
 
 std::ostream & operator<<(std::ostream & os, const x_client & xc);
