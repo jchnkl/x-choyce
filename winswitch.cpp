@@ -476,6 +476,7 @@ class x_client : public x_event_handler {
       xcb_damage_destroy(_c(), _damage);
       xcb_render_free_picture(_c(), _window_picture);
       xcb_render_free_picture(_c(), _preview_picture);
+      xcb_destroy_window(_c(), _preview);
     }
 
     double &       preview_scale(void)        { return _preview_scale; }
