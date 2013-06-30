@@ -209,6 +209,87 @@ class x_connection {
       return result;
     }
 
+    xcb_atom_t
+    intern_atom(const std::string & atom_name) const
+    {
+      xcb_intern_atom_cookie_t atom_cookie =
+        xcb_intern_atom(_c, false, atom_name.length(), atom_name.c_str());
+      xcb_intern_atom_reply_t * atom_reply =
+        xcb_intern_atom_reply(_c, atom_cookie, NULL);
+
+      if (atom_reply) {
+        xcb_atom_t atom = atom_reply->atom;
+        delete atom_reply;
+        return atom;
+      }
+
+      return XCB_ATOM_NONE;
+    }
+
+    xcb_window_t
+    net_active_window(void) const
+    {
+      xcb_atom_t atom = intern_atom("_NET_ACTIVE_WINDOW");
+      if (atom == XCB_ATOM_NONE) { return XCB_NONE; }
+
+      xcb_get_property_cookie_t property_cookie =
+        xcb_get_property(_c, false, _root_window, atom, XCB_ATOM_WINDOW, 0, 32);
+
+      xcb_generic_error_t * error = NULL;
+      xcb_get_property_reply_t * property_reply =
+        xcb_get_property_reply(_c, property_cookie, &error);
+
+      xcb_window_t active_window;
+      if (error || property_reply->value_len == 0) {
+        delete error;
+        active_window = XCB_NONE;
+      } else {
+        active_window = *(xcb_window_t *)xcb_get_property_value(property_reply);
+      }
+
+      delete property_reply;
+      return active_window;
+    }
+
+    void request_change_current_desktop(unsigned int desktop_id) const
+    {
+      xcb_client_message_event_t event;
+      memset(&event, 0, sizeof(xcb_client_message_event_t));
+
+      event.response_type = XCB_CLIENT_MESSAGE;
+      event.format = 32;
+      event.type = intern_atom("_NET_CURRENT_DESKTOP");
+
+      event.data.data32[0] = desktop_id;
+      event.data.data32[1] = XCB_TIME_CURRENT_TIME;
+
+      uint32_t mask = XCB_EVENT_MASK_SUBSTRUCTURE_REDIRECT
+                    | XCB_EVENT_MASK_SUBSTRUCTURE_NOTIFY;
+
+      xcb_send_event(_c, false, _root_window, mask, (const char *)&event);
+    }
+
+    void request_change_active_window(xcb_window_t window) const
+    {
+      xcb_client_message_event_t event;
+      memset(&event, 0, sizeof(xcb_client_message_event_t));
+
+      event.response_type = XCB_CLIENT_MESSAGE;
+      event.format = 32;
+      event.window = window;
+      event.type = intern_atom("_NET_ACTIVE_WINDOW");
+
+      // source indication; 1 == application, 2 == pagers and other clients
+      event.data.data32[0] = 2;
+      event.data.data32[1] = XCB_TIME_CURRENT_TIME;
+      event.data.data32[2] = XCB_NONE;
+
+      uint32_t mask = XCB_EVENT_MASK_SUBSTRUCTURE_REDIRECT
+                    | XCB_EVENT_MASK_SUBSTRUCTURE_NOTIFY;
+
+      xcb_send_event(_c, false, _root_window, mask, (const char *)&event);
+    }
+
   private:
     uint8_t _damage_event_id;
     int _screen_number = 0;
