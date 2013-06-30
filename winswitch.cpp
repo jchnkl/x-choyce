@@ -540,7 +540,7 @@ class x_client : public x_event_handler {
       uint16_t width = rectangle.width() * _preview_scale;
       uint16_t height = rectangle.height() * _preview_scale;
 
-      uint8_t op = XCB_RENDER_PICT_OP_OVER;
+      uint8_t op = XCB_RENDER_PICT_OP_SRC;
       xcb_render_composite(_c(), op,
                            _window_picture, XCB_NONE, _preview_picture,
                            // int16_t src_x, int16_t src_y,
