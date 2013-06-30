@@ -963,7 +963,7 @@ int main(int argc, char ** argv)
   x_event_source es(c);
   x_client_container cc(c, es);
 
-  grid_t grid();
+  grid_t grid;
   x_clients_preview cp(c, &grid, cc);
 
   es.register_handler(&c);
