@@ -15,6 +15,8 @@
 #include <xcb/xinerama.h>
 #include <xcb/composite.h>
 
+#include "x_event_handler.hpp"
+
 // http://svn.enlightenment.org/svn/e/tags/evas-1.0.2/src/modules/engines/xrender_x11/evas_engine_xcb_render.c
 #define DOUBLE_TO_FIXED(d) ((xcb_render_fixed_t) ((d) * 65536))
 
@@ -71,11 +73,6 @@ std::ostream & operator<<(std::ostream & os, const rectangle_t & rectangle)
   return os << rectangle.x() << "x" << rectangle.y() << "+"
             << rectangle.width() << "+" << rectangle.height();
 }
-
-class x_event_handler {
-  public:
-    virtual void handle(xcb_generic_event_t *) = 0;
-};
 
 class x_connection : public x_event_handler {
   public:
