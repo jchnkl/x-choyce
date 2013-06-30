@@ -31,12 +31,6 @@ render_find_visual_format(const x_connection & c, xcb_visualid_t visual);
 xcb_render_picture_t
 make_picture(const x_connection & c, xcb_window_t window);
 
-std::list<x_client>
-make_x_clients(const x_connection & c, const std::vector<xcb_window_t> & windows);
-
-std::vector<x_client>
-make_thumbnails(const x_connection & c, const std::vector<xcb_window_t> & windows);
-
 class layout_t {
   public:
     virtual void arrange(const rectangle_t &, x_client_container &) const = 0;
