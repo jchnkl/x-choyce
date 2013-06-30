@@ -122,13 +122,37 @@ class x_connection {
 
     uint8_t damage_event_id(void) const { return _damage_event_id; }
 
+    void grab_key(uint16_t modifiers, xcb_keysym_t keysym) const
+    {
+      xcb_keycode_t keycode = keysym_to_keycode(keysym);
+      if (keycode != 0) {
+        xcb_grab_key(_c, false, _root_window, modifiers, keycode,
+                     XCB_GRAB_MODE_ASYNC, XCB_GRAB_MODE_ASYNC);
+      }
+    }
+
+    void grab_keyboard(void) const
+    {
+      xcb_grab_keyboard_cookie_t grab_keyboard_cookie =
+        xcb_grab_keyboard(_c, false, root_window(), XCB_TIME_CURRENT_TIME,
+                          XCB_GRAB_MODE_ASYNC, XCB_GRAB_MODE_ASYNC);
+      xcb_grab_keyboard_reply_t * grab_keyboard_reply =
+        xcb_grab_keyboard_reply(_c, grab_keyboard_cookie, NULL);
+      delete grab_keyboard_reply;
+    }
+
+    void ungrab_keyboard(void) const
+    {
+      xcb_ungrab_keyboard(_c, XCB_TIME_CURRENT_TIME);
+    }
+
     xcb_keysym_t
-    keycode_to_keysym(const x_connection & c, xcb_keycode_t keycode) const
+    keycode_to_keysym(xcb_keycode_t keycode) const
     {
       xcb_key_symbols_t * keysyms;
       xcb_keysym_t keysym;
 
-      if (!(keysyms = xcb_key_symbols_alloc(c()))) { return 0; }
+      if (!(keysyms = xcb_key_symbols_alloc(_c))) { return 0; }
       keysym = xcb_key_symbols_get_keysym(keysyms, keycode, 0);
       xcb_key_symbols_free(keysyms);
 
@@ -136,12 +160,12 @@ class x_connection {
     }
 
     xcb_keycode_t
-    keysym_to_keycode(const x_connection & c, xcb_keysym_t keysym) const
+    keysym_to_keycode(xcb_keysym_t keysym) const
     {
       xcb_key_symbols_t * keysyms;
       xcb_keycode_t keycode, * keycode_reply;
 
-      if (!(keysyms = xcb_key_symbols_alloc(c()))) { return 0; }
+      if (!(keysyms = xcb_key_symbols_alloc(_c))) { return 0; }
       keycode_reply = xcb_key_symbols_get_keycode(keysyms, keysym);
       xcb_key_symbols_free(keysyms);
 
@@ -411,52 +435,35 @@ std::ostream & operator<<(std::ostream & os, const x_client & xc)
             << " on desktop " << xc._net_wm_desktop;
 }
 
-class x_user_input : public x_event_handler {
   public:
-    x_user_input(const x_connection & c) : _c(c) {}
 
-    void grab_key(uint16_t modifiers, xcb_keysym_t keysym)
     {
-      xcb_keycode_t keycode = _c.keysym_to_keycode(_c, keysym);
-      if (keycode != 0) {
-        xcb_grab_key(_c(), false, _c.root_window(), modifiers, keycode,
-                     XCB_GRAB_MODE_ASYNC, XCB_GRAB_MODE_ASYNC);
       }
     }
 
-    void grab_keyboard(void)
     {
-      xcb_grab_keyboard_cookie_t grab_keyboard_cookie =
-        xcb_grab_keyboard(_c(), false, _c.root_window(), XCB_TIME_CURRENT_TIME,
-                          XCB_GRAB_MODE_ASYNC, XCB_GRAB_MODE_ASYNC);
-      xcb_grab_keyboard_reply_t * grab_keyboard_reply =
-        xcb_grab_keyboard_reply(_c(), grab_keyboard_cookie, NULL);
-      delete grab_keyboard_reply;
     }
 
-    void ungrab_keyboard(void)
     {
-      xcb_ungrab_keyboard(_c(), XCB_TIME_CURRENT_TIME);
     }
 
     void handle(xcb_generic_event_t * ge)
     {
       if (XCB_KEY_PRESS == (ge->response_type & ~0x80)) {
         xcb_key_press_event_t * e = (xcb_key_press_event_t *)ge;
-        xcb_keysym_t keysym = _c.keycode_to_keysym(_c, e->detail);
+        xcb_keysym_t keysym = _c.keycode_to_keysym(e->detail);
         if (keysym == XK_Escape && e->state == 0) {
           std::exit(EXIT_SUCCESS);
-
         } else if (keysym == XK_Tab && e->state == XCB_MOD_MASK_4) {
-          grab_keyboard();
+          _c.grab_keyboard();
           std::cerr << "XK_Tab + XCB_MOD_MASK_4" << std::endl;
         }
 
       } else if (XCB_KEY_RELEASE == (ge->response_type & ~0x80)) {
         xcb_key_release_event_t * e = (xcb_key_release_event_t *)ge;
-        xcb_keysym_t keysym = _c.keycode_to_keysym(_c, e->detail);
+        xcb_keysym_t keysym = _c.keycode_to_keysym(e->detail);
         if (keysym == XK_Super_L) {
-          ungrab_keyboard();
+          _c.ungrab_keyboard();
           std::cerr << "release" << std::endl;
         }
       }
@@ -555,6 +562,9 @@ argb_visual(const x_connection & c)
 int main(int argc, char ** argv)
 {
   x_connection c;
+  c.grab_key(XCB_MOD_MASK_4, XK_Tab);
+
+  c.grab_key_0, XK_Escape);
 
   auto x_clients = make_x_clients(c, c.net_client_list_stacking());
   x_event_source es(c);
@@ -570,8 +580,6 @@ int main(int argc, char ** argv)
   }
 
   x_user_input xui(c);
-  xui.grab_key(XCB_MOD_MASK_4, XK_Tab);
-  xui.grab_key(0, XK_Escape);
   es.register_handler(&xui);
 
   es.run_event_loop();
