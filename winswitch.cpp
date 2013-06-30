@@ -471,10 +471,9 @@ class x_client : public x_event_handler {
                         XCB_WINDOW_CLASS_INPUT_OUTPUT,
                         _c.default_screen()->root_visual, mask, values);
 
-
       _damage = xcb_generate_id(_c());
       xcb_damage_create(_c(), _damage, _window,
-                        XCB_DAMAGE_REPORT_LEVEL_BOUNDING_BOX);
+                        XCB_DAMAGE_REPORT_LEVEL_NON_EMPTY);
     }
 
     ~x_client(void)
@@ -499,7 +498,7 @@ class x_client : public x_event_handler {
       if (_c.damage_event_id() == (ge->response_type & ~0x80)) {
         xcb_damage_notify_event_t * e = (xcb_damage_notify_event_t *)ge;
         xcb_damage_subtract(_c(), e->damage, XCB_NONE, XCB_NONE);
-        compose();
+        compose(rectangle_t(e->area.x, e->area.y, e->area.width, e->area.height));
       }
     }
 
@@ -534,20 +533,24 @@ class x_client : public x_event_handler {
       xcb_render_set_picture_transform(_c(), _window_picture, transform_matrix);
     }
 
-    void compose(void)
+    void compose(const rectangle_t & rectangle)
     {
+      int16_t x = rectangle.x() * _preview_scale;
+      int16_t y = rectangle.y() * _preview_scale;
+      uint16_t width = rectangle.width() * _preview_scale;
+      uint16_t height = rectangle.height() * _preview_scale;
+
       uint8_t op = XCB_RENDER_PICT_OP_OVER;
       xcb_render_composite(_c(), op,
                            _window_picture, XCB_NONE, _preview_picture,
                            // int16_t src_x, int16_t src_y,
-                           0, 0,
+                           x, y,
                            // int16_t mask_x, int16_t mask_y,
                            0, 0,
                            // int16_t dst_x, int16_t dst_y,
-                           0, 0,
-                           // _position.x, _position.y,
+                           x, y,
                            // uint16_t width, uint16_t height
-                           _rectangle.width(), _rectangle.height());
+                           width, height);
     }
 
     void update_geometry(void)
