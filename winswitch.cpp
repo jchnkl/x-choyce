@@ -21,14 +21,10 @@
 #include "x_client.hpp"
 #include "x_event_source.hpp"
 #include "x_client_container.hpp"
+#include "layout_t.hpp"
 
 // http://svn.enlightenment.org/svn/e/tags/evas-1.0.2/src/modules/engines/xrender_x11/evas_engine_xcb_render.c
 #define DOUBLE_TO_FIXED(d) ((xcb_render_fixed_t) ((d) * 65536))
-
-class layout_t {
-  public:
-    virtual void arrange(const rectangle_t &, x_client_container &) const = 0;
-};
 
 class grid_t : public layout_t {
   public:
