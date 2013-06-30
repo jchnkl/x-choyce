@@ -8,6 +8,7 @@
 #include <xcb/xcb_atom.h>
 #include <xcb/xcb_keysyms.h>
 #include <xcb/damage.h>
+#include <xcb/xinerama.h>
 #include <xcb/composite.h>
 
 // http://svn.enlightenment.org/svn/e/tags/evas-1.0.2/src/modules/engines/xrender_x11/evas_engine_xcb_render.c
@@ -65,7 +66,7 @@ class x_event_handler {
     virtual void handle(xcb_generic_event_t *) = 0;
 };
 
-class x_connection {
+class x_connection : public x_event_handler {
   public:
     x_connection(void)
     {
@@ -74,6 +75,8 @@ class x_connection {
       _root_window = _default_screen->root;
       init_damage();
       init_render();
+      init_xinerama();
+      select_input(_root_window, XCB_EVENT_MASK_STRUCTURE_NOTIFY);
     }
 
     ~x_connection(void) {
@@ -290,6 +293,39 @@ class x_connection {
       xcb_send_event(_c, false, _root_window, mask, (const char *)&event);
     }
 
+
+    rectangle_t current_screen(void) const
+    {
+      xcb_get_geometry_cookie_t geometry_cookie =
+        xcb_get_geometry(_c, net_active_window());
+      xcb_get_geometry_reply_t * geometry_reply =
+        xcb_get_geometry_reply(_c, geometry_cookie, NULL);
+
+      if (geometry_reply) {
+        int cx = geometry_reply->x + geometry_reply->width / 2;
+        int cy = geometry_reply->y + geometry_reply->height / 2;
+        delete geometry_reply;
+        for (auto & screen : _screens) {
+          if (cx >= screen.x() && cx <= screen.x() + (int)screen.width()
+              && cy >= screen.y() && cy <= screen.y() + (int)screen.height()) {
+            return screen;
+          }
+        }
+      }
+
+      return rectangle_t(0, 0, 800, 600);
+    }
+
+    void handle(xcb_generic_event_t * ge)
+    {
+      if (XCB_CONFIGURE_NOTIFY == (ge->response_type & ~0x80)) {
+        xcb_configure_request_event_t * e = (xcb_configure_request_event_t *)ge;
+        if (e->window == _root_window) {
+          update_xinerama();
+        }
+      }
+    }
+
   private:
     uint8_t _damage_event_id;
     int _screen_number = 0;
@@ -297,6 +333,7 @@ class x_connection {
     xcb_connection_t * _c = NULL;
     xcb_screen_t * _default_screen = NULL;
 
+    std::vector<rectangle_t> _screens;
     std::vector<const xcb_query_extension_reply_t *> _extension_reply_list;
 
 
@@ -332,6 +369,45 @@ class x_connection {
 
     void init_render(void) { xcb_prefetch_extension_data(_c, &xcb_render_id); }
 
+    void init_xinerama(void)
+    {
+      xcb_prefetch_extension_data(_c, &xcb_xinerama_id);
+      xcb_xinerama_query_version(_c, XCB_XINERAMA_MAJOR_VERSION,
+                                     XCB_XINERAMA_MINOR_VERSION);
+
+      xcb_xinerama_is_active_cookie_t is_active_cookie =
+        xcb_xinerama_is_active(_c);
+      xcb_xinerama_is_active_reply_t * is_active_reply =
+        xcb_xinerama_is_active_reply(_c, is_active_cookie, NULL);
+
+      if (is_active_reply && is_active_reply->state) {
+        delete is_active_reply;
+        update_xinerama();
+      }
+    }
+
+    void update_xinerama(void)
+    {
+      xcb_xinerama_query_screens_cookie_t query_screens_cookie =
+        xcb_xinerama_query_screens(_c);
+
+      xcb_xinerama_query_screens_reply_t * query_screens_reply =
+        xcb_xinerama_query_screens_reply(_c, query_screens_cookie, NULL);
+
+      if (query_screens_reply) {
+        _screens.clear();
+        xcb_xinerama_screen_info_t * screen_info =
+          xcb_xinerama_query_screens_screen_info(query_screens_reply);
+        int length =
+          xcb_xinerama_query_screens_screen_info_length(query_screens_reply);
+        for (int i = 0; i < length; ++i) {
+          _screens.push_back(
+              rectangle_t(screen_info[i].x_org, screen_info[i].y_org,
+                screen_info[i].width, screen_info[i].height));
+        }
+        delete query_screens_reply;
+      }
+    }
 };
 
 class x_event_source {
