@@ -1,7 +1,10 @@
 #include <climits>
 #include <cstdlib>
+#include <cstring>
 #include <unistd.h>
 #include <iostream>
+#include <algorithm>
+#include <list>
 #include <deque>
 #include <vector>
 #include <X11/keysym.h>
