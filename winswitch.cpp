@@ -22,6 +22,9 @@ render_find_visual_format(const x_connection & c, xcb_visualid_t visual);
 xcb_render_picture_t
 make_picture(const x_connection & c, xcb_window_t window);
 
+std::list<x_client>
+make_x_clients(const x_connection & c, const std::vector<xcb_window_t> & windows);
+
 std::vector<x_client>
 make_thumbnails(const x_connection & c, const std::vector<xcb_window_t> & windows);
 
@@ -507,12 +510,12 @@ make_picture(const x_connection & c, xcb_window_t window)
   return picture;
 }
 
-std::vector<x_client>
-make_x_clients(x_connection & c, const std::vector<xcb_window_t> & windows)
+std::list<x_client>
+make_x_clients(const x_connection & c, const std::vector<xcb_window_t> & windows)
 {
-  std::vector<x_client> thumbnails;
-  for (auto & window : windows) { thumbnails.emplace_back(c, window); }
-  return thumbnails;
+  std::list<x_client> x_clients;
+  for (auto & window : windows) { x_clients.emplace_back(c, window); }
+  return x_clients;
 }
 
 xcb_visualtype_t *
