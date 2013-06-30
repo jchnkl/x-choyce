@@ -8,6 +8,9 @@
 #include "x_event_handler.hpp"
 #include "x_connection.hpp"
 
+// http://svn.enlightenment.org/svn/e/tags/evas-1.0.2/src/modules/engines/xrender_x11/evas_engine_xcb_render.c
+#define DOUBLE_TO_FIXED(d) ((xcb_render_fixed_t) ((d) * 65536))
+
 class x_client : public x_event_handler {
   public:
     friend std::ostream & operator<<(std::ostream &, const x_client &);

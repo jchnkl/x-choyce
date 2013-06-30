@@ -25,8 +25,6 @@
 #include "layout_t.hpp"
 #include "grid.hpp"
 
-// http://svn.enlightenment.org/svn/e/tags/evas-1.0.2/src/modules/engines/xrender_x11/evas_engine_xcb_render.c
-#define DOUBLE_TO_FIXED(d) ((xcb_render_fixed_t) ((d) * 65536))
 int main(int argc, char ** argv)
 {
   x_connection c;
