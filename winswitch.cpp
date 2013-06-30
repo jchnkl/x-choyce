@@ -200,7 +200,10 @@ class x_connection {
       xcb_window_t * windows =
         (xcb_window_t *)xcb_get_property_value(property_reply);
 
-      std::vector<xcb_window_t> result(windows, windows + property_reply->length);
+      std::vector<xcb_window_t> result;
+      for (int i = property_reply->length - 1; i >= 0; --i) {
+        result.push_back(windows[i]);
+      }
 
       delete property_reply;
       return result;
