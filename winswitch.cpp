@@ -1,19 +1,5 @@
-#include <climits>
-#include <cstdlib>
-#include <cstring>
-#include <unistd.h>
-#include <iostream>
-#include <algorithm>
-#include <list>
-#include <deque>
-#include <vector>
-#include <X11/keysym.h>
 #include <xcb/xcb.h>
-#include <xcb/xcb_atom.h>
-#include <xcb/xcb_keysyms.h>
-#include <xcb/damage.h>
-#include <xcb/xinerama.h>
-#include <xcb/composite.h>
+#include <X11/keysym.h>
 
 #include "data_types.hpp"
 #include "x_event_handler.hpp"
