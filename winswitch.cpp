@@ -987,9 +987,6 @@ int main(int argc, char ** argv)
   x_connection c;
   c.grab_key(XCB_MOD_MASK_4, XK_Tab);
 
-  c.grab_key_0, XK_Escape);
-
-  auto x_clients = make_x_clients(c, c.net_client_list_stacking());
   x_event_source es(c);
 
   int xo = 0, yo = 0;
