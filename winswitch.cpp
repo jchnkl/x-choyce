@@ -15,8 +15,9 @@
 // http://svn.enlightenment.org/svn/e/tags/evas-1.0.2/src/modules/engines/xrender_x11/evas_engine_xcb_render.c
 #define DOUBLE_TO_FIXED(d) ((xcb_render_fixed_t) ((d) * 65536))
 
-class x_connection;
 class x_client;
+class x_connection;
+class x_event_source;
 
 xcb_render_pictformat_t
 render_find_visual_format(const x_connection & c, xcb_visualid_t visual);
