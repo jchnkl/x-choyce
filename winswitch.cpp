@@ -646,7 +646,14 @@ std::ostream & operator<<(std::ostream & os, const x_client & xc)
             << xc._rectangle.y()     << "+"
             << xc._rectangle.width() << "+"
             << xc._rectangle.height()
-            << " on desktop " << xc._net_wm_desktop;
+            << " on desktop " << xc._net_wm_desktop
+            << " preview with scale "
+            << xc._preview_scale << " @ "
+            << xc._preview_position.x << "x"
+            << xc._preview_position.y << "+"
+            << (uint)(xc._rectangle.width() * xc._preview_scale) << "+"
+            << (uint)(xc._rectangle.height() * xc._preview_scale)
+            ;
 }
 
 class x_client_container {
