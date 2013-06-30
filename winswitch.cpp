@@ -61,6 +61,12 @@ struct rectangle_t {
   dimension_t dimension;
 };
 
+std::ostream & operator<<(std::ostream & os, const rectangle_t & rectangle)
+{
+  return os << rectangle.x() << "x" << rectangle.y() << "+"
+            << rectangle.width() << "+" << rectangle.height();
+}
+
 class x_event_handler {
   public:
     virtual void handle(xcb_generic_event_t *) = 0;
