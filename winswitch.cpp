@@ -490,6 +490,7 @@ class x_client : public x_event_handler {
     double &       preview_scale(void)        { return _preview_scale; }
     rectangle_t &  rectangle(void)            { return _rectangle; }
     position_t &   preview_position(void)     { return _preview_position; }
+    rectangle_t &  preview_rectangle(void)    { return _preview_rectangle; }
     unsigned int   net_wm_desktop(void) const { return _net_wm_desktop; }
     xcb_window_t & window(void)               { return _window; }
 
@@ -566,6 +567,7 @@ class x_client : public x_event_handler {
     const x_connection & _c;
     double _preview_scale;
     rectangle_t _rectangle;
+    rectangle_t _preview_rectangle;
     position_t _preview_position;
     unsigned int _net_wm_desktop;
     xcb_window_t _window;
