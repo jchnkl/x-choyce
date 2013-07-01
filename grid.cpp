@@ -8,25 +8,14 @@ grid_t::arrange(const rectangle_t & screen, unsigned int nrects) const
   int gap = 5;
 
   int radix = std::round(std::sqrt(nrects));
-  int rest = (radix * radix) - nrects;
+  int rest = nrects - (radix * radix);
 
-  auto cells = decompose(radix, radix * radix);
+  std::vector<int> cells(radix, radix);
 
-  if (rest >= 0) {
-    for (auto rit = cells.rbegin(); rit != cells.rend(); ) {
-      if (rest == 0) {
-        break;
-      } else if (rest < *rit) {
-        *rit -= rest;
-        break;
-      } else if (rest >= *rit) {
-        rest -= *rit;
-        ++rit;
-        cells.pop_back();
-      }
-    }
-  } else {
-    cells.push_back((-1) * rest);
+  if (rest < 0 || (rest > 0 && rest < radix / 2.0)) {
+    cells.back() += rest;
+  } else if (rest > 0) {
+    cells.push_back(rest);
   }
 
   int ncol = cells.size();
@@ -44,20 +33,4 @@ grid_t::arrange(const rectangle_t & screen, unsigned int nrects) const
   }
 
   return rects;
-}
-
-std::deque<int>
-grid_t::decompose(int f, int n) const
-{
-  std::deque<int> result;
-  while (true) {
-    n -= f;
-    if (n > 0) {
-      result.push_back(f);
-    } else {
-      result.push_back(n + f);
-      break;
-    }
-  }
-  return result;
 }
