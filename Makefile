@@ -2,7 +2,7 @@ LIBS=xcb xcb-atom xcb-keysyms xcb-composite xcb-damage xcb-xinerama
 CXXFLAGS=-g -std=c++11 -Wall $(shell pkg-config --cflags ${LIBS})
 LDFLAGS=$(shell pkg-config --libs ${LIBS})
 
-SRCS=winswitch.cpp \
+SRCS=main.cpp \
 		 data_types.cpp \
 		 x_connection.cpp \
 		 x_client.cpp \
