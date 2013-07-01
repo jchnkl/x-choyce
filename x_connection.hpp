@@ -9,6 +9,7 @@
 #include "data_types.hpp"
 #include "x_event_handler.hpp"
 
+#include <X11/Xlib.h>
 class x_connection : public x_event_handler {
   public:
     x_connection(void);
@@ -28,6 +29,7 @@ class x_connection : public x_event_handler {
     void ungrab_keyboard(void) const;
     xcb_keysym_t keycode_to_keysym(xcb_keycode_t keycode) const;
     xcb_keycode_t keysym_to_keycode(xcb_keysym_t keysym) const;
+    std::string keysym_to_string(xcb_keysym_t keysym) const;
     std::vector<xcb_window_t> net_client_list_stacking(void) const;
     xcb_atom_t intern_atom(const std::string & atom_name) const;
     xcb_window_t net_active_window(void) const;

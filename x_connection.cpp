@@ -137,6 +137,17 @@ x_connection::keysym_to_keycode(xcb_keysym_t keysym) const
   return keycode;
 }
 
+std::string
+x_connection::keysym_to_string(xcb_keysym_t keysym) const
+{
+  char * key_name = XKeysymToString(keysym);
+  if (key_name == NULL) {
+    return std::string("(null)");
+  } else {
+    return std::string(key_name);
+  }
+}
+
 std::vector<xcb_window_t>
 x_connection::net_client_list_stacking(void) const
 {
