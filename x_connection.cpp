@@ -108,6 +108,42 @@ x_connection::ungrab_keyboard(void) const
   xcb_ungrab_keyboard(_c, XCB_TIME_CURRENT_TIME);
 }
 
+x_connection::modifier_map
+x_connection::modifier_mapping(void) const
+{
+  modifier_map result;
+
+  xcb_get_modifier_mapping_reply_t * modifier_mapping_reply =
+    xcb_get_modifier_mapping_reply(_c, xcb_get_modifier_mapping(_c), NULL);
+
+  if (modifier_mapping_reply == NULL) { return result; }
+
+  xcb_keycode_t * keycodes =
+    xcb_get_modifier_mapping_keycodes(modifier_mapping_reply);
+
+  int keycodes_length =
+    xcb_get_modifier_mapping_keycodes_length(modifier_mapping_reply);
+
+  uint8_t keycodes_per_modifier = modifier_mapping_reply->keycodes_per_modifier;
+
+  xcb_mod_mask_t modifiers[] = { XCB_MOD_MASK_SHIFT,
+                                 XCB_MOD_MASK_LOCK,
+                                 XCB_MOD_MASK_CONTROL,
+                                 XCB_MOD_MASK_1, XCB_MOD_MASK_2,
+                                 XCB_MOD_MASK_3, XCB_MOD_MASK_4, XCB_MOD_MASK_5 };
+
+  for (int ks = 0, m = 0; ks < keycodes_length; ks += keycodes_per_modifier) {
+    for (int k = 0; k < keycodes_per_modifier; ++k) {
+      xcb_keycode_t keycode = keycodes[m * keycodes_per_modifier + k];
+      if (keycode != 0) { result[modifiers[m]].push_back(keycode); }
+    }
+    ++m;
+  }
+
+  delete modifier_mapping_reply;
+  return result;
+}
+
 xcb_keysym_t
 x_connection::keycode_to_keysym(xcb_keycode_t keycode) const
 {

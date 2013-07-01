@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 #include <xcb/xcb.h>
 #include <xcb/render.h>
 
@@ -12,6 +13,8 @@
 #include <X11/Xlib.h>
 class x_connection : public x_event_handler {
   public:
+    typedef std::map<xcb_mod_mask_t, std::vector<xcb_keycode_t>> modifier_map;
+
     x_connection(void);
     ~x_connection(void);
 
@@ -27,6 +30,7 @@ class x_connection : public x_event_handler {
     void ungrab_key(uint16_t modifiers, xcb_keysym_t keysym) const;
     void grab_keyboard(void) const;
     void ungrab_keyboard(void) const;
+    modifier_map modifier_mapping(void) const;
     xcb_keysym_t keycode_to_keysym(xcb_keycode_t keycode) const;
     xcb_keycode_t keysym_to_keycode(xcb_keysym_t keysym) const;
     std::string keysym_to_string(xcb_keysym_t keysym) const;
