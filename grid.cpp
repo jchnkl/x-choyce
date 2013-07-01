@@ -7,10 +7,10 @@ grid_t::arrange(const rectangle_t & screen, unsigned int nrects) const
 {
   int gap = 5;
 
-  int factor = std::round(std::sqrt(nrects));
-  int rest = (factor * factor) - nrects;
+  int radix = std::round(std::sqrt(nrects));
+  int rest = (radix * radix) - nrects;
 
-  auto cells = decompose(factor, factor * factor);
+  auto cells = decompose(radix, radix * radix);
 
   if (rest >= 0) {
     for (auto rit = cells.rbegin(); rit != cells.rend(); ) {
