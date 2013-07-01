@@ -23,6 +23,7 @@ class x_connection : public x_event_handler {
     xcb_window_t const & root_window(void) const;
     uint8_t damage_event_id(void) const;
     void grab_key(uint16_t modifiers, xcb_keysym_t keysym) const;
+    void ungrab_key(uint16_t modifiers, xcb_keysym_t keysym) const;
     void grab_keyboard(void) const;
     void ungrab_keyboard(void) const;
     xcb_keysym_t keycode_to_keysym(xcb_keycode_t keycode) const;

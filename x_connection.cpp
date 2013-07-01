@@ -86,6 +86,15 @@ x_connection::grab_key(uint16_t modifiers, xcb_keysym_t keysym) const
 }
 
 void
+x_connection::ungrab_key(uint16_t modifiers, xcb_keysym_t keysym) const
+{
+  xcb_keycode_t keycode = keysym_to_keycode(keysym);
+  if (keycode != 0) {
+    xcb_ungrab_key(_c, keycode, _root_window, modifiers);
+  }
+}
+
+void
 x_connection::grab_keyboard(void) const
 {
   xcb_grab_keyboard_cookie_t grab_keyboard_cookie =
