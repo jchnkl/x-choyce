@@ -44,7 +44,6 @@ class x_connection : public x_event_handler {
     xcb_screen_t * _default_screen = NULL;
 
     std::vector<rectangle_t> _screens;
-    std::vector<const xcb_query_extension_reply_t *> _extension_reply_list;
 
     void find_default_screen(void);
     void init_damage(void);

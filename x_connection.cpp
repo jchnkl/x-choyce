@@ -20,9 +20,6 @@ x_connection::x_connection(void)
 x_connection::~x_connection(void)
 {
   xcb_disconnect(_c);
-  for (auto er : _extension_reply_list) {
-    delete er;
-  }
 }
 
 xcb_connection_t *
@@ -313,8 +310,6 @@ x_connection::init_damage(void)
     xcb_get_extension_data(_c, &xcb_damage_id);
 
   _damage_event_id = extension_reply->first_event + XCB_DAMAGE_NOTIFY;
-
-  _extension_reply_list.push_back(extension_reply);
 
   // necessary to get xdamage of the ground
   xcb_damage_query_version(_c, XCB_DAMAGE_MAJOR_VERSION,
