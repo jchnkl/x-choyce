@@ -9,7 +9,14 @@ SRCS=winswitch.cpp \
 		 x_clients_preview.cpp \
 		 grid.cpp
 
+OBJS=$(SRCS:%.cpp=%.o)
+
 EXE=winswitch
 
-all:
-	${CXX} ${CXXFLAGS} ${LDFLAGS} ${SRCS} -o ${EXE}
+all: ${OBJS}
+	${CXX} ${CXXFLAGS} ${LDFLAGS} ${OBJS} -o ${EXE}
+
+clean:
+	rm -f ${EXE} ${OBJS}
+
+.PHONY: clean
