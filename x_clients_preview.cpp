@@ -24,11 +24,14 @@ void x_clients_preview::handle(xcb_generic_event_t * ge)
         _current_client->update_preview(false);
         move_client(e->state == XCB_MOD_MASK_4);
         _current_client->update_preview(true);
+
       } else {
+        _x_clients.update();
+        if (_x_clients.size() == 0) { return; }
+
         _active = true;
         _c.grab_keyboard();
         _active_window = _c.net_active_window();
-        _x_clients.update();
 
         configure_clients_preview();
 
