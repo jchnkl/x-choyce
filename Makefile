@@ -6,7 +6,7 @@ SRCS=main.cpp \
 		 data_types.cpp \
 		 x_connection.cpp \
 		 x_client.cpp \
-		 x_clients_preview.cpp \
+		 x_client_chooser.cpp \
 		 grid.cpp
 
 OBJS=$(SRCS:%.cpp=%.o)

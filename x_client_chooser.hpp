@@ -1,5 +1,5 @@
-#ifndef _X_CLIENTS_PREVIEW
-#define _X_CLIENTS_PREVIEW
+#ifndef _X_CLIENT_CHOOSER
+#define _X_CLIENT_CHOOSER
 
 #include <xcb/xcb.h>
 
@@ -8,9 +8,9 @@
 #include "x_event_handler.hpp"
 #include "x_client_container.hpp"
 
-class x_clients_preview : public x_event_handler {
+class x_client_chooser : public x_event_handler {
   public:
-    x_clients_preview(const x_connection & c,
+    x_client_chooser(const x_connection & c,
                       const layout_t * layout,
                       x_client_container & x_clients);
 

@@ -7,7 +7,7 @@
 #include "x_client.hpp"
 #include "x_event_source.hpp"
 #include "x_client_container.hpp"
-#include "x_clients_preview.hpp"
+#include "x_client_chooser.hpp"
 #include "layout_t.hpp"
 #include "grid.hpp"
 
@@ -20,7 +20,7 @@ int main(int argc, char ** argv)
   x_client_container cc(c, es);
 
   grid_t grid;
-  x_clients_preview cp(c, &grid, cc);
+  x_client_chooser cp(c, &grid, cc);
 
   es.register_handler(&c);
   es.register_handler(&cp);

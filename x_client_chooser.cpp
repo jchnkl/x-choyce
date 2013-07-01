@@ -1,9 +1,9 @@
-#include "x_clients_preview.hpp"
+#include "x_client_chooser.hpp"
 
 #include <algorithm>
 #include <X11/keysym.h>
 
-x_clients_preview::x_clients_preview(const x_connection & c,
+x_client_chooser::x_client_chooser(const x_connection & c,
                                      const layout_t * layout,
                                      x_client_container & x_clients)
   : _c(c), _layout(layout), _x_clients(x_clients)
@@ -12,7 +12,7 @@ x_clients_preview::x_clients_preview(const x_connection & c,
 }
 
 
-void x_clients_preview::handle(xcb_generic_event_t * ge)
+void x_client_chooser::handle(xcb_generic_event_t * ge)
 {
   if (XCB_KEY_PRESS == (ge->response_type & ~0x80)) {
     xcb_key_press_event_t * e = (xcb_key_press_event_t *)ge;
@@ -64,7 +64,7 @@ void x_clients_preview::handle(xcb_generic_event_t * ge)
   }
 }
 
-void x_clients_preview::move_client(bool next)
+void x_client_chooser::move_client(bool next)
 {
   if (next) {
     if (++_current_client == _x_clients.end()) {
@@ -79,7 +79,7 @@ void x_clients_preview::move_client(bool next)
 }
 
 void
-x_clients_preview::configure_clients_preview(void)
+x_client_chooser::configure_clients_preview(void)
 {
   int i = 0;
   auto rects = _layout->arrange(_c.current_screen(), _x_clients.size());
