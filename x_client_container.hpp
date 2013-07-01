@@ -9,7 +9,7 @@
 
 class x_client_container {
   public:
-    typedef std::list<x_client> container_t;
+    typedef std::list<x_client_t> container_t;
     typedef container_t::iterator iterator;
     typedef container_t::const_iterator const_iterator;
     typedef container_t::reverse_iterator reverse_iterator;

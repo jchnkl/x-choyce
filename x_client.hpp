@@ -12,12 +12,12 @@
 // http://svn.enlightenment.org/svn/e/tags/evas-1.0.2/src/modules/engines/xrender_x11/evas_engine_xcb_render.c
 #define DOUBLE_TO_FIXED(d) ((xcb_render_fixed_t) ((d) * 65536))
 
-class x_client : public x_event_handler {
+class x_client_t : public x_event_handler {
   public:
-    friend std::ostream & operator<<(std::ostream &, const x_client &);
+    friend std::ostream & operator<<(std::ostream &, const x_client_t &);
 
-    x_client(const x_connection & c, xcb_window_t window);
-    ~x_client(void);
+    x_client_t(const x_connection & c, xcb_window_t window);
+    ~x_client_t(void);
 
     bool operator==(const xcb_window_t & window);
 
@@ -52,9 +52,9 @@ class x_client : public x_event_handler {
     void get_net_wm_desktop(void);
 };
 
-std::ostream & operator<<(std::ostream & os, const x_client & xc);
+std::ostream & operator<<(std::ostream & os, const x_client_t & xc);
 
-std::list<x_client>
+std::list<x_client_t>
 make_x_clients(const x_connection & c, const std::vector<xcb_window_t> & windows);
 
 #endif

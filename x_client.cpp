@@ -1,6 +1,6 @@
 #include "x_client.hpp"
 
-x_client::x_client(const x_connection & c, xcb_window_t window)
+x_client_t::x_client_t(const x_connection & c, xcb_window_t window)
   : _c(c), _window(window)
 {
   update_geometry();
@@ -21,7 +21,7 @@ x_client::x_client(const x_connection & c, xcb_window_t window)
                     XCB_DAMAGE_REPORT_LEVEL_NON_EMPTY);
 }
 
-x_client::~x_client(void)
+x_client_t::~x_client_t(void)
 {
   xcb_damage_destroy(_c(), _damage);
   xcb_render_free_picture(_c(), _window_picture);
@@ -29,16 +29,16 @@ x_client::~x_client(void)
   xcb_destroy_window(_c(), _preview);
 }
 
-bool x_client::operator==(const xcb_window_t & window) { return _window == window; }
+bool x_client_t::operator==(const xcb_window_t & window) { return _window == window; }
 
-double &       x_client::preview_scale(void)        { return _preview_scale; }
-rectangle_t &  x_client::rectangle(void)            { return _rectangle; }
-position_t &   x_client::preview_position(void)     { return _preview_position; }
-rectangle_t &  x_client::preview_rectangle(void)    { return _preview_rectangle; }
-unsigned int   x_client::net_wm_desktop(void) const { return _net_wm_desktop; }
-xcb_window_t & x_client::window(void)               { return _window; }
+double &       x_client_t::preview_scale(void)        { return _preview_scale; }
+rectangle_t &  x_client_t::rectangle(void)            { return _rectangle; }
+position_t &   x_client_t::preview_position(void)     { return _preview_position; }
+rectangle_t &  x_client_t::preview_rectangle(void)    { return _preview_rectangle; }
+unsigned int   x_client_t::net_wm_desktop(void) const { return _net_wm_desktop; }
+xcb_window_t & x_client_t::window(void)               { return _window; }
 
-void x_client::handle(xcb_generic_event_t * ge)
+void x_client_t::handle(xcb_generic_event_t * ge)
 {
   if (_c.damage_event_id() == (ge->response_type & ~0x80)) {
     xcb_damage_notify_event_t * e = (xcb_damage_notify_event_t *)ge;
@@ -47,20 +47,20 @@ void x_client::handle(xcb_generic_event_t * ge)
   }
 }
 
-void x_client::hide_preview(void) const
+void x_client_t::hide_preview(void) const
 {
   xcb_unmap_window(_c(), _preview);
   xcb_render_free_picture(_c(), _window_picture);
   xcb_render_free_picture(_c(), _preview_picture);
 }
 
-void x_client::update_preview(bool is_active)
+void x_client_t::update_preview(bool is_active)
 {
   _preview_is_active = is_active;
   compose(rectangle_t(0, 0, _rectangle.width(), _rectangle.height()));
 }
 
-void x_client::show_preview(bool is_active)
+void x_client_t::show_preview(bool is_active)
 {
   _preview_is_active = is_active;
 
@@ -95,7 +95,7 @@ void x_client::show_preview(bool is_active)
   compose(rectangle_t(0, 0, _rectangle.width(), _rectangle.height()));
 }
 
-void x_client::compose(const rectangle_t & rectangle)
+void x_client_t::compose(const rectangle_t & rectangle)
 {
   int16_t x = rectangle.x() * _preview_scale;
   int16_t y = rectangle.y() * _preview_scale;
@@ -125,7 +125,7 @@ void x_client::compose(const rectangle_t & rectangle)
   xcb_render_fill_rectangles(_c(), op, _preview_picture, color, 1, &r);
 }
 
-void x_client::update_geometry(void)
+void x_client_t::update_geometry(void)
 {
   xcb_get_geometry_reply_t * geometry_reply =
     xcb_get_geometry_reply(_c(), xcb_get_geometry(_c(), _window), NULL);
@@ -138,7 +138,7 @@ void x_client::update_geometry(void)
   delete geometry_reply;
 }
 
-void x_client::get_net_wm_desktop(void)
+void x_client_t::get_net_wm_desktop(void)
 {
   std::string atom_name = "_NET_WM_DESKTOP";
   xcb_intern_atom_cookie_t atom_cookie =
@@ -167,7 +167,7 @@ void x_client::get_net_wm_desktop(void)
   delete property_reply;
 }
 
-std::ostream & operator<<(std::ostream & os, const x_client & xc)
+std::ostream & operator<<(std::ostream & os, const x_client_t & xc)
 {
   return os << "0x" << std::hex << xc._window << std::dec << " @ "
             << xc._rectangle.x()     << "x"
@@ -184,10 +184,10 @@ std::ostream & operator<<(std::ostream & os, const x_client & xc)
             ;
 }
 
-std::list<x_client>
+std::list<x_client_t>
 make_x_clients(const x_connection & c, const std::vector<xcb_window_t> & windows)
 {
-  std::list<x_client> x_clients;
+  std::list<x_client_t> x_clients;
   for (auto & window : windows) { x_clients.emplace_back(c, window); }
   return x_clients;
 }
