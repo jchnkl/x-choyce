@@ -6,7 +6,10 @@
 x_clients_preview::x_clients_preview(const x_connection & c,
                                      const layout_t * layout,
                                      x_client_container & x_clients)
-: _c(c), _layout(layout), _x_clients(x_clients) {}
+  : _c(c), _layout(layout), _x_clients(x_clients)
+{
+  _modifier_map = _c.modifier_mapping();
+}
 
 
 void x_clients_preview::handle(xcb_generic_event_t * ge)
@@ -47,14 +50,16 @@ void x_clients_preview::handle(xcb_generic_event_t * ge)
 
   } else if (XCB_KEY_RELEASE == (ge->response_type & ~0x80)) {
     xcb_key_release_event_t * e = (xcb_key_release_event_t *)ge;
-    xcb_keysym_t keysym = _c.keycode_to_keysym(e->detail);
-    if (keysym == XK_Super_L) {
-      for (auto & client : _x_clients) {
-        client.hide_preview();
+    for (auto & keycode : _modifier_map[XCB_MOD_MASK_4]) {
+      if (e->detail == keycode) {
+        for (auto & client : _x_clients) {
+          client.hide_preview();
+        }
+        _c.request_change_active_window(_current_client->window());
+        _active = false;
+        _c.ungrab_keyboard();
       }
-      _c.request_change_active_window(_current_client->window());
-      _active = false;
-      _c.ungrab_keyboard();
+      break;
     }
   }
 }

@@ -24,6 +24,7 @@ class x_clients_preview : public x_event_handler {
     const layout_t * _layout;
     x_client_container & _x_clients;
     x_client_container::iterator _current_client;
+    x_connection::modifier_map _modifier_map;
 
     void move_client(bool next);
     void configure_clients_preview(void);
