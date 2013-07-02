@@ -66,9 +66,9 @@ class x_client_container : public x_event_handler {
             && e->atom == _c.intern_atom("_NET_CLIENT_LIST_STACKING")) {
           auto cw = _current_client->window();
           update();
-          auto result = std::find(_x_clients.begin(), _x_clients.end(), cw);
-          if (result == _x_clients.end()) {
-            _current_client = _x_clients.begin();
+          auto result = std::find(_container.begin(), _container.end(), cw);
+          if (result == _container.end()) {
+            _current_client = _container.begin();
           } else {
             _current_client = result;
           }
@@ -78,16 +78,16 @@ class x_client_container : public x_event_handler {
 
     void update(void)
     {
-      for (auto & xc : _x_clients) { _x_event_source.unregister_handler(&xc); }
-      _x_clients.clear();
+      for (auto & xc : _container) { _x_event_source.unregister_handler(&xc); }
+      _container.clear();
       _windows.clear();
       _windows = _c.net_client_list_stacking();
-      _x_clients = make_x_clients(_c, _windows);
-      for (auto & xc : _x_clients) { _x_event_source.register_handler(&xc); }
+      _container = make_x_clients(_c, _windows);
+      for (auto & xc : _container) { _x_event_source.register_handler(&xc); }
     }
 
   private:
-    container_t _x_clients;
+    container_t _container;
     iterator _current_client;
     std::vector<xcb_window_t> _windows;
     const x_connection & _c;
