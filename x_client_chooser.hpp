@@ -25,7 +25,7 @@ class x_client_chooser : public x_event_handler {
     const x_connection & _c;
     const layout_t * _layout;
     x_client_container & _x_clients;
-    x_client_container::iterator _current_client;
+    x_client_container::cyclic_x_client_iterator _current_x_client;
     x_connection::modifier_map _modifier_map;
 
     xcb_keycode_t _action_keycode;

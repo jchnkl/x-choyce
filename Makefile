@@ -4,6 +4,7 @@ LDFLAGS=$(shell pkg-config --libs ${LIBS})
 
 SRCS=main.cpp \
 		 data_types.cpp \
+		 cyclic_iterator.cpp \
 		 x_connection.cpp \
 		 x_client.cpp \
 		 x_client_chooser.cpp \

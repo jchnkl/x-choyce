@@ -7,30 +7,54 @@
 #include "x_client.hpp"
 #include "x_event_source.hpp"
 #include "x_event_handler.hpp"
+#include "cyclic_iterator.hpp"
 
 class x_client_container : public x_event_handler {
   public:
-    typedef std::list<x_client_t> container_t;
+    typedef x_client_t value_type;
+    typedef value_type * pointer;
+    typedef value_type & reference;
+    typedef std::list<value_type> container_t;
     typedef container_t::iterator iterator;
     typedef container_t::const_iterator const_iterator;
     typedef container_t::reverse_iterator reverse_iterator;
     typedef container_t::const_reverse_iterator const_reverse_iterator;
+    typedef cyclic_iterator<container_t> cyclic_x_client_iterator;
+    typedef const_cyclic_iterator<container_t> const_cyclic_x_client_iterator;
 
-    iterator begin(void)                      { return _x_clients.begin(); }
-    iterator end(void)                        { return _x_clients.end(); }
-    const_iterator begin(void) const          { return _x_clients.cbegin(); }
-    const_iterator end(void) const            { return _x_clients.cend(); }
-    reverse_iterator rbegin(void)             { return _x_clients.rbegin(); }
-    reverse_iterator rend(void)               { return _x_clients.rend(); }
-    const_reverse_iterator rbegin(void) const { return _x_clients.crbegin(); }
-    const_reverse_iterator rend(void) const   { return _x_clients.crend(); }
-    const size_t size(void) const             { return _x_clients.size(); }
+    iterator begin(void)                      { return _container.begin(); }
+    iterator end(void)                        { return _container.end(); }
+    const_iterator begin(void) const          { return _container.cbegin(); }
+    const_iterator end(void) const            { return _container.cend(); }
+    reverse_iterator rbegin(void)             { return _container.rbegin(); }
+    reverse_iterator rend(void)               { return _container.rend(); }
+    const_reverse_iterator rbegin(void) const { return _container.crbegin(); }
+    const_reverse_iterator rend(void) const   { return _container.crend(); }
+    const size_t size(void) const             { return _container.size(); }
+
+    cyclic_iterator<container_t> cbegin(void)
+    {
+      return cyclic_iterator<container_t>(&_container);
+    }
+    cyclic_iterator<container_t> cend(void)
+    {
+      return cyclic_iterator<container_t>(&_container);
+    }
+
+    const_cyclic_iterator<container_t> ccbegin(void)
+    {
+      return const_cyclic_iterator<container_t>(&_container);
+    }
+    const_cyclic_iterator<container_t> ccend(void)
+    {
+      return const_cyclic_iterator<container_t>(&_container);
+    }
 
     x_client_container(const x_connection & c, x_event_source & es)
       : _c(c), _x_event_source(es)
     {
       update();
-      _current_client = _x_clients.begin();
+      _current_client = _container.begin();
       _c.select_input(_c.root_window(), XCB_EVENT_MASK_PROPERTY_CHANGE);
     }
 

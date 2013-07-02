@@ -16,7 +16,6 @@ x_client_chooser::x_client_chooser(const x_connection & c,
   _modifier_map = _c.modifier_mapping();
 }
 
-
 void x_client_chooser::handle(xcb_generic_event_t * ge)
 {
   if (XCB_KEY_PRESS == (ge->response_type & ~0x80)) {
@@ -26,12 +25,14 @@ void x_client_chooser::handle(xcb_generic_event_t * ge)
         && (e->state == _action_modmask
           || e->state == (_action_modmask | XCB_MOD_MASK_SHIFT))) {
       if (_active) {
-        _current_client->update_preview(false);
+        _current_x_client->update_preview(false);
         move_client(e->state == _action_modmask);
-        _current_client->update_preview(true);
+        _current_x_client->update_preview(true);
 
       } else {
         if (_x_clients.size() == 0) { return; }
+
+        _current_x_client = _x_clients.cbegin();
 
         _active = true;
         _c.grab_keyboard();
@@ -39,13 +40,12 @@ void x_client_chooser::handle(xcb_generic_event_t * ge)
 
         configure_clients_preview();
 
-        _current_client =
-          std::find(_x_clients.begin(), _x_clients.end(), _active_window);
         move_client(e->state == _action_modmask);
 
         for (auto & client : _x_clients) {
-          client.show_preview(client == _current_client->window());
+          client.show_preview(client == _current_x_client->window());
         }
+
       }
     }
 
@@ -56,7 +56,7 @@ void x_client_chooser::handle(xcb_generic_event_t * ge)
         for (auto & client : _x_clients) {
           client.hide_preview();
         }
-        _c.request_change_active_window(_current_client->window());
+        _c.request_change_active_window(_current_x_client->window());
         _active = false;
         _c.ungrab_keyboard();
       }
@@ -68,14 +68,9 @@ void x_client_chooser::handle(xcb_generic_event_t * ge)
 void x_client_chooser::move_client(bool next)
 {
   if (next) {
-    if (++_current_client == _x_clients.end()) {
-      _current_client = _x_clients.begin();
-    }
+    ++_current_x_client;
   } else {
-    if (_current_client == _x_clients.begin()) {
-      _current_client = _x_clients.end();
-    }
-    --_current_client;
+    --_current_x_client;
   }
 }
 
