@@ -197,5 +197,5 @@ bool operator==(const x_client_t & x_client, const xcb_window_t & window)
 
 bool operator==(const xcb_window_t & window, const x_client_t & x_client)
 {
-  return x_client._window == window;
+  return x_client == window;
 }
