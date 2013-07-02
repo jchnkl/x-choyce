@@ -15,11 +15,11 @@
 class x_client_t : public x_event_handler {
   public:
     friend std::ostream & operator<<(std::ostream &, const x_client_t &);
+    friend bool operator==(const x_client_t &, const xcb_window_t &);
+    friend bool operator==(const xcb_window_t &, const x_client_t &);
 
     x_client_t(const x_connection & c, xcb_window_t window);
     ~x_client_t(void);
-
-    bool operator==(const xcb_window_t & window);
 
     double &       preview_scale(void);
     rectangle_t &  rectangle(void);
@@ -56,5 +56,11 @@ std::ostream & operator<<(std::ostream & os, const x_client_t & xc);
 
 std::list<x_client_t>
 make_x_clients(const x_connection & c, const std::vector<xcb_window_t> & windows);
+
+bool
+operator==(const x_client_t &, const xcb_window_t &);
+
+bool
+operator==(const xcb_window_t &, const x_client_t &);
 
 #endif

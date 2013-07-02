@@ -29,8 +29,6 @@ x_client_t::~x_client_t(void)
   xcb_destroy_window(_c(), _preview);
 }
 
-bool x_client_t::operator==(const xcb_window_t & window) { return _window == window; }
-
 double &       x_client_t::preview_scale(void)        { return _preview_scale; }
 rectangle_t &  x_client_t::rectangle(void)            { return _rectangle; }
 position_t &   x_client_t::preview_position(void)     { return _preview_position; }
@@ -190,4 +188,14 @@ make_x_clients(const x_connection & c, const std::vector<xcb_window_t> & windows
   std::list<x_client_t> x_clients;
   for (auto & window : windows) { x_clients.emplace_back(c, window); }
   return x_clients;
+}
+
+bool operator==(const x_client_t & x_client, const xcb_window_t & window)
+{
+  return x_client._window == window;
+}
+
+bool operator==(const xcb_window_t & window, const x_client_t & x_client)
+{
+  return x_client._window == window;
 }
