@@ -20,6 +20,7 @@ int main(int argc, char ** argv)
 
   x_event_source es(c);
   x_client_container cc(c, es);
+  es.register_handler(&cc);
 
   grid_t grid;
   x_client_chooser cp(c, &grid, cc, key, mod);

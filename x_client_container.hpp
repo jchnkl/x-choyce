@@ -6,8 +6,9 @@
 
 #include "x_client.hpp"
 #include "x_event_source.hpp"
+#include "x_event_handler.hpp"
 
-class x_client_container {
+class x_client_container : public x_event_handler {
   public:
     typedef std::list<x_client_t> container_t;
     typedef container_t::iterator iterator;
@@ -26,7 +27,22 @@ class x_client_container {
     const size_t size(void) const             { return _x_clients.size(); }
 
     x_client_container(const x_connection & c, x_event_source & es)
-      : _c(c), _x_event_source(es) {}
+      : _c(c), _x_event_source(es)
+    {
+      update();
+      _c.select_input(_c.root_window(), XCB_EVENT_MASK_PROPERTY_CHANGE);
+    }
+
+    void handle(xcb_generic_event_t * ge)
+    {
+      if (XCB_PROPERTY_NOTIFY == (ge->response_type & ~0x80)) {
+        xcb_property_notify_event_t * e = (xcb_property_notify_event_t *)ge;
+        if (e->window == _c.root_window()
+            && e->atom == _c.intern_atom("_NET_CLIENT_LIST_STACKING")) {
+          update();
+        }
+      }
+    }
 
     void update(void)
     {

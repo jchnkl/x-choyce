@@ -31,7 +31,6 @@ void x_client_chooser::handle(xcb_generic_event_t * ge)
         _current_client->update_preview(true);
 
       } else {
-        _x_clients.update();
         if (_x_clients.size() == 0) { return; }
 
         _active = true;
