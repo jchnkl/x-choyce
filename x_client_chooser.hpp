@@ -11,8 +11,10 @@
 class x_client_chooser : public x_event_handler {
   public:
     x_client_chooser(const x_connection & c,
-                      const layout_t * layout,
-                      x_client_container & x_clients);
+                     const layout_t * layout,
+                     x_client_container & x_clients,
+                     xcb_keysym_t action_keysym,
+                     xcb_mod_mask_t action_modmask);
 
     void handle(xcb_generic_event_t * ge);
 
@@ -25,6 +27,9 @@ class x_client_chooser : public x_event_handler {
     x_client_container & _x_clients;
     x_client_container::iterator _current_client;
     x_connection::modifier_map _modifier_map;
+
+    xcb_keycode_t _action_keycode;
+    xcb_mod_mask_t _action_modmask;
 
     void move_client(bool next);
     void configure_clients_preview(void);

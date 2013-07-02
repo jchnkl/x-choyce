@@ -4,10 +4,15 @@
 #include <X11/keysym.h>
 
 x_client_chooser::x_client_chooser(const x_connection & c,
-                                     const layout_t * layout,
-                                     x_client_container & x_clients)
+                                   const layout_t * layout,
+                                   x_client_container & x_clients,
+                                   xcb_keysym_t action_keysym,
+                                   xcb_mod_mask_t action_modmask)
   : _c(c), _layout(layout), _x_clients(x_clients)
+  , _action_modmask(action_modmask)
 {
+  _c.grab_key(_action_modmask, action_keysym);
+  _action_keycode = _c.keysym_to_keycode(action_keysym);
   _modifier_map = _c.modifier_mapping();
 }
 
@@ -20,12 +25,12 @@ void x_client_chooser::handle(xcb_generic_event_t * ge)
     if (keysym == XK_Escape && e->state == 0) {
       _active = false;
 
-    } else if (keysym == XK_Tab
-        && (e->state == XCB_MOD_MASK_4
-          || e->state == (XCB_MOD_MASK_4 | XCB_MOD_MASK_SHIFT))) {
+    } else if (keysym == _action_keycode
+        && (e->state == _action_modmask
+          || e->state == (_action_modmask | XCB_MOD_MASK_SHIFT))) {
       if (_active) {
         _current_client->update_preview(false);
-        move_client(e->state == XCB_MOD_MASK_4);
+        move_client(e->state == _action_modmask);
         _current_client->update_preview(true);
 
       } else {
@@ -40,7 +45,7 @@ void x_client_chooser::handle(xcb_generic_event_t * ge)
 
         _current_client =
           std::find(_x_clients.begin(), _x_clients.end(), _active_window);
-        move_client(e->state == XCB_MOD_MASK_4);
+        move_client(e->state == _action_modmask);
 
         for (auto & client : _x_clients) {
           client.show_preview(client == _current_client->window());
@@ -50,7 +55,7 @@ void x_client_chooser::handle(xcb_generic_event_t * ge)
 
   } else if (XCB_KEY_RELEASE == (ge->response_type & ~0x80)) {
     xcb_key_release_event_t * e = (xcb_key_release_event_t *)ge;
-    for (auto & keycode : _modifier_map[XCB_MOD_MASK_4]) {
+    for (auto & keycode : _modifier_map[_action_modmask]) {
       if (e->detail == keycode) {
         for (auto & client : _x_clients) {
           client.hide_preview();

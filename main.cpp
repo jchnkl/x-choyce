@@ -13,14 +13,16 @@
 
 int main(int argc, char ** argv)
 {
+  xcb_keysym_t key = XK_Tab;
+  xcb_mod_mask_t mod = XCB_MOD_MASK_1;
+
   x_connection c;
-  c.grab_key(XCB_MOD_MASK_4, XK_Tab);
 
   x_event_source es(c);
   x_client_container cc(c, es);
 
   grid_t grid;
-  x_client_chooser cp(c, &grid, cc);
+  x_client_chooser cp(c, &grid, cc, key, mod);
 
   es.register_handler(&c);
   es.register_handler(&cp);
