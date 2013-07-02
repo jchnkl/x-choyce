@@ -21,6 +21,11 @@ class x_client_t : public x_event_handler {
     x_client_t(const x_connection & c, xcb_window_t window);
     ~x_client_t(void);
 
+    bool operator==(const x_client_t & other)
+    {
+      return _window == other._window;
+    }
+
     double &       preview_scale(void);
     rectangle_t &  rectangle(void);
     position_t &   preview_position(void);
