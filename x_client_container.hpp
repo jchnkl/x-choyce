@@ -30,6 +30,7 @@ class x_client_container : public x_event_handler {
       : _c(c), _x_event_source(es)
     {
       update();
+      _current_client = _x_clients.begin();
       _c.select_input(_c.root_window(), XCB_EVENT_MASK_PROPERTY_CHANGE);
     }
 
@@ -39,7 +40,14 @@ class x_client_container : public x_event_handler {
         xcb_property_notify_event_t * e = (xcb_property_notify_event_t *)ge;
         if (e->window == _c.root_window()
             && e->atom == _c.intern_atom("_NET_CLIENT_LIST_STACKING")) {
+          auto cw = _current_client->window();
           update();
+          auto result = std::find(_x_clients.begin(), _x_clients.end(), cw);
+          if (result == _x_clients.end()) {
+            _current_client = _x_clients.begin();
+          } else {
+            _current_client = result;
+          }
         }
       }
     }
@@ -56,6 +64,7 @@ class x_client_container : public x_event_handler {
 
   private:
     container_t _x_clients;
+    iterator _current_client;
     std::vector<xcb_window_t> _windows;
     const x_connection & _c;
     x_event_source & _x_event_source;
