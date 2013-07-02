@@ -21,11 +21,8 @@ void x_client_chooser::handle(xcb_generic_event_t * ge)
 {
   if (XCB_KEY_PRESS == (ge->response_type & ~0x80)) {
     xcb_key_press_event_t * e = (xcb_key_press_event_t *)ge;
-    xcb_keysym_t keysym = _c.keycode_to_keysym(e->detail);
-    if (keysym == XK_Escape && e->state == 0) {
-      _active = false;
 
-    } else if (keysym == _action_keycode
+    if (e->detail == _action_keycode
         && (e->state == _action_modmask
           || e->state == (_action_modmask | XCB_MOD_MASK_SHIFT))) {
       if (_active) {
