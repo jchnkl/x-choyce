@@ -11,7 +11,7 @@ SRCS=main.cpp \
 
 OBJS=$(SRCS:%.cpp=%.o)
 
-EXE=winswitch
+EXE=x:choyce
 
 all: ${OBJS}
 	${CXX} ${CXXFLAGS} ${LDFLAGS} ${OBJS} -o ${EXE}
