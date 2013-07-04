@@ -17,7 +17,7 @@ class x_client_thumbnail : public x_event_handler_t
                          , public thumbnail_t {
   public:
     x_client_thumbnail(x_connection & c,
-                       const rectangle_t & rectangle,
+                       const rectangle & rect,
                        const xcb_window_t & window = XCB_NONE,
                        std::shared_ptr<x_client> xclient = NULL);
 
@@ -38,7 +38,7 @@ class x_client_thumbnail : public x_event_handler_t
     x_client_ptr _x_client;
 
     double _scale;
-    rectangle_t _rectangle;
+    rectangle _rectangle;
 
     xcb_window_t _thumbnail_window;
     xcb_damage_damage_t _damage;

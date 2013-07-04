@@ -22,8 +22,8 @@ class x_client {
       return _window == other._window;
     }
 
-          rectangle_t &  rectangle(void);
-    const rectangle_t &  rectangle(void) const;
+          rectangle &  rect(void);
+    const rectangle &  rect(void) const;
           xcb_window_t & window(void);
     const xcb_window_t & window(void) const;
           unsigned int   net_wm_desktop(void) const;
@@ -33,7 +33,7 @@ class x_client {
 
   private:
     x_connection & _c;
-    rectangle_t _rectangle;
+    rectangle _rectangle;
     unsigned int _net_wm_desktop;
     xcb_window_t _window;
 

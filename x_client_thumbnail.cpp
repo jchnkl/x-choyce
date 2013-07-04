@@ -3,10 +3,10 @@
 #include <xcb/xcb_renderutil.h>
 
 x_client_thumbnail::x_client_thumbnail(x_connection & c,
-                                       const rectangle_t & rectangle,
+                                       const rectangle & rect,
                                        const xcb_window_t & window,
                                        std::shared_ptr<x_client> xclient)
-      : _c(c), _rectangle(rectangle)
+      : _c(c), _rectangle(rect)
 {
   if (window == XCB_NONE && xclient == NULL) {
     throw std::invalid_argument(
@@ -39,11 +39,11 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
   _window_picture = make_picture(_c, _x_client->window());
   _thumbnail_picture = make_picture(_c, _thumbnail_window);
 
-  _scale = std::min((double)rectangle.width() / _x_client->rectangle().width(),
-                    (double)rectangle.height() / _x_client->rectangle().height());
+  _scale = std::min((double)rect.width() / _x_client->rect().width(),
+                    (double)rect.height() / _x_client->rect().height());
 
-  _rectangle.width() = _x_client->rectangle().width() * _scale;
-  _rectangle.height() = _x_client->rectangle().height() * _scale;
+  _rectangle.width() = _x_client->rect().width() * _scale;
+  _rectangle.height() = _x_client->rect().height() * _scale;
 }
 
 x_client_thumbnail::~x_client_thumbnail(void)

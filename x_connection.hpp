@@ -46,7 +46,7 @@ class x_connection : public x_event_handler_t
     xcb_window_t net_active_window(void) const;
     void request_change_current_desktop(unsigned int desktop_id) const;
     void request_change_active_window(xcb_window_t window) const;
-    rectangle_t current_screen(void) const;
+    rectangle current_screen(void) const;
     void handle(xcb_generic_event_t * ge);
 
     void register_handler(x_event_handler_t * eh);
@@ -60,7 +60,7 @@ class x_connection : public x_event_handler_t
     xcb_connection_t * _c = NULL;
     xcb_screen_t * _default_screen = NULL;
 
-    std::vector<rectangle_t> _screens;
+    std::vector<rectangle> _screens;
 
     std::shared_ptr<x_ewmh> _ewmh;
     std::shared_ptr<x_event_source_t> _event_source;

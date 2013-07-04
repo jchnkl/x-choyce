@@ -9,8 +9,8 @@ x_client::x_client(x_connection & c, const xcb_window_t & window)
 
 x_client::~x_client(void) {}
 
-      rectangle_t &  x_client::rectangle(void)       { return _rectangle; }
-const rectangle_t &  x_client::rectangle(void) const { return _rectangle; }
+      rectangle &  x_client::rect(void)       { return _rectangle; }
+const rectangle &  x_client::rect(void) const { return _rectangle; }
       xcb_window_t & x_client::window(void)          { return _window; }
 const xcb_window_t & x_client::window(void) const    { return _window; }
 

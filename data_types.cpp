@@ -7,40 +7,40 @@ dimension_t::dimension_t(unsigned int w, unsigned int h)
 position_t::position_t(void) {}
 position_t::position_t(int x, int y) : x(x), y(y) {}
 
-rectangle_t::rectangle_t(void) {}
+rectangle::rectangle(void) {}
 
-rectangle_t::rectangle_t(position_t position, dimension_t dimension)
+rectangle::rectangle(position_t position, dimension_t dimension)
   : position(position), dimension(dimension) {}
 
-rectangle_t::rectangle_t(int x, int y, unsigned int width, unsigned int height)
+rectangle::rectangle(int x, int y, unsigned int width, unsigned int height)
   : position(x, y), dimension(width, height) {}
 
 int &
-rectangle_t::x(void) { return position.x; }
+rectangle::x(void) { return position.x; }
 
 int const &
-rectangle_t::x(void) const { return position.x; }
+rectangle::x(void) const { return position.x; }
 
 int &
-rectangle_t::y(void) { return position.y; }
+rectangle::y(void) { return position.y; }
 
 int const &
-rectangle_t::y(void) const { return position.y; }
+rectangle::y(void) const { return position.y; }
 
 unsigned int &
-rectangle_t::width(void) { return dimension.width; }
+rectangle::width(void) { return dimension.width; }
 
 unsigned int const &
-rectangle_t::width(void) const { return dimension.width; }
+rectangle::width(void) const { return dimension.width; }
 
 unsigned int &
-rectangle_t::height(void) { return dimension.height; }
+rectangle::height(void) { return dimension.height; }
 
 unsigned int const &
-rectangle_t::height(void) const { return dimension.height; }
+rectangle::height(void) const { return dimension.height; }
 
-std::ostream & operator<<(std::ostream & os, const rectangle_t & rectangle)
+std::ostream & operator<<(std::ostream & os, const rectangle & rect)
 {
-  return os << rectangle.x() << "x" << rectangle.y() << "+"
-            << rectangle.width() << "+" << rectangle.height();
+  return os << rect.x() << "x" << rect.y() << "+"
+            << rect.width() << "+" << rect.height();
 }

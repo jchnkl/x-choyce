@@ -36,11 +36,11 @@ x_client_thumbnail_manager::update(void)
   } else {
     _cyclic_window_iterator = cyclic_window_iterator_t(&_windows);
 
-    auto rectangles = _layout->arrange(_c.current_screen(), _windows.size());
+    auto rects = _layout->arrange(_c.current_screen(), _windows.size());
 
     for (size_t i = 0; i < _windows.size(); ++i) {
       _x_client_thumbnail_manager.emplace(_windows[i],
-          thumbnail_ptr(new x_client_thumbnail(_c, rectangles[i], _windows[i])));
+          thumbnail_ptr(new x_client_thumbnail(_c, rects[i], _windows[i])));
     }
   }
 }

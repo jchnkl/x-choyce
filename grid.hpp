@@ -7,8 +7,8 @@
 
 class grid_t : public layout_t {
   public:
-    std::deque<rectangle_t>
-      arrange(const rectangle_t & screen, unsigned int nrects) const;
+    std::deque<rectangle>
+      arrange(const rectangle & screen, unsigned int nrects) const;
 };
 
 #endif

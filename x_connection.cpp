@@ -296,7 +296,7 @@ x_connection::request_change_active_window(xcb_window_t window) const
   xcb_send_event(_c, false, _root_window, mask, (const char *)&event);
 }
 
-rectangle_t
+rectangle
 x_connection::current_screen(void) const
 {
   xcb_get_geometry_cookie_t geometry_cookie =
@@ -316,7 +316,7 @@ x_connection::current_screen(void) const
     }
   }
 
-  return rectangle_t(0, 0, 800, 600);
+  return rectangle(0, 0, 800, 600);
 }
 
 void
@@ -418,7 +418,7 @@ x_connection::update_xinerama(void)
       xcb_xinerama_query_screens_screen_info_length(query_screens_reply);
     for (int i = 0; i < length; ++i) {
       _screens.push_back(
-          rectangle_t(screen_info[i].x_org, screen_info[i].y_org,
+          rectangle(screen_info[i].x_org, screen_info[i].y_org,
             screen_info[i].width, screen_info[i].height));
     }
     delete query_screens_reply;

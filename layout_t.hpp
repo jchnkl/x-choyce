@@ -7,8 +7,8 @@
 
 class layout_t {
   public:
-    virtual std::deque<rectangle_t>
-      arrange(const rectangle_t &, unsigned int) const = 0;
+    virtual std::deque<rectangle>
+      arrange(const rectangle &, unsigned int) const = 0;
 };
 
 #endif

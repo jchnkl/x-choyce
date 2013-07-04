@@ -3,8 +3,8 @@
 #include <cmath>
 #include <vector>
 
-std::deque<rectangle_t>
-grid_t::arrange(const rectangle_t & screen, unsigned int nrects) const
+std::deque<rectangle>
+grid_t::arrange(const rectangle & screen, unsigned int nrects) const
 {
   int gap = 5;
 
@@ -22,12 +22,12 @@ grid_t::arrange(const rectangle_t & screen, unsigned int nrects) const
   int ncol = cells.size();
   int colw = screen.width() / ncol;
 
-  std::deque<rectangle_t> rects;
+  std::deque<rectangle> rects;
   for (int c = 0; c < ncol; ++c) {
     int nrow = cells[c];
     int rowh = screen.height() / nrow;
     for (int r = 0; r < nrow; ++r) {
-      rects.push_back(rectangle_t(c * colw + screen.x() + gap,
+      rects.push_back(rectangle(c * colw + screen.x() + gap,
                                   r * rowh + screen.y() + gap,
                                   colw - 2 * gap, rowh - 2 * gap));
     }

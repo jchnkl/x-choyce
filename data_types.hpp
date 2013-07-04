@@ -15,10 +15,10 @@ struct position_t {
   int x, y;
 };
 
-struct rectangle_t {
-  rectangle_t(void);
-  rectangle_t(position_t position, dimension_t dimension);
-  rectangle_t(int x, int y, unsigned int width, unsigned int height);
+struct rectangle {
+  rectangle(void);
+  rectangle(position_t position, dimension_t dimension);
+  rectangle(int x, int y, unsigned int width, unsigned int height);
 
   int & x(void);
   int const & x(void) const;
@@ -33,6 +33,6 @@ struct rectangle_t {
   dimension_t dimension;
 };
 
-std::ostream & operator<<(std::ostream & os, const rectangle_t & rectangle);
+std::ostream & operator<<(std::ostream & os, const rectangle & rect);
 
 #endif
