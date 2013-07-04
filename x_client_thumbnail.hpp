@@ -42,6 +42,8 @@ class x_client_thumbnail : public x_event_handler_t
 
     uint16_t _alpha_value = (uint16_t)(0.75f * 0xffff);
 
+    void configure_preview_window(void) const;
+    void configure_preview_picture(void) const;
     void configure_alpha_picture(uint16_t alpha_value) const;
 };
 

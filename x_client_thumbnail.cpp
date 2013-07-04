@@ -68,6 +68,35 @@ x_client_thumbnail::handle(xcb_generic_event_t * ge)
 }
 
 void
+x_client_thumbnail::configure_preview_window(void) const
+{
+  uint32_t mask = XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y
+                | XCB_CONFIG_WINDOW_WIDTH | XCB_CONFIG_WINDOW_HEIGHT
+                | XCB_CONFIG_WINDOW_STACK_MODE;
+
+  uint32_t values[] = { (uint32_t)_rectangle.x(),
+                        (uint32_t)_rectangle.y(),
+                        (uint32_t)_rectangle.width(),
+                        (uint32_t)_rectangle.height(),
+                        XCB_STACK_MODE_ABOVE };
+
+  xcb_configure_window(_c(), _preview, mask, values);
+  xcb_map_window(_c(), _preview);
+}
+
+void
+x_client_thumbnail::configure_preview_picture(void) const
+{
+  xcb_render_transform_t transform_matrix = {
+      DOUBLE_TO_FIXED(1), DOUBLE_TO_FIXED(0), DOUBLE_TO_FIXED(    0)
+    , DOUBLE_TO_FIXED(0), DOUBLE_TO_FIXED(1), DOUBLE_TO_FIXED(    0)
+    , DOUBLE_TO_FIXED(0), DOUBLE_TO_FIXED(0), DOUBLE_TO_FIXED(_scale)
+    };
+
+  xcb_render_set_picture_transform(_c(), _window_picture, transform_matrix);
+}
+
+void
 x_client_thumbnail::configure_alpha_picture(uint16_t alpha_value) const
 {
   xcb_pixmap_t alpha_pixmap = xcb_generate_id(_c());
