@@ -4,28 +4,28 @@ dimension::dimension(void) {}
 dimension::dimension(unsigned int w, unsigned int h)
   : width(w), height(h) {}
 
-position_t::position_t(void) {}
-position_t::position_t(int x, int y) : x(x), y(y) {}
+position::position(void) {}
+position::position(int x, int y) : x(x), y(y) {}
 
 rectangle::rectangle(void) {}
 
-rectangle::rectangle(position_t position, dimension dim)
-  : position(position), _dimension(dim) {}
+rectangle::rectangle(position pos, dimension dim)
+  : _position(pos), _dimension(dim) {}
 
 rectangle::rectangle(int x, int y, unsigned int width, unsigned int height)
-  : position(x, y), _dimension(width, height) {}
+  : _position(x, y), _dimension(width, height) {}
 
 int &
-rectangle::x(void) { return position.x; }
+rectangle::x(void) { return _position.x; }
 
 int const &
-rectangle::x(void) const { return position.x; }
+rectangle::x(void) const { return _position.x; }
 
 int &
-rectangle::y(void) { return position.y; }
+rectangle::y(void) { return _position.y; }
 
 int const &
-rectangle::y(void) const { return position.y; }
+rectangle::y(void) const { return _position.y; }
 
 unsigned int &
 rectangle::width(void) { return _dimension.width; }
