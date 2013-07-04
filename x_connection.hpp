@@ -7,12 +7,12 @@
 #include <map>
 #include <xcb/xcb.h>
 #include <xcb/render.h>
+#include <X11/Xlib.h>
 
 #include "data_types.hpp"
 #include "x_event_handler.hpp"
 #include "x_event_source_t.hpp"
 
-#include <X11/Xlib.h>
 class x_ewmh;
 class x_event_source;
 
