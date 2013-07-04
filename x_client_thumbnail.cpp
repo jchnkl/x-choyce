@@ -57,6 +57,62 @@ x_client_thumbnail::~x_client_thumbnail(void)
 }
 
 void
+x_client_thumbnail::show(void) const
+{
+  configure_preview_window();
+  configure_preview_picture();
+  update();
+}
+
+void
+x_client_thumbnail::hide(void) const
+{
+  xcb_unmap_window(_c(), _preview);
+}
+
+void
+x_client_thumbnail::select(void) const
+{
+  _c.request_change_current_desktop(_x_client->net_wm_desktop());
+  _c.request_change_active_window(_x_client->window());
+}
+
+void
+x_client_thumbnail::update(void) const
+{
+  update(0, 0, _rectangle.width(), _rectangle.height());
+}
+
+void
+x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height) const
+{
+  xcb_render_composite(_c(), XCB_RENDER_PICT_OP_SRC,
+                       _window_picture, _alpha_picture, _preview_picture,
+                       // int16_t src_x, int16_t src_y,
+                       x, y,
+                       // int16_t mask_x, int16_t mask_y,
+                       0, 0,
+                       // int16_t dst_x, int16_t dst_y,
+                       x, y,
+                       // uint16_t width, uint16_t height
+                       width, height);
+}
+
+void
+x_client_thumbnail::highlight(bool want_highlight) const
+{
+  xcb_rectangle_t r = { 0, 0, 1, 1 };
+  xcb_render_color_t color = { 0, 0, 0, 0xffff };
+
+  if (! want_highlight) { color.alpha = _alpha_value; }
+
+  xcb_render_fill_rectangles(_c(), XCB_RENDER_PICT_OP_SRC,
+                             _alpha_picture, color, 1, &r);
+
+  update();
+}
+
+void
 x_client_thumbnail::handle(xcb_generic_event_t * ge)
 {
   if (_c.damage_event_id() == (ge->response_type & ~0x80)) {

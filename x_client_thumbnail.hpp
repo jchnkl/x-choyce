@@ -23,6 +23,12 @@ class x_client_thumbnail : public x_event_handler_t
 
     ~x_client_thumbnail(void);
 
+    void show(void) const;
+    void hide(void) const;
+    void select(void) const;
+    void update(void) const;
+    void highlight(bool want_highlight) const;
+
     void handle(xcb_generic_event_t * ge);
 
   private:
@@ -42,6 +48,7 @@ class x_client_thumbnail : public x_event_handler_t
 
     uint16_t _alpha_value = (uint16_t)(0.75f * 0xffff);
 
+    void update(int x, int y, unsigned int width, unsigned int height) const;
     void configure_preview_window(void) const;
     void configure_preview_picture(void) const;
     void configure_alpha_picture(uint16_t alpha_value) const;
