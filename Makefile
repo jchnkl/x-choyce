@@ -1,4 +1,4 @@
-LIBS=xcb xcb-atom xcb-keysyms xcb-composite xcb-damage xcb-xinerama x11
+LIBS=xcb xcb-atom xcb-keysyms xcb-composite xcb-damage xcb-xinerama xcb-renderutil x11
 CXXFLAGS=-g -std=c++11 -Wall $(shell pkg-config --cflags ${LIBS})
 LDFLAGS=$(shell pkg-config --libs ${LIBS})
 
@@ -9,6 +9,7 @@ SRCS=main.cpp \
 		 x_ewmh.cpp \
 		 x_client.cpp \
 		 x_client_chooser.cpp \
+		 x_client_thumbnail.cpp \
 		 grid.cpp
 
 OBJS=$(SRCS:%.cpp=%.o)
