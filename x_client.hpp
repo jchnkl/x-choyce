@@ -1,5 +1,5 @@
-#ifndef _X_CLIENT
-#define _X_CLIENT
+#ifndef _X_CLIENT_HPP
+#define _X_CLIENT_HPP
 
 #include <list>
 #include <xcb/xcb.h>

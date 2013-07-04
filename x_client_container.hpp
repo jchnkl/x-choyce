@@ -1,5 +1,5 @@
-#ifndef _X_CLIENT_CONTAINER
-#define _X_CLIENT_CONTAINER
+#ifndef _X_CLIENT_THUMBNAIL_MANAGER_HPP
+#define _X_CLIENT_THUMBNAIL_MANAGER_HPP
 
 #include <list>
 #include <vector>
