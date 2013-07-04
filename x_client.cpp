@@ -5,123 +5,16 @@ x_client_t::x_client_t(const x_connection & c, xcb_window_t window)
 {
   update_geometry();
   get_net_wm_desktop();
-
-  uint32_t mask = XCB_CW_BACK_PIXEL | XCB_CW_OVERRIDE_REDIRECT;
-  uint32_t values[] = { 0, true };
-  _preview = xcb_generate_id(c());
-  xcb_create_window(_c(), XCB_COPY_FROM_PARENT, _preview,
-                    _c.default_screen()->root,
-                    0, 0, 1, 1, 0,
-                    // _position.x, _position.y, _size.width, _size.height, 0,
-                    XCB_WINDOW_CLASS_INPUT_OUTPUT,
-                    _c.default_screen()->root_visual, mask, values);
-
-  _damage = xcb_generate_id(_c());
-  xcb_damage_create(_c(), _damage, _window,
-                    XCB_DAMAGE_REPORT_LEVEL_NON_EMPTY);
 }
 
-x_client_t::~x_client_t(void)
-{
-  xcb_damage_destroy(_c(), _damage);
-  xcb_render_free_picture(_c(), _window_picture);
-  xcb_render_free_picture(_c(), _preview_picture);
-  xcb_destroy_window(_c(), _preview);
-}
+x_client_t::~x_client_t(void) {}
 
-double &       x_client_t::preview_scale(void)        { return _preview_scale; }
-rectangle_t &  x_client_t::rectangle(void)            { return _rectangle; }
-position_t &   x_client_t::preview_position(void)     { return _preview_position; }
-rectangle_t &  x_client_t::preview_rectangle(void)    { return _preview_rectangle; }
-unsigned int   x_client_t::net_wm_desktop(void) const { return _net_wm_desktop; }
-xcb_window_t & x_client_t::window(void)               { return _window; }
+      rectangle_t &  x_client_t::rectangle(void)       { return _rectangle; }
+const rectangle_t &  x_client_t::rectangle(void) const { return _rectangle; }
+      xcb_window_t & x_client_t::window(void)          { return _window; }
+const xcb_window_t & x_client_t::window(void) const    { return _window; }
 
-void x_client_t::handle(xcb_generic_event_t * ge)
-{
-  if (_c.damage_event_id() == (ge->response_type & ~0x80)) {
-    xcb_damage_notify_event_t * e = (xcb_damage_notify_event_t *)ge;
-    xcb_damage_subtract(_c(), e->damage, XCB_NONE, XCB_NONE);
-    compose(rectangle_t(e->area.x, e->area.y, e->area.width, e->area.height));
-  }
-}
-
-void x_client_t::hide_preview(void) const
-{
-  xcb_unmap_window(_c(), _preview);
-  xcb_render_free_picture(_c(), _window_picture);
-  xcb_render_free_picture(_c(), _preview_picture);
-}
-
-void x_client_t::update_preview(bool is_active)
-{
-  _preview_is_active = is_active;
-  compose(rectangle_t(0, 0, _rectangle.width(), _rectangle.height()));
-}
-
-void x_client_t::show_preview(bool is_active)
-{
-  _preview_is_active = is_active;
-
-  xcb_get_geometry_reply_t * geometry_reply =
-    xcb_get_geometry_reply(_c(), xcb_get_geometry(_c(), _window), NULL);
-
-  delete geometry_reply;
-
-  uint32_t mask = XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y
-                | XCB_CONFIG_WINDOW_WIDTH | XCB_CONFIG_WINDOW_HEIGHT
-                | XCB_CONFIG_WINDOW_STACK_MODE;
-  uint32_t values[] = { (uint32_t)_preview_position.x,
-                        (uint32_t)_preview_position.y,
-                        (uint32_t)(_rectangle.width() * _preview_scale),
-                        (uint32_t)(_rectangle.height() * _preview_scale),
-                        XCB_STACK_MODE_ABOVE };
-
-  xcb_configure_window(_c(), _preview, mask, values);
-  xcb_map_window(_c(), _preview);
-
-  _window_picture = make_picture(_c, _window);
-  _preview_picture = make_picture(_c, _preview);
-
-  xcb_render_transform_t transform_matrix =
-    { DOUBLE_TO_FIXED(1), DOUBLE_TO_FIXED(0), DOUBLE_TO_FIXED(             0)
-    , DOUBLE_TO_FIXED(0), DOUBLE_TO_FIXED(1), DOUBLE_TO_FIXED(             0)
-    , DOUBLE_TO_FIXED(0), DOUBLE_TO_FIXED(0), DOUBLE_TO_FIXED(_preview_scale)
-    };
-
-  xcb_render_set_picture_transform(_c(), _window_picture, transform_matrix);
-
-  compose(rectangle_t(0, 0, _rectangle.width(), _rectangle.height()));
-}
-
-void x_client_t::compose(const rectangle_t & rectangle)
-{
-  int16_t x = rectangle.x() * _preview_scale;
-  int16_t y = rectangle.y() * _preview_scale;
-  uint16_t width = rectangle.width() * _preview_scale;
-  uint16_t height = rectangle.height() * _preview_scale;
-
-  uint8_t op = XCB_RENDER_PICT_OP_SRC;
-  xcb_render_composite(_c(), op,
-                       _window_picture, XCB_NONE, _preview_picture,
-                       // int16_t src_x, int16_t src_y,
-                       x, y,
-                       // int16_t mask_x, int16_t mask_y,
-                       0, 0,
-                       // int16_t dst_x, int16_t dst_y,
-                       x, y,
-                       // uint16_t width, uint16_t height
-                       width, height);
-
-  if (_preview_is_active) { return; }
-
-  op = XCB_RENDER_PICT_OP_OVER;
-  xcb_render_color_t color = { (uint16_t)(0.0f * 0xffff),
-                               (uint16_t)(0.0f * 0xffff),
-                               (uint16_t)(0.0f * 0xffff),
-                               (uint16_t)(0.25f * 0xffff) };
-  xcb_rectangle_t r = { x, y, width, height };
-  xcb_render_fill_rectangles(_c(), op, _preview_picture, color, 1, &r);
-}
+unsigned int x_client_t::net_wm_desktop(void) const { return _net_wm_desktop; }
 
 void x_client_t::update_geometry(void)
 {
