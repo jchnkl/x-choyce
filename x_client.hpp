@@ -40,7 +40,6 @@ class x_client {
     void get_net_wm_desktop(void);
 };
 
-std::ostream & operator<<(std::ostream & os, const x_client & xc);
 
 std::list<x_client>
 make_x_clients(x_connection & c, const std::vector<xcb_window_t> & windows);

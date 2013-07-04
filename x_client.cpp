@@ -58,26 +58,9 @@ void x_client::get_net_wm_desktop(void)
   delete property_reply;
 }
 
-std::ostream & operator<<(std::ostream & os, const x_client & xc)
 
 std::list<x_client>
 make_x_clients(x_connection & c, const std::vector<xcb_window_t> & windows)
-{
-  return os << "0x" << std::hex << xc._window << std::dec << " @ "
-            << xc._rectangle.x()     << "x"
-            << xc._rectangle.y()     << "+"
-            << xc._rectangle.width() << "+"
-            << xc._rectangle.height()
-            << " on desktop " << xc._net_wm_desktop
-            << " preview with scale "
-            << xc._preview_scale << " @ "
-            << xc._preview_position.x << "x"
-            << xc._preview_position.y << "+"
-            << (uint)(xc._rectangle.width() * xc._preview_scale) << "+"
-            << (uint)(xc._rectangle.height() * xc._preview_scale)
-            ;
-}
-
 {
   std::list<x_client> x_clients;
   for (auto & window : windows) { x_clients.emplace_back(c, window); }
