@@ -163,7 +163,7 @@ x_client_thumbnail::configure_alpha_picture(uint16_t alpha_value) const
     xcb_render_util_find_standard_format(formats_reply, XCB_PICT_STANDARD_A_8);
 
   uint32_t mask = XCB_RENDER_CP_REPEAT | XCB_RENDER_CP_COMPONENT_ALPHA;
-  uint32_t values[] = { XCB_RENDER_REPEAT_NORMAL, true };
+  uint32_t values[] = { true, true };
 
   xcb_render_create_picture(_c(), _alpha_picture, alpha_pixmap,
                             format->id, mask, values);
