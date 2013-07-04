@@ -21,6 +21,7 @@ class cyclic_iterator {
     self_type operator--(int);
     bool operator==(const self_type & rhs);
     bool operator!=(const self_type & rhs);
+    bool is_valid(void);
   private:
     bool _valid;
     T * _container;
@@ -46,6 +47,7 @@ class const_cyclic_iterator {
     self_type operator--(int);
     bool operator==(const self_type & rhs);
     bool operator!=(const self_type & rhs);
+    bool is_valid(void);
   private:
     bool _valid;
     const T * _container;

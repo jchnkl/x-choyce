@@ -77,7 +77,9 @@ cyclic_iterator<T>::operator--(void)
   template<typename T> typename cyclic_iterator<T>::self_type
 cyclic_iterator<T>::operator--(int)
 {
-  return this->operator--();
+  cyclic_iterator<T> clone(*this);
+  --(*this);
+  return clone;
 }
 
   template<typename T> bool
@@ -90,6 +92,12 @@ cyclic_iterator<T>::operator==(const self_type & rhs)
 cyclic_iterator<T>::operator!=(const self_type & rhs)
 {
   return ! (*this == rhs);
+}
+
+  template<typename T> bool
+cyclic_iterator<T>::is_valid(void)
+{
+  return _valid;
 }
 
 // const_cyclic_iterator
@@ -111,6 +119,7 @@ const_cyclic_iterator<T>::const_cyclic_iterator(const self_type & rhs)
   template<typename T> typename const_cyclic_iterator<T>::self_type
 const_cyclic_iterator<T>::operator=(const self_type & rhs)
 {
+  _valid = rhs._valid;
   _container = rhs._container;
   _iterator = rhs._iterator;
   return *this;
@@ -145,7 +154,9 @@ const_cyclic_iterator<T>::operator++(void)
   template<typename T> typename const_cyclic_iterator<T>::self_type
 const_cyclic_iterator<T>::operator++(int)
 {
-  return this->operator++();
+  cyclic_iterator<T> clone(*this);
+  ++(*this);
+  return clone;
 }
 
 // prefix operator: --t
@@ -165,7 +176,9 @@ const_cyclic_iterator<T>::operator--(void)
   template<typename T> typename const_cyclic_iterator<T>::self_type
 const_cyclic_iterator<T>::operator--(int)
 {
-  return this->operator--();
+  cyclic_iterator<T> clone(*this);
+  --(*this);
+  return clone;
 }
 
   template<typename T> bool
@@ -178,6 +191,12 @@ const_cyclic_iterator<T>::operator==(const self_type & rhs)
 const_cyclic_iterator<T>::operator!=(const self_type & rhs)
 {
   return ! (*this == rhs);
+}
+
+  template<typename T> bool
+const_cyclic_iterator<T>::is_valid(void)
+{
+  return _valid;
 }
 
 #endif
