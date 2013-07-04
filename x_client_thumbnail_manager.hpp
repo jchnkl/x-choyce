@@ -20,13 +20,14 @@ class x_client_thumbnail_manager : public chooser_t
       _c.unregister_handler(this);
     }
 
-    void handle(xcb_generic_event_t * ge);
     void show(void);
     void hide(void);
     void next(void);
     void prev(void);
     void select(void);
     void update(void);
+
+    void handle(xcb_generic_event_t * ge);
 
   private:
     typedef std::shared_ptr<thumbnail_t> thumbnail_ptr;
