@@ -4,9 +4,9 @@
 #include <xcb/xcb.h>
 
 #include "x_connection.hpp"
-#include "x_event_handler.hpp"
+#include "x_event_handler_t.hpp"
 
-class x_ewmh : public x_event_handler {
+class x_ewmh : public x_event_handler_t {
   public:
     x_ewmh(x_connection & c);
     ~x_ewmh(void);

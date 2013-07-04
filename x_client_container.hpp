@@ -6,10 +6,10 @@
 
 #include "x_client.hpp"
 #include "x_event_source.hpp"
-#include "x_event_handler.hpp"
+#include "x_event_handler_t.hpp"
 #include "cyclic_iterator.hpp"
 
-class x_client_container : public x_event_handler {
+class x_client_container : public x_event_handler_t {
   public:
     typedef x_client_t value_type;
     typedef value_type * pointer;

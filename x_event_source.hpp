@@ -4,19 +4,19 @@
 #include <list>
 
 #include "x_connection.hpp"
-#include "x_event_handler.hpp"
 #include "x_event_source_t.hpp"
+#include "x_event_handler_t.hpp"
 
 class x_event_source : public x_event_source_t {
   public:
     x_event_source(const x_connection & c) : _c(c) {}
 
-    void register_handler(x_event_handler * eh)
+    void register_handler(x_event_handler_t * eh)
     {
       _handler_list.push_back(eh);
     }
 
-    void unregister_handler(x_event_handler * eh)
+    void unregister_handler(x_event_handler_t * eh)
     {
       _handler_list.remove(eh);
     }
@@ -39,7 +39,7 @@ class x_event_source : public x_event_source_t {
 
   private:
     const x_connection & _c;
-    std::list<x_event_handler *> _handler_list;
+    std::list<x_event_handler_t *> _handler_list;
 };
 
 #endif

@@ -2,7 +2,7 @@
 #include <X11/keysym.h>
 
 #include "data_types.hpp"
-#include "x_event_handler.hpp"
+#include "x_event_handler_t.hpp"
 #include "x_connection.hpp"
 #include "x_client.hpp"
 #include "x_event_source.hpp"

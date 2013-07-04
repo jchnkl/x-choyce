@@ -331,13 +331,13 @@ x_connection::handle(xcb_generic_event_t * ge)
 }
 
 void
-x_connection::register_handler(x_event_handler * eh)
+x_connection::register_handler(x_event_handler_t * eh)
 {
   _event_source->register_handler(eh);
 }
 
 void
-x_connection::unregister_handler(x_event_handler * eh)
+x_connection::unregister_handler(x_event_handler_t * eh)
 {
   _event_source->unregister_handler(eh);
 }

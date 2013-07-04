@@ -3,7 +3,7 @@
 
 #include <xcb/xcb.h>
 
-class x_event_handler {
+class x_event_handler_t {
   public:
     virtual void handle(xcb_generic_event_t *) = 0;
 };

@@ -5,10 +5,10 @@
 
 #include "layout_t.hpp"
 #include "x_connection.hpp"
-#include "x_event_handler.hpp"
+#include "x_event_handler_t.hpp"
 #include "x_client_container.hpp"
 
-class x_client_chooser : public x_event_handler {
+class x_client_chooser : public x_event_handler_t {
   public:
     x_client_chooser(const x_connection & c,
                      const layout_t * layout,
