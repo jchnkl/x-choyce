@@ -14,7 +14,7 @@ template<template<class t = thumbnail_t::thumbnail_ptr,
                   class = std::allocator<t>>
          class container_t>
 void
-x_client_thumbnail_factory<container_t>::make(back_inserter insert) const
+x_client_thumbnail_factory<container_t>::make(back_insert_iterator insert) const
 {
   auto windows = _c.net_client_list_stacking();
   auto rects = _layout->arrange(_c.current_screen(), windows.size());

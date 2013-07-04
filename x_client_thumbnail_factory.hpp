@@ -12,11 +12,11 @@ template<template<class t = thumbnail_t::thumbnail_ptr,
 class x_client_thumbnail_factory : public thumbnail_factory_t<container_t> {
   public:
     typedef std::back_insert_iterator<container_t<thumbnail_t::thumbnail_ptr>>
-      back_inserter;
+      back_insert_iterator;
 
     x_client_thumbnail_factory(x_connection & c, const layout_t * layout);
 
-    void make(back_inserter insert) const;
+    void make(back_insert_iterator insert) const;
 
   private:
     x_connection & _c;
