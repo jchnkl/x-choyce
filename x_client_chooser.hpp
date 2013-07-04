@@ -10,11 +10,16 @@
 
 class x_client_chooser : public x_event_handler_t {
   public:
-    x_client_chooser(const x_connection & c,
+    x_client_chooser(x_connection & c,
                      const layout_t * layout,
                      x_client_container & x_clients,
                      xcb_keysym_t action_keysym,
                      xcb_mod_mask_t action_modmask);
+
+    ~x_client_chooser(void)
+    {
+      _c.unregister_handler(this);
+    }
 
     void handle(xcb_generic_event_t * ge);
 
@@ -22,7 +27,7 @@ class x_client_chooser : public x_event_handler_t {
     bool _active = false;
     xcb_window_t _active_window;
 
-    const x_connection & _c;
+    x_connection & _c;
     const layout_t * _layout;
     x_client_container & _x_clients;
     x_client_container::cyclic_x_client_iterator _current_x_client;

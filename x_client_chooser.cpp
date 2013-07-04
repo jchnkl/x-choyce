@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <X11/keysym.h>
 
-x_client_chooser::x_client_chooser(const x_connection & c,
+x_client_chooser::x_client_chooser(x_connection & c,
                                    const layout_t * layout,
                                    x_client_container & x_clients,
                                    xcb_keysym_t action_keysym,
@@ -11,6 +11,7 @@ x_client_chooser::x_client_chooser(const x_connection & c,
   : _c(c), _layout(layout), _x_clients(x_clients)
   , _action_modmask(action_modmask)
 {
+  _c.register_handler(this);
   _c.grab_key(_action_modmask, action_keysym);
   _action_keycode = _c.keysym_to_keycode(action_keysym);
   _modifier_map = _c.modifier_mapping();
