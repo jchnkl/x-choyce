@@ -5,10 +5,12 @@
 
 #include "cyclic_iterator.hpp"
 #include "layout_t.hpp"
+#include "chooser_t.hpp"
 #include "x_event_handler_t.hpp"
 #include "x_client_thumbnail.hpp"
 
-class x_client_thumbnail_manager : public x_event_handler_t {
+class x_client_thumbnail_manager : public chooser_t
+                                 , public x_event_handler_t {
   public:
     x_client_thumbnail_manager(x_connection & c,
                                const layout_t * layout);
