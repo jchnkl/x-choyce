@@ -13,7 +13,8 @@
 // http://svn.enlightenment.org/svn/e/tags/evas-1.0.2/src/modules/engines/xrender_x11/evas_engine_xcb_render.c
 #define DOUBLE_TO_FIXED(d) ((xcb_render_fixed_t) ((d) * 65536))
 
-class x_client_thumbnail : public thumbnail_t {
+class x_client_thumbnail : public x_event_handler_t
+                         , public thumbnail_t {
   public:
     x_client_thumbnail(x_connection & c,
                        const rectangle_t & rectangle,
@@ -21,6 +22,8 @@ class x_client_thumbnail : public thumbnail_t {
                        std::shared_ptr<x_client> xclient = NULL);
 
     ~x_client_thumbnail(void);
+
+    void handle(xcb_generic_event_t * ge);
 
   private:
     typedef std::shared_ptr<x_client> x_client_ptr;

@@ -15,6 +15,7 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
     _x_client = xclient;
   }
 
+  _c.register_handler(this);
   uint32_t mask = XCB_CW_BACK_PIXEL | XCB_CW_OVERRIDE_REDIRECT;
   uint32_t values[] = { 0, true };
   _preview = xcb_generate_id(_c());
@@ -42,9 +43,21 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
 
 x_client_thumbnail::~x_client_thumbnail(void)
 {
+  _c.unregister_handler(this);
   xcb_destroy_window(_c(), _preview);
   xcb_damage_destroy(_c(), _damage);
   xcb_render_free_picture(_c(), _alpha_picture);
   xcb_render_free_picture(_c(), _window_picture);
   xcb_render_free_picture(_c(), _preview_picture);
+}
+
+void
+x_client_thumbnail::handle(xcb_generic_event_t * ge)
+{
+  if (_c.damage_event_id() == (ge->response_type & ~0x80)) {
+    xcb_damage_notify_event_t * e = (xcb_damage_notify_event_t *)ge;
+    xcb_damage_subtract(_c(), e->damage, XCB_NONE, XCB_NONE);
+    update(e->area.x * _scale, e->area.y * _scale,
+           e->area.width * _scale, e->area.height * _scale);
+  }
 }
