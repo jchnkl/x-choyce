@@ -25,7 +25,6 @@ class x_client_thumbnail_manager : public chooser_t
     void next(void);
     void prev(void);
     void select(void);
-    void update(void);
 
     void handle(xcb_generic_event_t * ge);
 
@@ -42,6 +41,7 @@ class x_client_thumbnail_manager : public chooser_t
 
     std::unordered_map<xcb_window_t, thumbnail_ptr> _x_client_thumbnail_manager;
 
+    void update(void);
     void next_or_prev(bool next);
 };
 
