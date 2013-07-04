@@ -44,13 +44,13 @@ class x_client_thumbnail : public x_event_handler_t
     xcb_damage_damage_t _damage;
     xcb_render_picture_t _alpha_picture;
     xcb_render_picture_t _window_picture;
-    xcb_render_picture_t _preview_picture;
+    xcb_render_picture_t _thumbnail_picture;
 
     uint16_t _alpha_value = (uint16_t)(0.75f * 0xffff);
 
     void update(int x, int y, unsigned int width, unsigned int height) const;
     void configure_thumbnail_window(void) const;
-    void configure_preview_picture(void) const;
+    void configure_thumbnail_picture(void) const;
     void configure_alpha_picture(uint16_t alpha_value) const;
 };
 

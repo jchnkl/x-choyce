@@ -37,7 +37,7 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
   configure_alpha_picture(_alpha_value);
 
   _window_picture = make_picture(_c, _x_client->window());
-  _preview_picture = make_picture(_c, _thumbnail_window);
+  _thumbnail_picture = make_picture(_c, _thumbnail_window);
 
   _scale = std::min((double)rectangle.width() / _x_client->rectangle().width(),
                     (double)rectangle.height() / _x_client->rectangle().height());
@@ -53,14 +53,14 @@ x_client_thumbnail::~x_client_thumbnail(void)
   xcb_damage_destroy(_c(), _damage);
   xcb_render_free_picture(_c(), _alpha_picture);
   xcb_render_free_picture(_c(), _window_picture);
-  xcb_render_free_picture(_c(), _preview_picture);
+  xcb_render_free_picture(_c(), _thumbnail_picture);
 }
 
 void
 x_client_thumbnail::show(void) const
 {
   configure_thumbnail_window();
-  configure_preview_picture();
+  configure_thumbnail_picture();
   update();
 }
 
@@ -87,7 +87,7 @@ void
 x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height) const
 {
   xcb_render_composite(_c(), XCB_RENDER_PICT_OP_SRC,
-                       _window_picture, _alpha_picture, _preview_picture,
+                       _window_picture, _alpha_picture, _thumbnail_picture,
                        // int16_t src_x, int16_t src_y,
                        x, y,
                        // int16_t mask_x, int16_t mask_y,
@@ -141,7 +141,7 @@ x_client_thumbnail::configure_thumbnail_window(void) const
 }
 
 void
-x_client_thumbnail::configure_preview_picture(void) const
+x_client_thumbnail::configure_thumbnail_picture(void) const
 {
   xcb_render_transform_t transform_matrix = {
       DOUBLE_TO_FIXED(1), DOUBLE_TO_FIXED(0), DOUBLE_TO_FIXED(    0)
