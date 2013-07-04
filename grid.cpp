@@ -1,6 +1,7 @@
 #include "grid.hpp"
 
 #include <cmath>
+#include <vector>
 
 std::deque<rectangle_t>
 grid_t::arrange(const rectangle_t & screen, unsigned int nrects) const
