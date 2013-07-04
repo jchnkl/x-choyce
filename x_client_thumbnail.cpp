@@ -30,9 +30,6 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
 
   _damage = xcb_generate_id(_c());
 
-  xcb_damage_create(_c(), _damage, _x_client->window(),
-                    XCB_DAMAGE_REPORT_LEVEL_NON_EMPTY);
-
   _alpha_picture = xcb_generate_id(_c());
   configure_alpha_picture(_alpha_value);
 
@@ -50,7 +47,6 @@ x_client_thumbnail::~x_client_thumbnail(void)
 {
   _c.unregister_handler(this);
   xcb_destroy_window(_c(), _thumbnail_window);
-  xcb_damage_destroy(_c(), _damage);
   xcb_render_free_picture(_c(), _alpha_picture);
   xcb_render_free_picture(_c(), _window_picture);
   xcb_render_free_picture(_c(), _thumbnail_picture);
@@ -59,6 +55,8 @@ x_client_thumbnail::~x_client_thumbnail(void)
 void
 x_client_thumbnail::show(void) const
 {
+  xcb_damage_create(_c(), _damage, _x_client->window(),
+                    XCB_DAMAGE_REPORT_LEVEL_NON_EMPTY);
   configure_thumbnail_window();
   configure_thumbnail_picture();
   update();
@@ -67,6 +65,7 @@ x_client_thumbnail::show(void) const
 void
 x_client_thumbnail::hide(void) const
 {
+  xcb_damage_destroy(_c(), _damage);
   xcb_unmap_window(_c(), _thumbnail_window);
 }
 
