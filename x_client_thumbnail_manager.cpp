@@ -7,7 +7,7 @@ x_client_thumbnail_manager::x_client_thumbnail_manager(
 {
   _c.register_handler(this);
   update();
-  _c.select_input(_c.root_window(), XCB_EVENT_MASK_PROPERTY_CHANGE);
+  _c.update_input(_c.root_window(), XCB_EVENT_MASK_PROPERTY_CHANGE);
 }
 
 void

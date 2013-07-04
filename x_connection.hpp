@@ -27,7 +27,8 @@ class x_connection : public x_event_handler_t
 
     xcb_connection_t * operator()(void) const;
 
-    void select_input(xcb_window_t window, xcb_event_mask_t event_mask) const;
+    void select_input(xcb_window_t window, uint32_t event_mask) const;
+    void update_input(xcb_window_t window, uint32_t event_mask) const;
     xcb_visualtype_t * default_visual_of_screen(void);
     void flush(void) const;
     xcb_screen_t * const default_screen(void) const;

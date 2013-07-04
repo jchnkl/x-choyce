@@ -32,7 +32,7 @@ x_connection::x_connection(std::shared_ptr<x_ewmh> ewmh,
   init_damage();
   init_render();
   init_xinerama();
-  select_input(_root_window, XCB_EVENT_MASK_STRUCTURE_NOTIFY);
+  update_input(_root_window, XCB_EVENT_MASK_STRUCTURE_NOTIFY);
 }
 
 x_connection::~x_connection(void)
@@ -44,11 +44,28 @@ xcb_connection_t *
 x_connection::operator()(void) const { return _c; }
 
 void
-x_connection::select_input(xcb_window_t window, xcb_event_mask_t event_mask) const
+x_connection::select_input(xcb_window_t window, uint32_t event_mask) const
 {
   uint32_t mask = XCB_CW_EVENT_MASK;
-  const uint32_t values[] = { event_mask };
+  uint32_t values[] = { event_mask };
   xcb_change_window_attributes(_c, window, mask, values);
+}
+
+void
+x_connection::update_input(xcb_window_t window, uint32_t event_mask) const
+{
+  xcb_get_window_attributes_cookie_t window_attributes_cookie =
+    xcb_get_window_attributes(_c, window);
+  xcb_get_window_attributes_reply_t * window_attributes_reply =
+    xcb_get_window_attributes_reply(_c, window_attributes_cookie, NULL);
+
+  if (window_attributes_reply) {
+    event_mask |= window_attributes_reply->your_event_mask;
+  }
+
+  delete window_attributes_reply;
+
+  select_input(window, event_mask);
 }
 
 xcb_visualtype_t *
