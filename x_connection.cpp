@@ -23,6 +23,8 @@ x_connection::x_connection(std::shared_ptr<x_ewmh> ewmh,
     _event_source = event_source;
   }
 
+  _event_source->register_handler(this);
+
   if (ewmh == NULL) {
     _ewmh = std::shared_ptr<x_ewmh>(new x_ewmh(*this));
   } else {
