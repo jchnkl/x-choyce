@@ -3,16 +3,14 @@
 
 #include <xcb/xcb.h>
 
-#include "layout_t.hpp"
-#include "x_connection.hpp"
+#include "chooser_t.hpp"
 #include "x_event_handler_t.hpp"
-#include "x_client_container.hpp"
+#include "x_connection.hpp"
 
 class x_client_chooser : public x_event_handler_t {
   public:
     x_client_chooser(x_connection & c,
-                     const layout_t * layout,
-                     x_client_container & x_clients,
+                     chooser_t * chooser,
                      xcb_keysym_t action_keysym,
                      xcb_mod_mask_t action_modmask);
 
@@ -28,9 +26,7 @@ class x_client_chooser : public x_event_handler_t {
     xcb_window_t _active_window;
 
     x_connection & _c;
-    const layout_t * _layout;
-    x_client_container & _x_clients;
-    x_client_container::cyclic_x_client_iterator _current_x_client;
+    chooser_t * _chooser;
     x_connection::modifier_map _modifier_map;
 
     xcb_keycode_t _action_keycode;
