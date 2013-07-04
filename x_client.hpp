@@ -10,14 +10,14 @@
 
 class x_client {
   public:
-    friend std::ostream & operator<<(std::ostream &, const x_client_t &);
-    friend bool operator==(const x_client_t &, const xcb_window_t &);
-    friend bool operator==(const xcb_window_t &, const x_client_t &);
+    friend std::ostream & operator<<(std::ostream &, const x_client &);
+    friend bool operator==(const x_client &, const xcb_window_t &);
+    friend bool operator==(const xcb_window_t &, const x_client &);
 
-    x_client_t(const x_connection & c, xcb_window_t window);
-    ~x_client_t(void);
+    x_client(const x_connection & c, const xcb_window_t & window);
+    ~x_client(void);
 
-    bool operator==(const x_client_t & other)
+    bool operator==(const x_client & other)
     {
       return _window == other._window;
     }
@@ -41,15 +41,15 @@ class x_client {
     void get_net_wm_desktop(void);
 };
 
-std::ostream & operator<<(std::ostream & os, const x_client_t & xc);
+std::ostream & operator<<(std::ostream & os, const x_client & xc);
 
-std::list<x_client_t>
-make_x_clients(const x_connection & c, const std::vector<xcb_window_t> & windows);
-
-bool
-operator==(const x_client_t &, const xcb_window_t &);
+std::list<x_client>
+make_x_clients(x_connection & c, const std::vector<xcb_window_t> & windows);
 
 bool
-operator==(const xcb_window_t &, const x_client_t &);
+operator==(const x_client &, const xcb_window_t &);
+
+bool
+operator==(const xcb_window_t &, const x_client &);
 
 #endif
