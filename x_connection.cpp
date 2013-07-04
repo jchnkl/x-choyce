@@ -6,9 +6,11 @@
 #include <xcb/xinerama.h>
 #include <xcb/xcb_keysyms.h>
 
+#include "x_ewmh.hpp"
 #include "x_event_source.hpp"
 
-x_connection::x_connection(std::shared_ptr<x_event_source> event_source)
+x_connection::x_connection(std::shared_ptr<x_ewmh> ewmh,
+                           std::shared_ptr<x_event_source> event_source)
 {
   _c = xcb_connect(NULL, &_screen_number);
   find_default_screen();
@@ -19,6 +21,12 @@ x_connection::x_connection(std::shared_ptr<x_event_source> event_source)
       std::shared_ptr<x_event_source_t>(new x_event_source(*this));
   } else {
     _event_source = event_source;
+  }
+
+  if (ewmh == NULL) {
+    _ewmh = std::shared_ptr<x_ewmh>(new x_ewmh(*this));
+  } else {
+    _ewmh = ewmh;
   }
 
   init_damage();
@@ -244,26 +252,7 @@ x_connection::intern_atom(const std::string & atom_name) const
 xcb_window_t
 x_connection::net_active_window(void) const
 {
-  xcb_atom_t atom = intern_atom("_NET_ACTIVE_WINDOW");
-  if (atom == XCB_ATOM_NONE) { return XCB_NONE; }
-
-  xcb_get_property_cookie_t property_cookie =
-    xcb_get_property(_c, false, _root_window, atom, XCB_ATOM_WINDOW, 0, 32);
-
-  xcb_generic_error_t * error = NULL;
-  xcb_get_property_reply_t * property_reply =
-    xcb_get_property_reply(_c, property_cookie, &error);
-
-  xcb_window_t active_window;
-  if (error || property_reply->value_len == 0) {
-    delete error;
-    active_window = XCB_NONE;
-  } else {
-    active_window = *(xcb_window_t *)xcb_get_property_value(property_reply);
-  }
-
-  delete property_reply;
-  return active_window;
+  return _ewmh->net_active_window();
 }
 
 void

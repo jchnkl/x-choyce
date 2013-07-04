@@ -13,6 +13,7 @@
 #include "x_event_source_t.hpp"
 
 #include <X11/Xlib.h>
+class x_ewmh;
 class x_event_source;
 
 class x_connection : public x_event_handler
@@ -20,7 +21,8 @@ class x_connection : public x_event_handler
   public:
     typedef std::map<xcb_mod_mask_t, std::vector<xcb_keycode_t>> modifier_map;
 
-    x_connection(std::shared_ptr<x_event_source> event_source = NULL);
+    x_connection(std::shared_ptr<x_ewmh> ewmh = NULL,
+                 std::shared_ptr<x_event_source> event_source = NULL);
     ~x_connection(void);
 
     xcb_connection_t * operator()(void) const;
@@ -60,6 +62,7 @@ class x_connection : public x_event_handler
 
     std::vector<rectangle_t> _screens;
 
+    std::shared_ptr<x_ewmh> _ewmh;
     std::shared_ptr<x_event_source_t> _event_source;
 
     void find_default_screen(void);

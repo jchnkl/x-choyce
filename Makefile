@@ -6,6 +6,7 @@ SRCS=main.cpp \
 		 data_types.cpp \
 		 cyclic_iterator.cpp \
 		 x_connection.cpp \
+		 x_ewmh.cpp \
 		 x_client.cpp \
 		 x_client_chooser.cpp \
 		 grid.cpp
