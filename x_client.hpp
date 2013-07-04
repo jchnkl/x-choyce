@@ -14,7 +14,7 @@ class x_client {
     friend bool operator==(const x_client &, const xcb_window_t &);
     friend bool operator==(const xcb_window_t &, const x_client &);
 
-    x_client(const x_connection & c, const xcb_window_t & window);
+    x_client(x_connection & c, const xcb_window_t & window);
     ~x_client(void);
 
     bool operator==(const x_client & other)
@@ -32,7 +32,7 @@ class x_client {
     void update_geometry(void);
 
   private:
-    const x_connection & _c;
+    x_connection & _c;
     rectangle_t _rectangle;
     unsigned int _net_wm_desktop;
     xcb_window_t _window;
