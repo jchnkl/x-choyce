@@ -22,12 +22,11 @@ class x_client {
       return _window == other._window;
     }
 
-    double &       preview_scale(void);
-    rectangle_t &  rectangle(void);
-    position_t &   preview_position(void);
-    rectangle_t &  preview_rectangle(void);
-    unsigned int   net_wm_desktop(void) const;
-    xcb_window_t & window(void);
+          rectangle_t &  rectangle(void);
+    const rectangle_t &  rectangle(void) const;
+          xcb_window_t & window(void);
+    const xcb_window_t & window(void) const;
+          unsigned int   net_wm_desktop(void) const;
 
     void handle(xcb_generic_event_t * ge);
     void update_geometry(void);

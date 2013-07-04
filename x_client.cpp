@@ -9,10 +9,10 @@ x_client::x_client(x_connection & c, const xcb_window_t & window)
 
 x_client::~x_client(void) {}
 
-      rectangle_t &  x_client_t::rectangle(void)       { return _rectangle; }
-const rectangle_t &  x_client_t::rectangle(void) const { return _rectangle; }
-      xcb_window_t & x_client_t::window(void)          { return _window; }
-const xcb_window_t & x_client_t::window(void) const    { return _window; }
+      rectangle_t &  x_client::rectangle(void)       { return _rectangle; }
+const rectangle_t &  x_client::rectangle(void) const { return _rectangle; }
+      xcb_window_t & x_client::window(void)          { return _window; }
+const xcb_window_t & x_client::window(void) const    { return _window; }
 
 unsigned int x_client::net_wm_desktop(void) const { return _net_wm_desktop; }
 
