@@ -202,6 +202,52 @@ x_connection::keysym_to_string(xcb_keysym_t keysym) const
   }
 }
 
+xcb_render_pictformat_t
+x_connection::pictformat_from_visual(xcb_visualid_t query) const
+{
+  xcb_render_pictscreen_iterator_t   screen_iter;
+  xcb_render_pictscreen_t          * cscreen;
+  xcb_render_pictdepth_iterator_t    depth_iter;
+  xcb_render_pictdepth_t           * cdepth;
+  xcb_render_pictvisual_iterator_t   visual_iter;
+  xcb_render_pictvisual_t          * cvisual;
+  xcb_render_pictformat_t            return_value;
+
+  xcb_render_query_pict_formats_cookie_t query_pict_formats_cookie =
+    xcb_render_query_pict_formats(_c);
+  xcb_render_query_pict_formats_reply_t * query_pict_formats_reply =
+    xcb_render_query_pict_formats_reply(_c, query_pict_formats_cookie, NULL);
+
+  screen_iter =
+    xcb_render_query_pict_formats_screens_iterator(query_pict_formats_reply);
+
+  while(screen_iter.rem) {
+    cscreen = screen_iter.data;
+
+    depth_iter = xcb_render_pictscreen_depths_iterator(cscreen);
+    while(depth_iter.rem) {
+      cdepth = depth_iter.data;
+
+      visual_iter = xcb_render_pictdepth_visuals_iterator(cdepth);
+      while(visual_iter.rem) {
+        cvisual = visual_iter.data;
+
+        if(cvisual->visual == query) {
+          delete query_pict_formats_reply;
+          return cvisual->format;
+        }
+        xcb_render_pictvisual_next(&visual_iter);
+      }
+      xcb_render_pictdepth_next(&depth_iter);
+    }
+    xcb_render_pictscreen_next(&screen_iter);
+  }
+
+  return_value = 0;
+  delete query_pict_formats_reply;
+  return return_value;
+}
+
 std::vector<xcb_window_t>
 x_connection::net_client_list_stacking(void) const
 {
