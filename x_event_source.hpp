@@ -4,8 +4,10 @@
 #include <list>
 
 #include "x_connection.hpp"
+#include "x_event_handler.hpp"
+#include "x_event_source_t.hpp"
 
-class x_event_source {
+class x_event_source : public x_event_source_t {
   public:
     x_event_source(const x_connection & c) : _c(c) {}
 
