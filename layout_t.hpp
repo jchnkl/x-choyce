@@ -4,7 +4,6 @@
 #include <deque>
 
 #include "data_types.hpp"
-#include "x_client_container.hpp"
 
 class layout_t {
   public:
