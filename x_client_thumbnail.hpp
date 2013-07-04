@@ -36,6 +36,13 @@ class x_client_thumbnail : public x_event_handler_t
 
     xcb_window_t _preview;
     xcb_damage_damage_t _damage;
+    xcb_render_picture_t _alpha_picture;
+    xcb_render_picture_t _window_picture;
+    xcb_render_picture_t _preview_picture;
+
+    uint16_t _alpha_value = (uint16_t)(0.75f * 0xffff);
+
+    void configure_alpha_picture(uint16_t alpha_value) const;
 };
 
 #endif

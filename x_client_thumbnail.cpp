@@ -1,5 +1,7 @@
 #include "x_client_thumbnail.hpp"
 
+#include <xcb/xcb_renderutil.h>
+
 x_client_thumbnail::x_client_thumbnail(x_connection & c,
                                        const rectangle_t & rectangle,
                                        const xcb_window_t & window,
@@ -31,6 +33,9 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
   xcb_damage_create(_c(), _damage, _x_client->window(),
                     XCB_DAMAGE_REPORT_LEVEL_NON_EMPTY);
 
+  _alpha_picture = xcb_generate_id(_c());
+  configure_alpha_picture(_alpha_value);
+
   _window_picture = make_picture(_c, _x_client->window());
   _preview_picture = make_picture(_c, _preview);
 
@@ -60,4 +65,30 @@ x_client_thumbnail::handle(xcb_generic_event_t * ge)
     update(e->area.x * _scale, e->area.y * _scale,
            e->area.width * _scale, e->area.height * _scale);
   }
+}
+
+void
+x_client_thumbnail::configure_alpha_picture(uint16_t alpha_value) const
+{
+  xcb_pixmap_t alpha_pixmap = xcb_generate_id(_c());
+  xcb_create_pixmap(_c(), 8, alpha_pixmap, _c.root_window(), 1, 1);
+
+  const xcb_render_query_pict_formats_reply_t * formats_reply =
+    xcb_render_util_query_formats(_c());
+  xcb_render_pictforminfo_t * format =
+    xcb_render_util_find_standard_format(formats_reply, XCB_PICT_STANDARD_A_8);
+
+  uint32_t mask = XCB_RENDER_CP_REPEAT | XCB_RENDER_CP_COMPONENT_ALPHA;
+  uint32_t values[] = { XCB_RENDER_REPEAT_NORMAL, true };
+
+  xcb_render_create_picture(_c(), _alpha_picture, alpha_pixmap,
+                            format->id, mask, values);
+
+  xcb_free_pixmap(_c(), alpha_pixmap);
+
+  xcb_render_color_t color = { 0, 0, 0, alpha_value };
+
+  xcb_rectangle_t r = { 0, 0, 1, 1 };
+  xcb_render_fill_rectangles(_c(), XCB_RENDER_PICT_OP_SRC,
+                             _alpha_picture, color, 1, &r);
 }
