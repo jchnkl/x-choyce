@@ -1,7 +1,7 @@
 #include "data_types.hpp"
 
-dimension_t::dimension_t(void) {}
-dimension_t::dimension_t(unsigned int w, unsigned int h)
+dimension::dimension(void) {}
+dimension::dimension(unsigned int w, unsigned int h)
   : width(w), height(h) {}
 
 position_t::position_t(void) {}
@@ -9,11 +9,11 @@ position_t::position_t(int x, int y) : x(x), y(y) {}
 
 rectangle::rectangle(void) {}
 
-rectangle::rectangle(position_t position, dimension_t dimension)
-  : position(position), dimension(dimension) {}
+rectangle::rectangle(position_t position, dimension dim)
+  : position(position), _dimension(dim) {}
 
 rectangle::rectangle(int x, int y, unsigned int width, unsigned int height)
-  : position(x, y), dimension(width, height) {}
+  : position(x, y), _dimension(width, height) {}
 
 int &
 rectangle::x(void) { return position.x; }
@@ -28,16 +28,16 @@ int const &
 rectangle::y(void) const { return position.y; }
 
 unsigned int &
-rectangle::width(void) { return dimension.width; }
+rectangle::width(void) { return _dimension.width; }
 
 unsigned int const &
-rectangle::width(void) const { return dimension.width; }
+rectangle::width(void) const { return _dimension.width; }
 
 unsigned int &
-rectangle::height(void) { return dimension.height; }
+rectangle::height(void) { return _dimension.height; }
 
 unsigned int const &
-rectangle::height(void) const { return dimension.height; }
+rectangle::height(void) const { return _dimension.height; }
 
 std::ostream & operator<<(std::ostream & os, const rectangle & rect)
 {

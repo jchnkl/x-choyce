@@ -3,9 +3,9 @@
 
 #include <iostream>
 
-struct dimension_t {
-  dimension_t(void);
-  dimension_t(unsigned int w, unsigned int h);
+struct dimension {
+  dimension(void);
+  dimension(unsigned int w, unsigned int h);
   unsigned int width, height;
 };
 
@@ -17,7 +17,7 @@ struct position_t {
 
 struct rectangle {
   rectangle(void);
-  rectangle(position_t position, dimension_t dimension);
+  rectangle(position_t position, dimension dim);
   rectangle(int x, int y, unsigned int width, unsigned int height);
 
   int & x(void);
@@ -30,7 +30,7 @@ struct rectangle {
   unsigned int const & height(void) const;
 
   position_t position;
-  dimension_t dimension;
+  dimension _dimension;
 };
 
 std::ostream & operator<<(std::ostream & os, const rectangle & rect);
