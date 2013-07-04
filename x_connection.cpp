@@ -6,11 +6,21 @@
 #include <xcb/xinerama.h>
 #include <xcb/xcb_keysyms.h>
 
-x_connection::x_connection(void)
+#include "x_event_source.hpp"
+
+x_connection::x_connection(std::shared_ptr<x_event_source> event_source)
 {
   _c = xcb_connect(NULL, &_screen_number);
   find_default_screen();
   _root_window = _default_screen->root;
+
+  if (event_source == NULL) {
+    _event_source =
+      std::shared_ptr<x_event_source_t>(new x_event_source(*this));
+  } else {
+    _event_source = event_source;
+  }
+
   init_damage();
   init_render();
   init_xinerama();
@@ -329,6 +339,24 @@ x_connection::handle(xcb_generic_event_t * ge)
       update_xinerama();
     }
   }
+}
+
+void
+x_connection::register_handler(x_event_handler * eh)
+{
+  _event_source->register_handler(eh);
+}
+
+void
+x_connection::unregister_handler(x_event_handler * eh)
+{
+  _event_source->unregister_handler(eh);
+}
+
+void
+x_connection::run_event_loop(void)
+{
+  _event_source->run_event_loop();
 }
 
 // private

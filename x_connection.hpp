@@ -1,6 +1,7 @@
 #ifndef _X_CONNECTION
 #define _X_CONNECTION
 
+#include <memory>
 #include <string>
 #include <vector>
 #include <map>
@@ -9,13 +10,17 @@
 
 #include "data_types.hpp"
 #include "x_event_handler.hpp"
+#include "x_event_source_t.hpp"
 
 #include <X11/Xlib.h>
-class x_connection : public x_event_handler {
+class x_event_source;
+
+class x_connection : public x_event_handler
+                   , public x_event_source_t {
   public:
     typedef std::map<xcb_mod_mask_t, std::vector<xcb_keycode_t>> modifier_map;
 
-    x_connection(void);
+    x_connection(std::shared_ptr<x_event_source> event_source = NULL);
     ~x_connection(void);
 
     xcb_connection_t * operator()(void) const;
@@ -42,6 +47,10 @@ class x_connection : public x_event_handler {
     rectangle_t current_screen(void) const;
     void handle(xcb_generic_event_t * ge);
 
+    void register_handler(x_event_handler * eh);
+    void unregister_handler(x_event_handler * eh);
+    void run_event_loop(void);
+
   private:
     uint8_t _damage_event_id;
     int _screen_number = 0;
@@ -50,6 +59,8 @@ class x_connection : public x_event_handler {
     xcb_screen_t * _default_screen = NULL;
 
     std::vector<rectangle_t> _screens;
+
+    std::shared_ptr<x_event_source_t> _event_source;
 
     void find_default_screen(void);
     void init_damage(void);
