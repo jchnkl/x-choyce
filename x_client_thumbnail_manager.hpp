@@ -1,19 +1,21 @@
 #ifndef _X_CLIENT_THUMBNAIL_MANAGER_HPP
 #define _X_CLIENT_THUMBNAIL_MANAGER_HPP
 
-#include <unordered_map>
+#include <vector>
+#include <iterator>
 
 #include "cyclic_iterator.hpp"
-#include "layout_t.hpp"
 #include "chooser_t.hpp"
+#include "thumbnail_t.hpp"
 #include "x_event_handler_t.hpp"
-#include "x_client_thumbnail.hpp"
+#include "x_connection.hpp"
 
 class x_client_thumbnail_manager : public chooser_t
                                  , public x_event_handler_t {
   public:
-    x_client_thumbnail_manager(x_connection & c,
-                               const layout_t * layout);
+    x_client_thumbnail_manager(
+        x_connection & c,
+        const thumbnail_factory_t<std::vector> * thumbnail_factory);
 
     ~x_client_thumbnail_manager(void)
     {
@@ -29,17 +31,15 @@ class x_client_thumbnail_manager : public chooser_t
     void handle(xcb_generic_event_t * ge);
 
   private:
-    typedef std::shared_ptr<thumbnail_t> thumbnail_ptr;
-    typedef std::vector<xcb_window_t> window_list_t;
-    typedef const_cyclic_iterator<window_list_t> cyclic_window_iterator_t;
+    typedef std::vector<thumbnail_t::thumbnail_ptr> thumbnail_list_t;
+    typedef std::back_insert_iterator<thumbnail_list_t> thumbnail_inserter_t;
+    typedef const_cyclic_iterator<thumbnail_list_t> thumbnail_cyclic_iterator;
 
     x_connection & _c;
-    const layout_t * _layout;
+    const thumbnail_factory_t<std::vector> * _thumbnail_factory;
 
-    window_list_t _windows;
-    cyclic_window_iterator_t _cyclic_window_iterator;
-
-    std::unordered_map<xcb_window_t, thumbnail_ptr> _x_client_thumbnail_manager;
+    std::vector<thumbnail_t::thumbnail_ptr> _thumbnails;
+    thumbnail_cyclic_iterator _thumbnail_cyclic_iterator;
 
     void update(void);
     void next_or_prev(bool next);

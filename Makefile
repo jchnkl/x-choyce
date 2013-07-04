@@ -10,6 +10,7 @@ SRCS=main.cpp \
 		 x_client.cpp \
 		 x_client_chooser.cpp \
 		 x_client_thumbnail.cpp \
+		 x_client_thumbnail_factory.cpp \
 		 x_client_thumbnail_manager.cpp \
 		 grid.cpp
 

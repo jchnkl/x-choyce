@@ -3,6 +3,8 @@
 #include "grid.hpp"
 #include "x_connection.hpp"
 #include "x_client_chooser.hpp"
+#include "x_client_thumbnail.hpp"
+#include "x_client_thumbnail_factory.hpp"
 #include "x_client_thumbnail_manager.hpp"
 
 int main(int argc, char ** argv)
@@ -13,7 +15,9 @@ int main(int argc, char ** argv)
   x_connection c;
 
   grid_t grid;
-  x_client_thumbnail_manager tm(c, &grid);
+  x_client_thumbnail_factory<std::vector> tf(c, &grid);
+
+  x_client_thumbnail_manager tm(c, &tf);
 
   x_client_chooser cp(c, &tm, key, mod);
 

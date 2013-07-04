@@ -1,8 +1,9 @@
 #include "x_client_thumbnail_manager.hpp"
 
-x_client_thumbnail_manager::x_client_thumbnail_manager(x_connection & c,
-                                                       const layout_t * layout)
-  : _c(c), _layout(layout)
+x_client_thumbnail_manager::x_client_thumbnail_manager(
+    x_connection & c,
+    const thumbnail_factory_t<std::vector> * thumbnail_factory)
+  : _c(c), _thumbnail_factory(thumbnail_factory)
 {
   _c.register_handler(this);
   update();
@@ -16,31 +17,7 @@ x_client_thumbnail_manager::handle(xcb_generic_event_t * ge)
     xcb_property_notify_event_t * e = (xcb_property_notify_event_t *)ge;
     if (e->window == _c.root_window()
         && e->atom == _c.intern_atom("_NET_CLIENT_LIST_STACKING")) {
-      _windows = _c.net_client_list_stacking();
       update();
-    }
-  }
-}
-
-void
-x_client_thumbnail_manager::update(void)
-{
-  _x_client_thumbnail_manager.clear();
-
-  _windows.clear();
-  _windows = _c.net_client_list_stacking();
-
-  if (_windows.empty()) {
-    _cyclic_window_iterator = cyclic_window_iterator_t();
-
-  } else {
-    _cyclic_window_iterator = cyclic_window_iterator_t(&_windows);
-
-    auto rects = _layout->arrange(_c.current_screen(), _windows.size());
-
-    for (size_t i = 0; i < _windows.size(); ++i) {
-      _x_client_thumbnail_manager.emplace(_windows[i],
-          thumbnail_ptr(new x_client_thumbnail(_c, rects[i], _windows[i])));
     }
   }
 }
@@ -48,25 +25,14 @@ x_client_thumbnail_manager::update(void)
 void
 x_client_thumbnail_manager::show(void)
 {
-  xcb_window_t active_window = _c.net_active_window();
-  _cyclic_window_iterator = cyclic_window_iterator_t(&_windows);
-
-  while (*_cyclic_window_iterator != *_windows.begin()) {
-    if (*_cyclic_window_iterator == active_window) { break; }
-    ++_cyclic_window_iterator;
-  }
-
-  for (auto & item : _x_client_thumbnail_manager) {
-    item.second->show();
-  }
+  _thumbnail_cyclic_iterator = thumbnail_cyclic_iterator(&_thumbnails);
+  for (auto & thumbnail : _thumbnails) { thumbnail->show(); }
 }
 
 void
 x_client_thumbnail_manager::hide(void)
 {
-  for (auto & item : _x_client_thumbnail_manager) {
-    item.second->hide();
-  }
+  for (auto & thumbnail : _thumbnails) { thumbnail->hide(); }
 }
 
 void
@@ -78,21 +44,22 @@ x_client_thumbnail_manager::prev(void) { next_or_prev(false); }
 void
 x_client_thumbnail_manager::select(void)
 {
-  try {
-    _x_client_thumbnail_manager.at(*_cyclic_window_iterator)->select();
-  } catch (...) {}
+  (*_thumbnail_cyclic_iterator)->select();
 }
 
 // private
 
 void
+x_client_thumbnail_manager::update(void)
+{
+  _thumbnails.clear();
+  _thumbnail_factory->make(thumbnail_inserter_t(_thumbnails));
+}
+
+void
 x_client_thumbnail_manager::next_or_prev(bool next)
 {
-  try {
-    _x_client_thumbnail_manager.at(*_cyclic_window_iterator)->highlight(false);
-  } catch (...) {}
-  next ? ++_cyclic_window_iterator : --_cyclic_window_iterator;
-  try {
-    _x_client_thumbnail_manager.at(*_cyclic_window_iterator)->highlight(true);
-  } catch (...) {}
+  (*_thumbnail_cyclic_iterator)->highlight(false);
+  next ? ++_thumbnail_cyclic_iterator : --_thumbnail_cyclic_iterator;
+  (*_thumbnail_cyclic_iterator)->highlight(true);
 }
