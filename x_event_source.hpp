@@ -9,12 +9,12 @@ class x_event_source {
   public:
     x_event_source(const x_connection & c) : _c(c) {}
 
-    virtual void register_handler(x_event_handler * eh)
+    void register_handler(x_event_handler * eh)
     {
       _handler_list.push_back(eh);
     }
 
-    virtual void unregister_handler(x_event_handler * eh)
+    void unregister_handler(x_event_handler * eh)
     {
       _handler_list.remove(eh);
     }
