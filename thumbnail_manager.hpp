@@ -1,5 +1,5 @@
-#ifndef _X_CLIENT_THUMBNAIL_MANAGER_HPP
-#define _X_CLIENT_THUMBNAIL_MANAGER_HPP
+#ifndef _THUMBNAIL_MANAGER_HPP
+#define _THUMBNAIL_MANAGER_HPP
 
 #include <vector>
 #include <iterator>
@@ -10,13 +10,11 @@
 #include "x_event_handler_t.hpp"
 #include "x_connection.hpp"
 
-class x_client_thumbnail_manager : public chooser_t {
+class thumbnail_manager : public chooser_t {
   public:
-    x_client_thumbnail_manager(
-        x_connection & c,
-        thumbnail_factory_t<std::vector> * thumbnail_factory);
+    thumbnail_manager(thumbnail_factory_t<std::vector> * thumbnail_factory);
 
-    ~x_client_thumbnail_manager(void) {}
+    ~thumbnail_manager(void) {}
 
     void show(void);
     void hide(void);
@@ -29,7 +27,6 @@ class x_client_thumbnail_manager : public chooser_t {
     typedef std::back_insert_iterator<thumbnail_list_t> thumbnail_inserter_t;
     typedef const_cyclic_iterator<thumbnail_list_t> thumbnail_cyclic_iterator;
 
-    x_connection & _c;
     thumbnail_factory_t<std::vector> * _thumbnail_factory;
 
     const unsigned int id = 0;

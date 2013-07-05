@@ -1,11 +1,11 @@
 #include <X11/keysym.h>
 
 #include "grid.hpp"
+#include "thumbnail_manager.hpp"
 #include "x_connection.hpp"
 #include "x_client_chooser.hpp"
 #include "x_client_thumbnail.hpp"
 #include "x_client_thumbnail_factory.hpp"
-#include "x_client_thumbnail_manager.hpp"
 
 int main(int argc, char ** argv)
 {
@@ -17,8 +17,7 @@ int main(int argc, char ** argv)
   grid_t grid;
   x_client_thumbnail_factory<std::vector> tf(c, &grid);
 
-  x_client_thumbnail_manager tm(c, &tf);
-
+  thumbnail_manager tm(&tf);
   x_client_chooser cp(c, &tm, key, mod);
 
   c.run_event_loop();

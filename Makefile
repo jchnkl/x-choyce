@@ -5,13 +5,13 @@ LDFLAGS=$(shell pkg-config --libs ${LIBS})
 SRCS=main.cpp \
 		 data_types.cpp \
 		 cyclic_iterator.cpp \
+		 thumbnail_manager.cpp \
 		 x_connection.cpp \
 		 x_ewmh.cpp \
 		 x_client.cpp \
 		 x_client_chooser.cpp \
 		 x_client_thumbnail.cpp \
 		 x_client_thumbnail_factory.cpp \
-		 x_client_thumbnail_manager.cpp \
 		 grid.cpp
 
 OBJS=$(SRCS:%.cpp=%.o)
