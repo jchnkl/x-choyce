@@ -19,10 +19,14 @@ template<template<class t = thumbnail_t::thumbnail_ptr,
          class container_t>
 class thumbnail_factory_t {
   public:
+    typedef container_t<thumbnail_t::thumbnail_ptr> thumbnail_container_t;
     typedef std::back_insert_iterator<container_t<thumbnail_t::thumbnail_ptr>>
-      back_inserter;
+      back_insert_iterator;
 
-    virtual void make(back_inserter insert) const = 0;
+    virtual void make(back_insert_iterator insert) = 0;
+    virtual void manage(unsigned int id, thumbnail_container_t & container) = 0;
+    virtual void giveup(unsigned int id) = 0;
+    virtual void update(unsigned int id) = 0;
 };
 
 #endif
