@@ -31,6 +31,8 @@ class x_client_thumbnail : public x_event_handler_t
 
     void handle(xcb_generic_event_t * ge);
 
+    void update_rectangle(const rectangle & rect);
+
   private:
     typedef std::shared_ptr<x_client> x_client_ptr;
 

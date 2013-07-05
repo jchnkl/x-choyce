@@ -6,7 +6,7 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
                                        const rectangle & rect,
                                        const xcb_window_t & window,
                                        std::shared_ptr<x_client> xclient)
-      : _c(c), _rectangle(rect)
+      : _c(c)
 {
   if (window == XCB_NONE && xclient == NULL) {
     throw std::invalid_argument(
@@ -16,6 +16,8 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
   } else {
     _x_client = xclient;
   }
+
+  update_rectangle(rect);
 
   _c.register_handler(this);
   uint32_t mask = XCB_CW_BACK_PIXEL | XCB_CW_OVERRIDE_REDIRECT;
@@ -35,12 +37,6 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
 
   _window_picture = make_picture(_c, _x_client->window());
   _thumbnail_picture = make_picture(_c, _thumbnail_window);
-
-  _scale = std::min((double)rect.width() / _x_client->rect().width(),
-                    (double)rect.height() / _x_client->rect().height());
-
-  _rectangle.width() = _x_client->rect().width() * _scale;
-  _rectangle.height() = _x_client->rect().height() * _scale;
 }
 
 x_client_thumbnail::~x_client_thumbnail(void)
@@ -120,6 +116,18 @@ x_client_thumbnail::handle(xcb_generic_event_t * ge)
     update(e->area.x * _scale, e->area.y * _scale,
            e->area.width * _scale, e->area.height * _scale);
   }
+}
+
+void
+x_client_thumbnail::update_rectangle(const rectangle & rect)
+{
+  _scale = std::min((double)rect.width() / _x_client->rect().width(),
+                    (double)rect.height() / _x_client->rect().height());
+
+  _rectangle.x() = rect.x();
+  _rectangle.y() = rect.y();
+  _rectangle.width() = _x_client->rect().width() * _scale;
+  _rectangle.height() = _x_client->rect().height() * _scale;
 }
 
 void
