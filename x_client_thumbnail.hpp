@@ -26,6 +26,11 @@ class x_client_thumbnail : public x_event_handler_t
 
     ~x_client_thumbnail(void);
 
+    bool operator==(const x_client_thumbnail & other)
+    {
+      return _thumbnail_window == other._thumbnail_window;
+    }
+
     void show(void) const;
     void hide(void) const;
     void select(void) const;
