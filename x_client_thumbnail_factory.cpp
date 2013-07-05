@@ -93,9 +93,13 @@ x_client_thumbnail_factory<container_t>::update(bool all, unsigned int id)
   _windows = _c.net_client_list_stacking();
   auto rects = _layout->arrange(_c.current_screen(), _windows.size());
 
-  for (auto & item : _thumbnails) {
-    auto result = std::find(_windows.begin(), _windows.end(), item.first);
-    if (result == _windows.end()) { _thumbnails.erase(item.first); }
+  for (auto item = _thumbnails.begin(); item != _thumbnails.end(); ) {
+    auto result = std::find(_windows.begin(), _windows.end(), item->first);
+    if (result == _windows.end()) {
+      item = _thumbnails.erase(item);
+    } else {
+      ++item;
+    }
   }
 
   for (size_t i = 0; i < _windows.size(); ++i) {
