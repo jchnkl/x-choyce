@@ -16,6 +16,9 @@
 class x_client_thumbnail : public x_event_handler_t
                          , public thumbnail_t {
   public:
+    friend bool operator==(const x_client_thumbnail &, const xcb_window_t &);
+    friend bool operator==(const xcb_window_t &, const x_client_thumbnail &);
+
     x_client_thumbnail(x_connection & c,
                        const rectangle & rect,
                        const xcb_window_t & window = XCB_NONE,
@@ -55,5 +58,11 @@ class x_client_thumbnail : public x_event_handler_t
     void configure_thumbnail_picture(void) const;
     void configure_alpha_picture(uint16_t alpha_value) const;
 };
+
+bool
+operator==(const x_client_thumbnail & thumbnail, const xcb_window_t & window);
+
+bool
+operator==(const xcb_window_t & window, const x_client_thumbnail & thumbnail);
 
 #endif

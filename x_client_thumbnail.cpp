@@ -184,3 +184,13 @@ x_client_thumbnail::configure_alpha_picture(uint16_t alpha_value) const
   xcb_render_fill_rectangles(_c(), XCB_RENDER_PICT_OP_SRC,
                              _alpha_picture, color, 1, &r);
 }
+
+bool operator==(const x_client_thumbnail & thumbnail, const xcb_window_t & window)
+{
+  return *(thumbnail._x_client) == window;
+}
+
+bool operator==(const xcb_window_t & window, const x_client_thumbnail & thumbnail)
+{
+  return thumbnail == window;
+}
