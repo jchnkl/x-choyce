@@ -6,9 +6,10 @@
 #include <xcb/damage.h>
 
 #include "data_types.hpp"
+#include "x_event_handler_t.hpp"
 #include "x_connection.hpp"
 
-class x_client {
+class x_client : public x_event_handler_t {
   public:
     friend std::ostream & operator<<(std::ostream &, const x_client &);
     friend bool operator==(const x_client &, const xcb_window_t &);

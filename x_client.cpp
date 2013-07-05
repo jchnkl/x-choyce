@@ -3,11 +3,13 @@
 x_client::x_client(x_connection & c, const xcb_window_t & window)
   : _c(c), _window(window)
 {
+  _c.register_handler(this);
+  _c.update_input(_window, XCB_EVENT_MASK_STRUCTURE_NOTIFY);
   update_geometry();
   get_net_wm_desktop();
 }
 
-x_client::~x_client(void) {}
+x_client::~x_client(void) { _c.unregister_handler(this); }
 
       rectangle &  x_client::rect(void)       { return _rectangle; }
 const rectangle &  x_client::rect(void) const { return _rectangle; }
@@ -58,6 +60,16 @@ void x_client::get_net_wm_desktop(void)
   delete property_reply;
 }
 
+void x_client::handle(xcb_generic_event_t * ge)
+{
+  if (XCB_CONFIGURE_NOTIFY == (ge->response_type & ~0x80)) {
+    xcb_configure_notify_event_t * e = (xcb_configure_notify_event_t *)ge;
+    if (e->window == _window) {
+      _rectangle.x() = e->x; _rectangle.y() = e->y;
+      _rectangle.width() = e->width; _rectangle.height() = e->height;
+    }
+  }
+}
 
 std::list<x_client>
 make_x_clients(x_connection & c, const std::vector<xcb_window_t> & windows)
