@@ -11,7 +11,8 @@
 template<template<class t = thumbnail_t::thumbnail_ptr,
                   class = std::allocator<t>>
          class container_t>
-class x_client_thumbnail_factory : public thumbnail_factory_t<container_t> {
+class x_client_thumbnail_factory : public x_event_handler_t
+                                 , public thumbnail_factory_t<container_t> {
   public:
     typedef container_t<thumbnail_t::thumbnail_ptr> thumbnail_container_t;
     typedef std::back_insert_iterator<container_t<thumbnail_t::thumbnail_ptr>>
@@ -25,6 +26,7 @@ class x_client_thumbnail_factory : public thumbnail_factory_t<container_t> {
     void giveup(unsigned int id);
     void update(unsigned int id);
 
+    void handle(xcb_generic_event_t * ge);
 
   private:
     typedef std::shared_ptr<x_client_thumbnail> x_client_thumbnail_ptr;

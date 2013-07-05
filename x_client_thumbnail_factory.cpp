@@ -12,7 +12,17 @@ x_client_thumbnail_factory<container_t>::x_client_thumbnail_factory(
     x_connection & c, const layout_t * layout)
   : _c(c), _layout(layout)
 {
+  _c.register_handler(this);
+  _c.update_input(_c.root_window(), XCB_EVENT_MASK_PROPERTY_CHANGE);
   update(true);
+}
+
+template<template<class t = thumbnail_t::thumbnail_ptr,
+                  class = std::allocator<t>>
+         class container_t>
+x_client_thumbnail_factory<container_t>::~x_client_thumbnail_factory(void)
+{
+  _c.unregister_handler(this);
 }
 
 template<template<class t = thumbnail_t::thumbnail_ptr,
@@ -57,6 +67,21 @@ void
 x_client_thumbnail_factory<container_t>::update(unsigned int id)
 {
   update(false, id);
+}
+
+template<template<class t = thumbnail_t::thumbnail_ptr,
+                  class = std::allocator<t>>
+         class container_t>
+void
+x_client_thumbnail_factory<container_t>::handle(xcb_generic_event_t * ge)
+{
+  if (XCB_PROPERTY_NOTIFY == (ge->response_type & ~0x80)) {
+    xcb_property_notify_event_t * e = (xcb_property_notify_event_t *)ge;
+    if (e->window == _c.root_window()
+        && e->atom == _c.intern_atom("_NET_CLIENT_LIST_STACKING")) {
+      update(true);
+    }
+  }
 }
 
 template<template<class t = thumbnail_t::thumbnail_ptr,
