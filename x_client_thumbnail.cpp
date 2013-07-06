@@ -49,7 +49,7 @@ x_client_thumbnail::~x_client_thumbnail(void)
 }
 
 void
-x_client_thumbnail::show(void) const
+x_client_thumbnail::show(void)
 {
   xcb_damage_create(_c(), _damage, _x_client->window(),
                     XCB_DAMAGE_REPORT_LEVEL_NON_EMPTY);
@@ -59,27 +59,27 @@ x_client_thumbnail::show(void) const
 }
 
 void
-x_client_thumbnail::hide(void) const
+x_client_thumbnail::hide(void)
 {
   xcb_damage_destroy(_c(), _damage);
   xcb_unmap_window(_c(), _thumbnail_window);
 }
 
 void
-x_client_thumbnail::select(void) const
+x_client_thumbnail::select(void)
 {
   _c.request_change_current_desktop(_x_client->net_wm_desktop());
   _c.request_change_active_window(_x_client->window());
 }
 
 void
-x_client_thumbnail::update(void) const
+x_client_thumbnail::update(void)
 {
   update(0, 0, _rectangle.width(), _rectangle.height());
 }
 
 void
-x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height) const
+x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height)
 {
   xcb_render_composite(_c(), XCB_RENDER_PICT_OP_SRC,
                        _window_picture, _alpha_picture, _thumbnail_picture,
@@ -94,7 +94,7 @@ x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height
 }
 
 void
-x_client_thumbnail::highlight(bool want_highlight) const
+x_client_thumbnail::highlight(bool want_highlight)
 {
   xcb_rectangle_t r = { 0, 0, 1, 1 };
   xcb_render_color_t color = { 0, 0, 0, 0xffff };
@@ -131,7 +131,7 @@ x_client_thumbnail::update_rectangle(const rectangle & rect)
 }
 
 void
-x_client_thumbnail::configure_thumbnail_window(void) const
+x_client_thumbnail::configure_thumbnail_window(void)
 {
   uint32_t mask = XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y
                 | XCB_CONFIG_WINDOW_WIDTH | XCB_CONFIG_WINDOW_HEIGHT
@@ -148,7 +148,7 @@ x_client_thumbnail::configure_thumbnail_window(void) const
 }
 
 void
-x_client_thumbnail::configure_thumbnail_picture(void) const
+x_client_thumbnail::configure_thumbnail_picture(void)
 {
   xcb_render_transform_t transform_matrix = {
       DOUBLE_TO_FIXED(1), DOUBLE_TO_FIXED(0), DOUBLE_TO_FIXED(    0)
@@ -160,7 +160,7 @@ x_client_thumbnail::configure_thumbnail_picture(void) const
 }
 
 void
-x_client_thumbnail::configure_alpha_picture(uint16_t alpha_value) const
+x_client_thumbnail::configure_alpha_picture(uint16_t alpha_value)
 {
   xcb_pixmap_t alpha_pixmap = xcb_generate_id(_c());
   xcb_create_pixmap(_c(), 8, alpha_pixmap, _c.root_window(), 1, 1);

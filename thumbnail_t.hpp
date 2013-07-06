@@ -7,11 +7,11 @@
 class thumbnail_t {
   public:
     typedef std::shared_ptr<thumbnail_t> thumbnail_ptr;
-    virtual void show(void) const = 0;
-    virtual void hide(void) const = 0;
-    virtual void update(void) const = 0;
-    virtual void select(void) const = 0;
-    virtual void highlight(bool want_highlight) const = 0;
+    virtual void show(void) = 0;
+    virtual void hide(void) = 0;
+    virtual void update(void) = 0;
+    virtual void select(void) = 0;
+    virtual void highlight(bool want_highlight) = 0;
 };
 
 template<template<class t = thumbnail_t::thumbnail_ptr,

@@ -31,11 +31,11 @@ class x_client_thumbnail : public x_event_handler_t
       return _thumbnail_window == other._thumbnail_window;
     }
 
-    void show(void) const;
-    void hide(void) const;
-    void select(void) const;
-    void update(void) const;
-    void highlight(bool want_highlight) const;
+    void show(void);
+    void hide(void);
+    void select(void);
+    void update(void);
+    void highlight(bool want_highlight);
 
     void handle(xcb_generic_event_t * ge);
 
@@ -58,10 +58,10 @@ class x_client_thumbnail : public x_event_handler_t
 
     uint16_t _alpha_value = (uint16_t)(0.75f * 0xffff);
 
-    void update(int x, int y, unsigned int width, unsigned int height) const;
-    void configure_thumbnail_window(void) const;
-    void configure_thumbnail_picture(void) const;
-    void configure_alpha_picture(uint16_t alpha_value) const;
+    void update(int x, int y, unsigned int width, unsigned int height);
+    void configure_thumbnail_window(void);
+    void configure_thumbnail_picture(void);
+    void configure_alpha_picture(uint16_t alpha_value);
 };
 
 bool
