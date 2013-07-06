@@ -34,6 +34,7 @@ x_connection::x_connection(std::shared_ptr<x_ewmh> ewmh,
     _ewmh = ewmh;
   }
 
+  init_gl();
   init_damage();
   init_render();
   init_xinerama();
@@ -388,6 +389,37 @@ x_connection::find_default_screen(void)
     }
 
   throw std::string("could not find default screen");
+}
+
+void
+x_connection::init_gl(void)
+{
+  glXBindTexImageEXT = (PFNGLXBINDTEXIMAGEEXTPROC)
+    glXGetProcAddress((const GLubyte *)"glXBindTexImageEXT");
+  glXReleaseTexImageEXT = (PFNGLXRELEASETEXIMAGEEXTPROC)
+    glXGetProcAddress((const GLubyte *)"glXReleaseTexImageEXT");
+  glXGetFBConfigsEXT = (PFNGLXGETFBCONFIGSPROC)
+    glXGetProcAddress((const GLubyte *)"glXGetFBConfigs");
+  glCreateShaderEXT = (PFNGLCREATESHADERPROC)
+    glXGetProcAddress((const GLubyte *)"glCreateShaderEXT");
+  glCreateShaderEXT = (PFNGLCREATESHADERPROC)
+    glXGetProcAddress((const GLubyte *)"glCreateShaderEXT");
+  glShaderSourceEXT = (PFNGLSHADERSOURCEPROC)
+    glXGetProcAddress((const GLubyte *)"glShaderSourceEXT");
+  glCompileShaderEXT = (PFNGLCOMPILESHADERPROC)
+    glXGetProcAddress((const GLubyte *)"glCompileShaderEXT");
+  glCreateProgramEXT = (PFNGLCREATEPROGRAMPROC)
+    glXGetProcAddress((const GLubyte *)"glCreateProgramEXT");
+  glAttachShaderEXT = (PFNGLATTACHSHADERPROC)
+    glXGetProcAddress((const GLubyte *)"glAttachShaderEXT");
+  glLinkProgramEXT = (PFNGLLINKPROGRAMPROC)
+    glXGetProcAddress((const GLubyte *)"glLinkProgramEXT");
+  glUseProgramEXT = (PFNGLUSEPROGRAMPROC)
+    glXGetProcAddress((const GLubyte *)"glUseProgramEXT");
+  glGetProgramInfoLogEXT = (PFNGLGETPROGRAMINFOLOGPROC)
+    glXGetProcAddress((const GLubyte *)"glGetProgramInfoLogEXT");
+  glGetShaderInfoLogEXT = (PFNGLGETSHADERINFOLOGPROC)
+    glXGetProcAddress((const GLubyte *)"glGetShaderInfoLogEXT");
 }
 
 void

@@ -7,8 +7,12 @@
 #include <map>
 #include <xcb/xcb.h>
 #include <xcb/render.h>
+
 #include <X11/Xlib.h>
 #include <X11/Xlib-xcb.h>
+
+#include <GL/gl.h>
+#include <GL/glx.h>
 
 #include "data_types.hpp"
 #include "x_event_handler_t.hpp"
@@ -56,6 +60,19 @@ class x_connection : public x_event_handler_t
     void unregister_handler(x_event_handler_t * eh);
     void run_event_loop(void);
 
+    PFNGLXBINDTEXIMAGEEXTPROC    glXBindTexImageEXT     = 0;
+    PFNGLXRELEASETEXIMAGEEXTPROC glXReleaseTexImageEXT  = 0;
+    PFNGLXGETFBCONFIGSPROC       glXGetFBConfigsEXT     = 0;
+    PFNGLCREATESHADERPROC        glCreateShaderEXT      = 0;
+    PFNGLSHADERSOURCEPROC        glShaderSourceEXT      = 0;
+    PFNGLCOMPILESHADERPROC       glCompileShaderEXT     = 0;
+    PFNGLCREATEPROGRAMPROC       glCreateProgramEXT     = 0;
+    PFNGLATTACHSHADERPROC        glAttachShaderEXT      = 0;
+    PFNGLLINKPROGRAMPROC         glLinkProgramEXT       = 0;
+    PFNGLUSEPROGRAMPROC          glUseProgramEXT        = 0;
+    PFNGLGETPROGRAMINFOLOGPROC   glGetProgramInfoLogEXT = 0;
+    PFNGLGETSHADERINFOLOGPROC    glGetShaderInfoLogEXT  = 0;
+
   private:
     uint8_t _damage_event_id;
     int _screen_number = 0;
@@ -70,6 +87,7 @@ class x_connection : public x_event_handler_t
     std::shared_ptr<x_event_source_t> _event_source;
 
     void find_default_screen(void);
+    void init_gl(void);
     void init_damage(void);
     void init_render(void);
     void init_xinerama(void);
