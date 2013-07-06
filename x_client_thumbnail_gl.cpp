@@ -1,5 +1,6 @@
 #include "x_client_thumbnail_gl.hpp"
 
+#include <xcb/composite.h>
 #include <xcb/xcb_renderutil.h>
 
 x_client_thumbnail::x_client_thumbnail(x_connection & c,
@@ -20,6 +21,7 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
   update_rectangle(rect);
 
   _c.register_handler(this);
+
   uint32_t mask = XCB_CW_BACK_PIXEL | XCB_CW_OVERRIDE_REDIRECT;
   uint32_t values[] = { 0, true };
   _thumbnail_window = xcb_generate_id(_c());
@@ -32,6 +34,7 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
 
   _damage = xcb_generate_id(_c());
 
+  _parent_pixmap = xcb_generate_id(_c());
 }
 
 x_client_thumbnail::~x_client_thumbnail(void)
@@ -46,6 +49,7 @@ x_client_thumbnail::show(void)
   xcb_damage_create(_c(), _damage, _x_client->window(),
                     XCB_DAMAGE_REPORT_LEVEL_NON_EMPTY);
   configure_thumbnail_window();
+  configure_gl();
   update();
 }
 
@@ -72,6 +76,26 @@ x_client_thumbnail::update(void)
 void
 x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height)
 {
+  glXMakeCurrent(_c.dpy(), _thumbnail_window, _gl_ctx);
+
+  glViewport(0, 0, _rectangle.width(), _rectangle.height());
+  glClearColor(0.0, 0.0, 0.0, 1.0);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+
+  glBegin(GL_QUADS);
+  glTexCoord2f(0.0, 0.0); glVertex3f(-1.0,  1.0, 0.0);
+  glTexCoord2f(1.0, 0.0); glVertex3f( 1.0,  1.0, 0.0);
+  glTexCoord2f(1.0, 1.0); glVertex3f( 1.0, -1.0, 0.0);
+  glTexCoord2f(0.0, 1.0); glVertex3f(-1.0, -1.0, 0.0);
+  glEnd();
+
+  glXSwapBuffers(_c.dpy(), _thumbnail_window);
 }
 
 void
@@ -121,12 +145,44 @@ x_client_thumbnail::configure_thumbnail_window(void)
 }
 
 void
+x_client_thumbnail::configure_gl(void)
 {
+  const int pixmap_config[] = {
+    GLX_BIND_TO_TEXTURE_RGBA_EXT, True,
+    GLX_DRAWABLE_TYPE, GLX_PIXMAP_BIT,
+    GLX_BIND_TO_TEXTURE_TARGETS_EXT, GLX_TEXTURE_2D_BIT_EXT,
+    GLX_DOUBLEBUFFER, False,
+    GLX_Y_INVERTED_EXT,
+    None
+  };
 
+  const int pixmap_attr[] = {
+    GLX_TEXTURE_TARGET_EXT, GLX_TEXTURE_2D_EXT,
+    GLX_TEXTURE_FORMAT_EXT, GLX_TEXTURE_FORMAT_RGB_EXT,
+    None
+  };
 
+  xcb_composite_name_window_pixmap(_c(), _x_client->window(), _parent_pixmap);
 
+  GLint gl_vi_attr[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
+  XVisualInfo * vi = glXChooseVisual(_c.dpy(), DefaultScreen(_c.dpy()), gl_vi_attr);
 
+  _gl_ctx = glXCreateContext(_c.dpy(), vi, NULL, GL_TRUE);
+  glXMakeCurrent(_c.dpy(), _thumbnail_window, _gl_ctx);
 
+  int config = 0;
+  _gl_configs = glXChooseFBConfig(_c.dpy(), 0, pixmap_config, &config);
+
+  _thumbnail_gl_pixmap =
+      glXCreatePixmap(_c.dpy(), _gl_configs[0], _parent_pixmap, pixmap_attr);
+
+  glEnable(GL_TEXTURE_2D);
+  glGenTextures(1, &_thumbnail_gl_texture_id);
+  glBindTexture(GL_TEXTURE_2D, _thumbnail_gl_texture_id);
+  _c.glXBindTexImageEXT(_c.dpy(), _thumbnail_gl_pixmap, GLX_FRONT_EXT, NULL);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 }
 
 bool operator==(const x_client_thumbnail & thumbnail, const xcb_window_t & window)
