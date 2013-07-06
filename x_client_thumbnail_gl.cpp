@@ -1,4 +1,4 @@
-#include "x_client_thumbnail.hpp"
+#include "x_client_thumbnail_gl.hpp"
 
 #include <xcb/xcb_renderutil.h>
 
@@ -32,20 +32,12 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
 
   _damage = xcb_generate_id(_c());
 
-  _alpha_picture = xcb_generate_id(_c());
-  configure_alpha_picture(_alpha_value);
-
-  _window_picture = make_picture(_c, _x_client->window());
-  _thumbnail_picture = make_picture(_c, _thumbnail_window);
 }
 
 x_client_thumbnail::~x_client_thumbnail(void)
 {
   _c.unregister_handler(this);
   xcb_destroy_window(_c(), _thumbnail_window);
-  xcb_render_free_picture(_c(), _alpha_picture);
-  xcb_render_free_picture(_c(), _window_picture);
-  xcb_render_free_picture(_c(), _thumbnail_picture);
 }
 
 void
@@ -54,7 +46,6 @@ x_client_thumbnail::show(void)
   xcb_damage_create(_c(), _damage, _x_client->window(),
                     XCB_DAMAGE_REPORT_LEVEL_NON_EMPTY);
   configure_thumbnail_window();
-  configure_thumbnail_picture();
   update();
 }
 
@@ -81,29 +72,11 @@ x_client_thumbnail::update(void)
 void
 x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height)
 {
-  xcb_render_composite(_c(), XCB_RENDER_PICT_OP_SRC,
-                       _window_picture, _alpha_picture, _thumbnail_picture,
-                       // int16_t src_x, int16_t src_y,
-                       x, y,
-                       // int16_t mask_x, int16_t mask_y,
-                       0, 0,
-                       // int16_t dst_x, int16_t dst_y,
-                       x, y,
-                       // uint16_t width, uint16_t height
-                       width, height);
 }
 
 void
 x_client_thumbnail::highlight(bool want_highlight)
 {
-  xcb_rectangle_t r = { 0, 0, 1, 1 };
-  xcb_render_color_t color = { 0, 0, 0, 0xffff };
-
-  if (! want_highlight) { color.alpha = _alpha_value; }
-
-  xcb_render_fill_rectangles(_c(), XCB_RENDER_PICT_OP_SRC,
-                             _alpha_picture, color, 1, &r);
-
   update();
 }
 
@@ -148,41 +121,12 @@ x_client_thumbnail::configure_thumbnail_window(void)
 }
 
 void
-x_client_thumbnail::configure_thumbnail_picture(void)
 {
-  xcb_render_transform_t transform_matrix = {
-      DOUBLE_TO_FIXED(1), DOUBLE_TO_FIXED(0), DOUBLE_TO_FIXED(    0)
-    , DOUBLE_TO_FIXED(0), DOUBLE_TO_FIXED(1), DOUBLE_TO_FIXED(    0)
-    , DOUBLE_TO_FIXED(0), DOUBLE_TO_FIXED(0), DOUBLE_TO_FIXED(_scale)
-    };
 
-  xcb_render_set_picture_transform(_c(), _window_picture, transform_matrix);
-}
 
-void
-x_client_thumbnail::configure_alpha_picture(uint16_t alpha_value)
-{
-  xcb_pixmap_t alpha_pixmap = xcb_generate_id(_c());
-  xcb_create_pixmap(_c(), 8, alpha_pixmap, _c.root_window(), 1, 1);
 
-  const xcb_render_query_pict_formats_reply_t * formats_reply =
-    xcb_render_util_query_formats(_c());
-  xcb_render_pictforminfo_t * format =
-    xcb_render_util_find_standard_format(formats_reply, XCB_PICT_STANDARD_A_8);
 
-  uint32_t mask = XCB_RENDER_CP_REPEAT | XCB_RENDER_CP_COMPONENT_ALPHA;
-  uint32_t values[] = { true, true };
 
-  xcb_render_create_picture(_c(), _alpha_picture, alpha_pixmap,
-                            format->id, mask, values);
-
-  xcb_free_pixmap(_c(), alpha_pixmap);
-
-  xcb_render_color_t color = { 0, 0, 0, alpha_value };
-
-  xcb_rectangle_t r = { 0, 0, 1, 1 };
-  xcb_render_fill_rectangles(_c(), XCB_RENDER_PICT_OP_SRC,
-                             _alpha_picture, color, 1, &r);
 }
 
 bool operator==(const x_client_thumbnail & thumbnail, const xcb_window_t & window)

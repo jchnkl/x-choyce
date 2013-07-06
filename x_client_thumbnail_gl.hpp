@@ -1,5 +1,5 @@
-#ifndef _X_CLIENT_THUMBNAIL_HPP
-#define _X_CLIENT_THUMBNAIL_HPP
+#ifndef _X_CLIENT_THUMBNAIL_GL_HPP
+#define _X_CLIENT_THUMBNAIL_GL_HPP
 
 #include <memory>
 #include <xcb/xcb.h>
@@ -52,16 +52,9 @@ class x_client_thumbnail : public x_event_handler_t
 
     xcb_window_t _thumbnail_window;
     xcb_damage_damage_t _damage;
-    xcb_render_picture_t _alpha_picture;
-    xcb_render_picture_t _window_picture;
-    xcb_render_picture_t _thumbnail_picture;
-
-    uint16_t _alpha_value = (uint16_t)(0.75f * 0xffff);
 
     void update(int x, int y, unsigned int width, unsigned int height);
     void configure_thumbnail_window(void);
-    void configure_thumbnail_picture(void);
-    void configure_alpha_picture(uint16_t alpha_value);
 };
 
 bool
