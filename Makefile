@@ -1,4 +1,5 @@
-LIBS=xcb xcb-atom xcb-keysyms xcb-composite xcb-damage xcb-xinerama xcb-renderutil x11
+LIBS=xcb xcb-atom xcb-keysyms xcb-composite xcb-damage xcb-xinerama \
+		 xcb-renderutil x11 x11-xcb
 CXXFLAGS=-g -std=c++11 -Wall $(shell pkg-config --cflags ${LIBS})
 LDFLAGS=$(shell pkg-config --libs ${LIBS})
 

@@ -8,6 +8,7 @@
 #include <xcb/xcb.h>
 #include <xcb/render.h>
 #include <X11/Xlib.h>
+#include <X11/Xlib-xcb.h>
 
 #include "data_types.hpp"
 #include "x_event_handler_t.hpp"
@@ -27,6 +28,7 @@ class x_connection : public x_event_handler_t
 
     xcb_connection_t * operator()(void) const;
 
+    Display * dpy(void);
     void select_input(xcb_window_t window, uint32_t event_mask) const;
     void update_input(xcb_window_t window, uint32_t event_mask) const;
     xcb_visualtype_t * default_visual_of_screen(void);
@@ -58,6 +60,7 @@ class x_connection : public x_event_handler_t
     uint8_t _damage_event_id;
     int _screen_number = 0;
     xcb_window_t _root_window = 0;
+    Display * _dpy = NULL;
     xcb_connection_t * _c = NULL;
     xcb_screen_t * _default_screen = NULL;
 

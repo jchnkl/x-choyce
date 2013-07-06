@@ -12,7 +12,10 @@
 x_connection::x_connection(std::shared_ptr<x_ewmh> ewmh,
                            std::shared_ptr<x_event_source> event_source)
 {
-  _c = xcb_connect(NULL, &_screen_number);
+  _dpy = XOpenDisplay(NULL);
+  XSetEventQueueOwner(_dpy, XCBOwnsEventQueue);
+  _screen_number = DefaultScreen(_dpy);
+  _c = XGetXCBConnection(_dpy);
   find_default_screen();
   _root_window = _default_screen->root;
 
@@ -44,6 +47,9 @@ x_connection::~x_connection(void)
 
 xcb_connection_t *
 x_connection::operator()(void) const { return _c; }
+
+Display *
+x_connection::dpy(void) { return _dpy; }
 
 void
 x_connection::select_input(xcb_window_t window, uint32_t event_mask) const
