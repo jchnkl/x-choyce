@@ -6,7 +6,7 @@
 #include "layout_t.hpp"
 #include "thumbnail_t.hpp"
 #include "x_connection.hpp"
-#include "x_client_thumbnail.hpp"
+#include "x_client_thumbnail_gl.hpp"
 
 template<template<class t = thumbnail_t::thumbnail_ptr,
                   class = std::allocator<t>>

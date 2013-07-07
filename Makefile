@@ -11,7 +11,7 @@ SRCS=main.cpp \
 		 x_ewmh.cpp \
 		 x_client.cpp \
 		 x_client_chooser.cpp \
-		 x_client_thumbnail.cpp \
+		 x_client_thumbnail_gl.cpp \
 		 x_client_thumbnail_factory.cpp \
 		 grid.cpp
 

@@ -4,7 +4,7 @@
 #include "thumbnail_manager.hpp"
 #include "x_connection.hpp"
 #include "x_client_chooser.hpp"
-#include "x_client_thumbnail.hpp"
+#include "x_client_thumbnail_gl.hpp"
 #include "x_client_thumbnail_factory.hpp"
 
 int main(int argc, char ** argv)
