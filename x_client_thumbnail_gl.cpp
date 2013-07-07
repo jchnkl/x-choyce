@@ -186,14 +186,17 @@ x_client_thumbnail::configure_gl(XVisualInfo * vi)
     delete vi;
   }
   _gl_ctx = glXCreateContext(_c.dpy(), vi, NULL, GL_TRUE);
+
   glXMakeCurrent(_c.dpy(), _thumbnail_window, _gl_ctx);
 
   int config = 0;
-  _gl_configs = glXChooseFBConfig(_c.dpy(), 0, pixmap_config, &config);
-
+  GLXFBConfig * _gl_configs =
+    glXChooseFBConfig(_c.dpy(), 0, pixmap_config, &config);
   _thumbnail_gl_pixmap =
       glXCreatePixmap(_c.dpy(), _gl_configs[0], _parent_pixmap, pixmap_attr);
+  delete _gl_configs;
 
+  GLuint _thumbnail_gl_texture_id;
   glEnable(GL_TEXTURE_2D);
   glGenTextures(1, &_thumbnail_gl_texture_id);
   glBindTexture(GL_TEXTURE_2D, _thumbnail_gl_texture_id);

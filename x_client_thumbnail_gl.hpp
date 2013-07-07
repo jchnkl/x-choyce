@@ -54,10 +54,9 @@ class x_client_thumbnail : public x_event_handler_t
     xcb_damage_damage_t _damage;
 
     xcb_pixmap_t _parent_pixmap;
+
     GLXContext _gl_ctx;
     GLXPixmap _thumbnail_gl_pixmap;
-    GLuint _thumbnail_gl_texture_id;
-    GLXFBConfig * _gl_configs;
 
     void update(int x, int y, unsigned int width, unsigned int height);
     void configure_thumbnail_window(void);
