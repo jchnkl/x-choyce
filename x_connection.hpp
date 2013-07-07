@@ -30,9 +30,9 @@ class x_connection : public x_event_handler_t
                  std::shared_ptr<x_event_source> event_source = NULL);
     ~x_connection(void);
 
-    xcb_connection_t * operator()(void) const;
+    xcb_connection_t * const operator()(void) const;
 
-    Display * dpy(void);
+    Display * const dpy(void) const;
     void select_input(xcb_window_t window, uint32_t event_mask) const;
     void update_input(xcb_window_t window, uint32_t event_mask) const;
     xcb_visualtype_t * default_visual_of_screen(void);

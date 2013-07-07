@@ -47,11 +47,11 @@ x_connection::~x_connection(void)
   xcb_disconnect(_c);
 }
 
-xcb_connection_t *
+xcb_connection_t * const
 x_connection::operator()(void) const { return _c; }
 
-Display *
-x_connection::dpy(void) { return _dpy; }
+Display * const
+x_connection::dpy(void) const { return _dpy; }
 
 void
 x_connection::select_input(xcb_window_t window, uint32_t event_mask) const
