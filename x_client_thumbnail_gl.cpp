@@ -22,8 +22,12 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
 
   _c.register_handler(_c.damage_event_id(), this);
 
+  _parent_pixmap = xcb_generate_id(_c());
+  xcb_composite_name_window_pixmap(_c(), _x_client->window(), _parent_pixmap);
+
   uint32_t mask = XCB_CW_BACK_PIXEL | XCB_CW_OVERRIDE_REDIRECT;
   uint32_t values[] = { 0, true };
+
   _thumbnail_window = xcb_generate_id(_c());
   xcb_create_window(_c(), XCB_COPY_FROM_PARENT, _thumbnail_window,
                     _c.default_screen()->root,
@@ -164,8 +168,6 @@ x_client_thumbnail::configure_gl(XVisualInfo * vi)
     GLX_TEXTURE_FORMAT_EXT, GLX_TEXTURE_FORMAT_RGB_EXT,
     None
   };
-
-  xcb_composite_name_window_pixmap(_c(), _x_client->window(), _parent_pixmap);
 
   if (vi == NULL) {
     GLint gl_vi_attr[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
