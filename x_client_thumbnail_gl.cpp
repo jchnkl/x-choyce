@@ -113,6 +113,7 @@ x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height
   glEnd();
 
   glXSwapBuffers(_c.dpy(), _thumbnail_window);
+  glXMakeCurrent(_c.dpy(), XCB_NONE, NULL);
 }
 
 void
@@ -207,6 +208,9 @@ x_client_thumbnail::configure_gl(XVisualInfo * vi)
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+  glXMakeCurrent(_c.dpy(), XCB_NONE, NULL);
+}
 
 void
 x_client_thumbnail::release_gl(void)
