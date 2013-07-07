@@ -199,12 +199,19 @@ x_client_thumbnail::configure_gl(XVisualInfo * vi)
     None
   };
 
+  auto create_ctx = [this, &vi]()
+  {
+    _gl_ctx = glXCreateContext(_c.dpy(), vi, NULL, GL_TRUE);
+  };
+
   if (vi == NULL) {
     GLint gl_vi_attr[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
     vi = glXChooseVisual(_c.dpy(), DefaultScreen(_c.dpy()), gl_vi_attr);
+    create_ctx();
     delete vi;
+  } else {
+    create_ctx();
   }
-  _gl_ctx = glXCreateContext(_c.dpy(), vi, NULL, GL_TRUE);
 
   glXMakeCurrent(_c.dpy(), _thumbnail_window, _gl_ctx);
 
