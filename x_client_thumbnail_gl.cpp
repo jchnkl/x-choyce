@@ -119,6 +119,14 @@ x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height
 void
 x_client_thumbnail::highlight(bool want_highlight)
 {
+  glXMakeCurrent(_c.dpy(), _thumbnail_window, _gl_ctx);
+  if (want_highlight) {
+    _c.glUseProgram(0);
+  } else {
+    _c.glUseProgram(_programs["grayscale_shader"]);
+  }
+  glXMakeCurrent(_c.dpy(), XCB_NONE, NULL);
+
   update();
 }
 
@@ -209,7 +217,47 @@ x_client_thumbnail::configure_gl(XVisualInfo * vi)
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
+  init_gl_shader();
+
   glXMakeCurrent(_c.dpy(), XCB_NONE, NULL);
+}
+
+void
+x_client_thumbnail::init_gl_shader(void)
+{
+  std::string shader_name = "grayscale_shader";
+  std::ifstream file("./grayscale.frag");
+  std::string shader_source_str((std::istreambuf_iterator<char>(file)),
+                                 std::istreambuf_iterator<char>());
+  file.close();
+
+  const GLchar * shader_source[]  = { shader_source_str.c_str() };
+  const GLint shader_source_len[] = { (GLint)(shader_source_str.length()) };
+
+  GLsizei log_length = 0, max_len = 1024;
+  GLchar log_buffer[max_len];
+
+  GLuint shader = _c.glCreateShader(GL_FRAGMENT_SHADER);
+  _c.glShaderSource(shader, 1, shader_source, shader_source_len);
+  _c.glCompileShader(shader);
+
+  _c.glGetShaderInfoLog(shader, max_len, &log_length, log_buffer);
+  if (log_length > 0) {
+    std::cerr << "Shader compilation failed:" << std::endl
+              << log_buffer << std::endl;
+  }
+
+  _programs[shader_name] = _c.glCreateProgram();
+  _c.glAttachShader(_programs[shader_name], shader);
+  _c.glLinkProgram(_programs[shader_name]);
+  _c.glUseProgram(_programs[shader_name]);
+
+  _c.glGetProgramInfoLog(_programs[shader_name],
+                         max_len, &log_length, log_buffer);
+  if (log_length > 0) {
+    std::cerr << "Program creation failed:" << std::endl
+              << log_buffer << std::endl;
+  }
 }
 
 void

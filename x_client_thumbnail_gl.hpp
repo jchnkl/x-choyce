@@ -1,7 +1,9 @@
 #ifndef _X_CLIENT_THUMBNAIL_GL_HPP
 #define _X_CLIENT_THUMBNAIL_GL_HPP
 
+#include <fstream>
 #include <memory>
+#include <unordered_map>
 #include <xcb/xcb.h>
 #include <xcb/damage.h>
 
@@ -57,10 +59,12 @@ class x_client_thumbnail : public x_event_handler_t
 
     GLXContext _gl_ctx;
     GLXPixmap _thumbnail_gl_pixmap;
+    std::unordered_map<std::string, GLuint> _programs;
 
     void update(int x, int y, unsigned int width, unsigned int height);
     void configure_thumbnail_window(void);
     void configure_gl(XVisualInfo * vi = NULL);
+    void init_gl_shader(void);
     void release_gl(void);
 };
 
