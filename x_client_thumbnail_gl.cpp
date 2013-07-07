@@ -22,23 +22,35 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
 
   _c.register_handler(_c.damage_event_id(), this);
 
-  _parent_pixmap = xcb_generate_id(_c());
-  xcb_composite_name_window_pixmap(_c(), _x_client->window(), _parent_pixmap);
-
-  uint32_t mask = XCB_CW_BACK_PIXEL | XCB_CW_OVERRIDE_REDIRECT;
-  uint32_t values[] = { 0, true };
-
-  _thumbnail_window = xcb_generate_id(_c());
-  xcb_create_window(_c(), XCB_COPY_FROM_PARENT, _thumbnail_window,
-                    _c.default_screen()->root,
-                    0, 0, 1, 1, 0,
-                    // _position.x, _position.y, _size.width, _size.height, 0,
-                    XCB_WINDOW_CLASS_INPUT_OUTPUT,
-                    _c.default_screen()->root_visual, mask, values);
-
   _damage = xcb_generate_id(_c());
 
   _parent_pixmap = xcb_generate_id(_c());
+  xcb_composite_name_window_pixmap(_c(), _x_client->window(), _parent_pixmap);
+
+  _thumbnail_window = xcb_generate_id(_c());
+  xcb_colormap_t colormap = xcb_generate_id(_c());
+
+  GLint gl_vi_attr[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
+  XVisualInfo * vi =
+    glXChooseVisual(_c.dpy(), DefaultScreen(_c.dpy()), gl_vi_attr);
+
+  xcb_create_colormap(_c(), XCB_COLORMAP_ALLOC_NONE, colormap,
+                      _c.root_window(), vi->visualid);
+
+  uint32_t valuemask = XCB_CW_OVERRIDE_REDIRECT | XCB_CW_COLORMAP;
+  uint32_t valuelist[] = { 1, colormap, 0 };
+  xcb_create_window(_c(), XCB_COPY_FROM_PARENT, _thumbnail_window,
+                    _c.root_window(), 0, 0,
+                    _x_client->rect().width(), _x_client->rect().height(),
+                    0, XCB_WINDOW_CLASS_INPUT_OUTPUT, vi->visualid,
+                    valuemask, valuelist);
+
+  xcb_free_colormap(_c(), colormap);
+
+  configure_gl(vi);
+  delete vi;
+
+  update();
 }
 
 x_client_thumbnail::~x_client_thumbnail(void)
@@ -53,7 +65,6 @@ x_client_thumbnail::show(void)
   xcb_damage_create(_c(), _damage, _x_client->window(),
                     XCB_DAMAGE_REPORT_LEVEL_NON_EMPTY);
   configure_thumbnail_window();
-  configure_gl();
   update();
 }
 
