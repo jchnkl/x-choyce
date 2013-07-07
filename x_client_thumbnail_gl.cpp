@@ -56,6 +56,8 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
 x_client_thumbnail::~x_client_thumbnail(void)
 {
   _c.deregister_handler(_c.damage_event_id(), this);
+  release_gl();
+  xcb_free_pixmap(_c(), _parent_pixmap);
   xcb_destroy_window(_c(), _thumbnail_window);
 }
 
@@ -205,6 +207,14 @@ x_client_thumbnail::configure_gl(XVisualInfo * vi)
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+void
+x_client_thumbnail::release_gl(void)
+{
+  glXMakeCurrent(_c.dpy(), _thumbnail_window, _gl_ctx);
+  _c.glXReleaseTexImageEXT(_c.dpy(), _thumbnail_gl_pixmap, GLX_FRONT_EXT);
+  glXDestroyContext(_c.dpy(), _gl_ctx);
+  glXMakeCurrent(_c.dpy(), None, NULL);
 }
 
 bool operator==(const x_client_thumbnail & thumbnail, const xcb_window_t & window)
