@@ -73,6 +73,8 @@ class x_connection : public x_event_handler_t
     PFNGLUSEPROGRAMPROC          glUseProgram          = 0;
     PFNGLGETPROGRAMINFOLOGPROC   glGetProgramInfoLog   = 0;
     PFNGLGETSHADERINFOLOGPROC    glGetShaderInfoLog    = 0;
+    PFNGLDELETESHADERPROC        glDeleteShader        = 0;
+    PFNGLDELETEPROGRAMPROC       glDeleteProgram       = 0;
 
   private:
     uint8_t _damage_event_id;

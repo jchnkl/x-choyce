@@ -425,6 +425,10 @@ x_connection::init_gl(void)
     glXGetProcAddress((const GLubyte *)"glGetProgramInfoLog");
   glGetShaderInfoLog = (PFNGLGETSHADERINFOLOGPROC)
     glXGetProcAddress((const GLubyte *)"glGetShaderInfoLog");
+  glDeleteShader = (PFNGLDELETESHADERPROC)
+    glXGetProcAddress((const GLubyte *)"glDeleteShader");
+  glDeleteProgram = (PFNGLDELETEPROGRAMPROC)
+    glXGetProcAddress((const GLubyte *)"glDeleteProgram");
 }
 
 void
