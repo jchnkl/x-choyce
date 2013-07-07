@@ -148,7 +148,7 @@ x_client_thumbnail::configure_thumbnail_window(void)
 }
 
 void
-x_client_thumbnail::configure_gl(void)
+x_client_thumbnail::configure_gl(XVisualInfo * vi)
 {
   const int pixmap_config[] = {
     GLX_BIND_TO_TEXTURE_RGBA_EXT, True,
@@ -167,9 +167,11 @@ x_client_thumbnail::configure_gl(void)
 
   xcb_composite_name_window_pixmap(_c(), _x_client->window(), _parent_pixmap);
 
-  GLint gl_vi_attr[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
-  XVisualInfo * vi = glXChooseVisual(_c.dpy(), DefaultScreen(_c.dpy()), gl_vi_attr);
-
+  if (vi == NULL) {
+    GLint gl_vi_attr[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
+    vi = glXChooseVisual(_c.dpy(), DefaultScreen(_c.dpy()), gl_vi_attr);
+    delete vi;
+  }
   _gl_ctx = glXCreateContext(_c.dpy(), vi, NULL, GL_TRUE);
   glXMakeCurrent(_c.dpy(), _thumbnail_window, _gl_ctx);
 

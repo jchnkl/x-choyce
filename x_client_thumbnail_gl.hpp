@@ -61,7 +61,7 @@ class x_client_thumbnail : public x_event_handler_t
 
     void update(int x, int y, unsigned int width, unsigned int height);
     void configure_thumbnail_window(void);
-    void configure_gl(void);
+    void configure_gl(XVisualInfo * vi = NULL);
 };
 
 bool
