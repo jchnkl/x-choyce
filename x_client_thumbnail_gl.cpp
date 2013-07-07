@@ -138,6 +138,7 @@ x_client_thumbnail::update_rectangle(const rectangle & rect)
 {
   _scale = std::min((double)rect.width() / _x_client->rect().width(),
                     (double)rect.height() / _x_client->rect().height());
+  _scale = std::min(1.0, _scale);
 
   _rectangle.x() = rect.x();
   _rectangle.y() = rect.y();
