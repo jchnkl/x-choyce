@@ -60,18 +60,19 @@ class x_connection : public x_event_handler_t
     void deregister_handler(unsigned int event_id, x_event_handler_t * eh);
     void run_event_loop(void);
 
-    PFNGLXBINDTEXIMAGEEXTPROC    glXBindTexImageEXT     = 0;
-    PFNGLXRELEASETEXIMAGEEXTPROC glXReleaseTexImageEXT  = 0;
-    PFNGLXGETFBCONFIGSPROC       glXGetFBConfigsEXT     = 0;
-    PFNGLCREATESHADERPROC        glCreateShaderEXT      = 0;
-    PFNGLSHADERSOURCEPROC        glShaderSourceEXT      = 0;
-    PFNGLCOMPILESHADERPROC       glCompileShaderEXT     = 0;
-    PFNGLCREATEPROGRAMPROC       glCreateProgramEXT     = 0;
-    PFNGLATTACHSHADERPROC        glAttachShaderEXT      = 0;
-    PFNGLLINKPROGRAMPROC         glLinkProgramEXT       = 0;
-    PFNGLUSEPROGRAMPROC          glUseProgramEXT        = 0;
-    PFNGLGETPROGRAMINFOLOGPROC   glGetProgramInfoLogEXT = 0;
-    PFNGLGETSHADERINFOLOGPROC    glGetShaderInfoLogEXT  = 0;
+    PFNGLXBINDTEXIMAGEEXTPROC    glXBindTexImageEXT    = 0;
+    PFNGLXRELEASETEXIMAGEEXTPROC glXReleaseTexImageEXT = 0;
+    PFNGLXGETFBCONFIGSPROC       glXGetFBConfigs       = 0;
+    PFNGLCREATESHADERPROC        glCreateShader        = 0;
+    PFNGLSHADERSOURCEPROC        glShaderSource        = 0;
+    PFNGLCOMPILESHADERPROC       glCompileShader       = 0;
+    PFNGLCREATEPROGRAMPROC       glCreateProgram       = 0;
+    PFNGLATTACHSHADERPROC        glAttachShader        = 0;
+    PFNGLDETACHSHADERPROC        glDetachShader        = 0;
+    PFNGLLINKPROGRAMPROC         glLinkProgram         = 0;
+    PFNGLUSEPROGRAMPROC          glUseProgram          = 0;
+    PFNGLGETPROGRAMINFOLOGPROC   glGetProgramInfoLog   = 0;
+    PFNGLGETSHADERINFOLOGPROC    glGetShaderInfoLog    = 0;
 
   private:
     uint8_t _damage_event_id;

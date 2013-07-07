@@ -401,28 +401,30 @@ x_connection::init_gl(void)
     glXGetProcAddress((const GLubyte *)"glXBindTexImageEXT");
   glXReleaseTexImageEXT = (PFNGLXRELEASETEXIMAGEEXTPROC)
     glXGetProcAddress((const GLubyte *)"glXReleaseTexImageEXT");
-  glXGetFBConfigsEXT = (PFNGLXGETFBCONFIGSPROC)
+  glXGetFBConfigs = (PFNGLXGETFBCONFIGSPROC)
     glXGetProcAddress((const GLubyte *)"glXGetFBConfigs");
-  glCreateShaderEXT = (PFNGLCREATESHADERPROC)
-    glXGetProcAddress((const GLubyte *)"glCreateShaderEXT");
-  glCreateShaderEXT = (PFNGLCREATESHADERPROC)
-    glXGetProcAddress((const GLubyte *)"glCreateShaderEXT");
-  glShaderSourceEXT = (PFNGLSHADERSOURCEPROC)
-    glXGetProcAddress((const GLubyte *)"glShaderSourceEXT");
-  glCompileShaderEXT = (PFNGLCOMPILESHADERPROC)
-    glXGetProcAddress((const GLubyte *)"glCompileShaderEXT");
-  glCreateProgramEXT = (PFNGLCREATEPROGRAMPROC)
-    glXGetProcAddress((const GLubyte *)"glCreateProgramEXT");
-  glAttachShaderEXT = (PFNGLATTACHSHADERPROC)
-    glXGetProcAddress((const GLubyte *)"glAttachShaderEXT");
-  glLinkProgramEXT = (PFNGLLINKPROGRAMPROC)
-    glXGetProcAddress((const GLubyte *)"glLinkProgramEXT");
-  glUseProgramEXT = (PFNGLUSEPROGRAMPROC)
-    glXGetProcAddress((const GLubyte *)"glUseProgramEXT");
-  glGetProgramInfoLogEXT = (PFNGLGETPROGRAMINFOLOGPROC)
-    glXGetProcAddress((const GLubyte *)"glGetProgramInfoLogEXT");
-  glGetShaderInfoLogEXT = (PFNGLGETSHADERINFOLOGPROC)
-    glXGetProcAddress((const GLubyte *)"glGetShaderInfoLogEXT");
+  glCreateShader = (PFNGLCREATESHADERPROC)
+    glXGetProcAddress((const GLubyte *)"glCreateShader");
+  glCreateShader = (PFNGLCREATESHADERPROC)
+    glXGetProcAddress((const GLubyte *)"glCreateShader");
+  glShaderSource = (PFNGLSHADERSOURCEPROC)
+    glXGetProcAddress((const GLubyte *)"glShaderSource");
+  glCompileShader = (PFNGLCOMPILESHADERPROC)
+    glXGetProcAddress((const GLubyte *)"glCompileShader");
+  glCreateProgram = (PFNGLCREATEPROGRAMPROC)
+    glXGetProcAddress((const GLubyte *)"glCreateProgram");
+  glAttachShader = (PFNGLATTACHSHADERPROC)
+    glXGetProcAddress((const GLubyte *)"glAttachShader");
+  glDetachShader = (PFNGLDETACHSHADERPROC)
+    glXGetProcAddress((const GLubyte *)"glDetachShader");
+  glLinkProgram = (PFNGLLINKPROGRAMPROC)
+    glXGetProcAddress((const GLubyte *)"glLinkProgram");
+  glUseProgram = (PFNGLUSEPROGRAMPROC)
+    glXGetProcAddress((const GLubyte *)"glUseProgram");
+  glGetProgramInfoLog = (PFNGLGETPROGRAMINFOLOGPROC)
+    glXGetProcAddress((const GLubyte *)"glGetProgramInfoLog");
+  glGetShaderInfoLog = (PFNGLGETSHADERINFOLOGPROC)
+    glXGetProcAddress((const GLubyte *)"glGetShaderInfoLog");
 }
 
 void
