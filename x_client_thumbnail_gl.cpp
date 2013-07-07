@@ -24,8 +24,7 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
 
   _damage = xcb_generate_id(_c());
 
-  _parent_pixmap = xcb_generate_id(_c());
-  xcb_composite_name_window_pixmap(_c(), _x_client->window(), _parent_pixmap);
+  configure_parent_pixmap();
 
   _thumbnail_window = xcb_generate_id(_c());
   xcb_colormap_t colormap = xcb_generate_id(_c());
@@ -172,6 +171,14 @@ x_client_thumbnail::configure_thumbnail_window(void)
 
   xcb_configure_window(_c(), _thumbnail_window, mask, values);
   xcb_map_window(_c(), _thumbnail_window);
+}
+
+void
+x_client_thumbnail::configure_parent_pixmap(void)
+{
+  xcb_free_pixmap(_c(), _parent_pixmap);
+  _parent_pixmap = xcb_generate_id(_c());
+  xcb_composite_name_window_pixmap(_c(), _x_client->window(), _parent_pixmap);
 }
 
 void
