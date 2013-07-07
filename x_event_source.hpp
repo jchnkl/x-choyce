@@ -5,6 +5,8 @@
 #include <list>
 #include <unordered_map>
 
+#include <X11/Xlibint.h>
+
 #include "x_connection.hpp"
 #include "x_event_source_t.hpp"
 #include "x_event_handler_t.hpp"
@@ -43,7 +45,24 @@ class x_event_source : public x_event_source_t {
             for (auto * eh : _handler.at(response_type)) {
               eh->handle(ge);
             }
+            taken = true;
           } catch (...) {}
+
+          if (! taken) {
+            // Check if a custom XEvent constructor was registered in xlib for this
+            // event type, and call it discarding the constructed XEvent if any.
+            // XESetWireToEvent might be used by libraries to intercept messages from
+            // the X server e.g. the OpenGL lib waiting for DRI2 events.
+
+            Bool (*proc)(Display*, XEvent*, xEvent*) =
+              XESetWireToEvent(_c.dpy(), response_type, 0);
+            if (proc) {
+              XESetWireToEvent(_c.dpy(), response_type, proc);
+              XEvent dummy;
+              ge->sequence = LastKnownRequestProcessed(_c.dpy());
+              proc(_c.dpy(), &dummy, (xEvent*)ge);
+            }
+          }
 
           delete ge;
         }
