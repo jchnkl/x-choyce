@@ -2,13 +2,13 @@
 
 x_ewmh::x_ewmh(x_connection & c) : _c(c)
 {
-  _c.register_handler(this);
+  _c.register_handler(XCB_PROPERTY_NOTIFY, this);
   update_net_active_window();
 }
 
 x_ewmh::~x_ewmh(void)
 {
-  _c.unregister_handler(this);
+  _c.deregister_handler(XCB_PROPERTY_NOTIFY, this);
 }
 
 xcb_window_t x_ewmh::net_active_window(void) const
@@ -16,7 +16,8 @@ xcb_window_t x_ewmh::net_active_window(void) const
   return _net_active_window;
 }
 
-void x_ewmh::handle(xcb_generic_event_t * ge)
+bool
+x_ewmh::handle(xcb_generic_event_t * ge)
 {
   if (XCB_PROPERTY_NOTIFY == (ge->response_type & ~0x80)) {
     xcb_property_notify_event_t * e = (xcb_property_notify_event_t *)ge;
@@ -24,7 +25,10 @@ void x_ewmh::handle(xcb_generic_event_t * ge)
         && e->atom == _c.intern_atom("_NET_ACTIVE_WINDOW")) {
       update_net_active_window();
     }
+    return true;
   }
+
+  return false;
 }
 
 void x_ewmh::update_net_active_window(void)

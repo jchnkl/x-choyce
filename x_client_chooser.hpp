@@ -16,10 +16,11 @@ class x_client_chooser : public x_event_handler_t {
 
     ~x_client_chooser(void)
     {
-      _c.unregister_handler(this);
+      _c.deregister_handler(XCB_KEY_PRESS, this);
+      _c.deregister_handler(XCB_KEY_RELEASE, this);
     }
 
-    void handle(xcb_generic_event_t * ge);
+    bool handle(xcb_generic_event_t * ge);
 
   private:
     bool _active = false;

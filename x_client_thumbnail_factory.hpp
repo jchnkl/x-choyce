@@ -26,7 +26,7 @@ class x_client_thumbnail_factory : public x_event_handler_t
     void giveup(unsigned int id);
     void update(unsigned int id);
 
-    void handle(xcb_generic_event_t * ge);
+    bool handle(xcb_generic_event_t * ge);
 
   private:
     typedef std::shared_ptr<x_client_thumbnail> x_client_thumbnail_ptr;

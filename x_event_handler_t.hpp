@@ -5,7 +5,7 @@
 
 class x_event_handler_t {
   public:
-    virtual void handle(xcb_generic_event_t *) = 0;
+    virtual bool handle(xcb_generic_event_t *) = 0;
 };
 
 #endif

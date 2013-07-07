@@ -12,7 +12,7 @@ x_client_thumbnail_factory<container_t>::x_client_thumbnail_factory(
     x_connection & c, const layout_t * layout)
   : _c(c), _layout(layout)
 {
-  _c.register_handler(this);
+  _c.register_handler(XCB_PROPERTY_NOTIFY, this);
   _c.update_input(_c.root_window(), XCB_EVENT_MASK_PROPERTY_CHANGE);
   update(true);
 }
@@ -22,7 +22,7 @@ template<template<class t = thumbnail_t::thumbnail_ptr,
          class container_t>
 x_client_thumbnail_factory<container_t>::~x_client_thumbnail_factory(void)
 {
-  _c.unregister_handler(this);
+  _c.deregister_handler(XCB_PROPERTY_NOTIFY, this);
 }
 
 template<template<class t = thumbnail_t::thumbnail_ptr,
@@ -72,7 +72,7 @@ x_client_thumbnail_factory<container_t>::update(unsigned int id)
 template<template<class t = thumbnail_t::thumbnail_ptr,
                   class = std::allocator<t>>
          class container_t>
-void
+bool
 x_client_thumbnail_factory<container_t>::handle(xcb_generic_event_t * ge)
 {
   if (XCB_PROPERTY_NOTIFY == (ge->response_type & ~0x80)) {
@@ -81,7 +81,10 @@ x_client_thumbnail_factory<container_t>::handle(xcb_generic_event_t * ge)
         && e->atom == _c.intern_atom("_NET_CLIENT_LIST_STACKING")) {
       update(true);
     }
+    return true;
   }
+
+  return false;
 }
 
 template<template<class t = thumbnail_t::thumbnail_ptr,

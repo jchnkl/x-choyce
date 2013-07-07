@@ -29,7 +29,7 @@ class x_client : public x_event_handler_t {
     const xcb_window_t & window(void) const;
           unsigned int   net_wm_desktop(void) const;
 
-    void handle(xcb_generic_event_t * ge);
+    bool handle(xcb_generic_event_t * ge);
     void update_geometry(void);
 
   private:

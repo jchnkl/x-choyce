@@ -54,10 +54,10 @@ class x_connection : public x_event_handler_t
     void request_change_current_desktop(unsigned int desktop_id) const;
     void request_change_active_window(xcb_window_t window) const;
     rectangle current_screen(void) const;
-    void handle(xcb_generic_event_t * ge);
+    bool handle(xcb_generic_event_t * ge);
 
-    void register_handler(x_event_handler_t * eh);
-    void unregister_handler(x_event_handler_t * eh);
+    void register_handler(unsigned int event_id, x_event_handler_t * eh);
+    void deregister_handler(unsigned int event_id, x_event_handler_t * eh);
     void run_event_loop(void);
 
     PFNGLXBINDTEXIMAGEEXTPROC    glXBindTexImageEXT     = 0;

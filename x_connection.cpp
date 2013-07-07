@@ -26,7 +26,7 @@ x_connection::x_connection(std::shared_ptr<x_ewmh> ewmh,
     _event_source = event_source;
   }
 
-  _event_source->register_handler(this);
+  _event_source->register_handler(XCB_CONFIGURE_NOTIFY, this);
 
   if (ewmh == NULL) {
     _ewmh = std::shared_ptr<x_ewmh>(new x_ewmh(*this));
@@ -43,6 +43,7 @@ x_connection::x_connection(std::shared_ptr<x_ewmh> ewmh,
 
 x_connection::~x_connection(void)
 {
+  _event_source->deregister_handler(XCB_CONFIGURE_NOTIFY, this);
   xcb_disconnect(_c);
 }
 
@@ -345,7 +346,7 @@ x_connection::current_screen(void) const
   return rectangle(0, 0, 800, 600);
 }
 
-void
+bool
 x_connection::handle(xcb_generic_event_t * ge)
 {
   if (XCB_CONFIGURE_NOTIFY == (ge->response_type & ~0x80)) {
@@ -354,18 +355,20 @@ x_connection::handle(xcb_generic_event_t * ge)
       update_xinerama();
     }
   }
+
+  return true;
 }
 
 void
-x_connection::register_handler(x_event_handler_t * eh)
+x_connection::register_handler(unsigned int event_id, x_event_handler_t * eh)
 {
-  _event_source->register_handler(eh);
+  _event_source->register_handler(event_id, eh);
 }
 
 void
-x_connection::unregister_handler(x_event_handler_t * eh)
+x_connection::deregister_handler(unsigned int event_id, x_event_handler_t * eh)
 {
-  _event_source->unregister_handler(eh);
+  _event_source->deregister_handler(event_id, eh);
 }
 
 void

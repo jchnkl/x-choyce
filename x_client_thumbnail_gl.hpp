@@ -37,7 +37,7 @@ class x_client_thumbnail : public x_event_handler_t
     void update(void);
     void highlight(bool want_highlight);
 
-    void handle(xcb_generic_event_t * ge);
+    bool handle(xcb_generic_event_t * ge);
 
     void update_rectangle(const rectangle & rect);
 

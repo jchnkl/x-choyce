@@ -11,7 +11,7 @@ class x_ewmh : public x_event_handler_t {
     x_ewmh(x_connection & c);
     ~x_ewmh(void);
     xcb_window_t net_active_window(void) const;
-    void handle(xcb_generic_event_t * ge);
+    bool handle(xcb_generic_event_t * ge);
 
   private:
     x_connection & _c;

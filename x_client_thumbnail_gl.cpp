@@ -20,7 +20,7 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
 
   update_rectangle(rect);
 
-  _c.register_handler(this);
+  _c.register_handler(_c.damage_event_id(), this);
 
   uint32_t mask = XCB_CW_BACK_PIXEL | XCB_CW_OVERRIDE_REDIRECT;
   uint32_t values[] = { 0, true };
@@ -39,7 +39,7 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
 
 x_client_thumbnail::~x_client_thumbnail(void)
 {
-  _c.unregister_handler(this);
+  _c.deregister_handler(_c.damage_event_id(), this);
   xcb_destroy_window(_c(), _thumbnail_window);
 }
 
@@ -104,7 +104,7 @@ x_client_thumbnail::highlight(bool want_highlight)
   update();
 }
 
-void
+bool
 x_client_thumbnail::handle(xcb_generic_event_t * ge)
 {
   if (_c.damage_event_id() == (ge->response_type & ~0x80)) {
@@ -112,7 +112,10 @@ x_client_thumbnail::handle(xcb_generic_event_t * ge)
     xcb_damage_subtract(_c(), e->damage, XCB_NONE, XCB_NONE);
     update(e->area.x * _scale, e->area.y * _scale,
            e->area.width * _scale, e->area.height * _scale);
+    return true;
   }
+
+  return false;
 }
 
 void
