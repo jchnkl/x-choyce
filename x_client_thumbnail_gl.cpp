@@ -263,6 +263,8 @@ x_client_thumbnail::init_gl_shader(void)
   GLsizei log_length = 0, max_len = 1024;
   GLchar log_buffer[max_len];
 
+  glXMakeCurrent(_c.dpy(), _thumbnail_window, _gl_ctx);
+
   GLuint shader = _c.glCreateShader(GL_FRAGMENT_SHADER);
   _c.glShaderSource(shader, 1, shader_source, shader_source_len);
   _c.glCompileShader(shader);
@@ -284,6 +286,8 @@ x_client_thumbnail::init_gl_shader(void)
     std::cerr << "Program creation failed:" << std::endl
               << log_buffer << std::endl;
   }
+
+  glXMakeCurrent(_c.dpy(), XCB_NONE, NULL);
 }
 
 void
