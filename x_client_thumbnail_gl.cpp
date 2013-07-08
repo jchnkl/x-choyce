@@ -149,6 +149,7 @@ x_client_thumbnail::handle(xcb_generic_event_t * ge)
       configure_parent_pixmap();
       release_gl();
       configure_gl();
+      init_gl_shader();
       update();
     }
     result = true;
