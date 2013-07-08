@@ -429,6 +429,8 @@ x_connection::init_gl(void)
     glXGetProcAddress((const GLubyte *)"glDeleteShader");
   glDeleteProgram = (PFNGLDELETEPROGRAMPROC)
     glXGetProcAddress((const GLubyte *)"glDeleteProgram");
+  glGenerateMipmapEXT = (PFNGLGENERATEMIPMAPEXTPROC)
+    glXGetProcAddress((const GLubyte *)"glGenerateMipmapEXT");
 }
 
 void
