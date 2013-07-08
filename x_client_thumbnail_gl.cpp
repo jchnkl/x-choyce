@@ -48,6 +48,7 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
   xcb_free_colormap(_c(), colormap);
 
   configure_gl(vi);
+  init_gl_shader();
   delete vi;
 
   update();
@@ -243,8 +244,6 @@ x_client_thumbnail::configure_gl(XVisualInfo * vi)
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
-  init_gl_shader();
 
   glXMakeCurrent(_c.dpy(), XCB_NONE, NULL);
 }
