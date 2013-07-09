@@ -23,7 +23,9 @@ class x_event_source : public x_event_source_t {
     void deregister_handler(unsigned int event_id, x_event_handler_t * eh)
     {
       try {
-        std::remove(_handler.at(event_id).begin(), _handler.at(event_id).end(), eh);
+        auto & list = _handler.at(event_id);
+        auto newend = std::remove(list.begin(), list.end(), eh);
+        list.erase(newend, list.end());
       } catch (...) {}
     }
 
