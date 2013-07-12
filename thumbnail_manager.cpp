@@ -18,7 +18,10 @@ thumbnail_manager::show(void)
 void
 thumbnail_manager::hide(void)
 {
-  for (auto & thumbnail : _thumbnails) { thumbnail->hide(); }
+  for (auto & thumbnail : _thumbnails) {
+    thumbnail->hide();
+    thumbnail->highlight(false);
+  }
 }
 
 void
