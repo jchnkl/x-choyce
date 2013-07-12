@@ -50,6 +50,7 @@ class x_client_thumbnail : public x_event_handler_t
     x_client_ptr _x_client;
 
     double _scale;
+    bool _highlight = false, _visible = false, _purge = false;
     rectangle _rectangle;
 
     xcb_window_t _thumbnail_window;
@@ -61,6 +62,7 @@ class x_client_thumbnail : public x_event_handler_t
     GLXPixmap _thumbnail_gl_pixmap;
     std::unordered_map<std::string, GLuint> _programs;
 
+    void purge(void);
     void update(int x, int y, unsigned int width, unsigned int height);
     void configure_thumbnail_window(void);
     void configure_parent_pixmap(void);

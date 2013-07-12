@@ -66,15 +66,24 @@ x_client_thumbnail::~x_client_thumbnail(void)
 void
 x_client_thumbnail::show(void)
 {
+  _visible = true;
   xcb_damage_create(_c(), _damage, _x_client->window(),
                     XCB_DAMAGE_REPORT_LEVEL_NON_EMPTY);
+
   configure_thumbnail_window();
-  update();
+
+  if (_purge) {
+    purge();
+    _purge = false;
+  } else {
+    update();
+  }
 }
 
 void
 x_client_thumbnail::hide(void)
 {
+  _visible = false;
   xcb_damage_destroy(_c(), _damage);
   xcb_unmap_window(_c(), _thumbnail_window);
 }
@@ -90,6 +99,16 @@ void
 x_client_thumbnail::update(void)
 {
   update(0, 0, _rectangle.width(), _rectangle.height());
+}
+
+void
+x_client_thumbnail::purge(void)
+{
+  configure_parent_pixmap();
+  release_gl();
+  configure_gl();
+  init_gl_shader();
+  update();
 }
 
 void
@@ -121,6 +140,7 @@ x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height
 void
 x_client_thumbnail::highlight(bool want_highlight)
 {
+  _highlight = want_highlight;
   glXMakeCurrent(_c.dpy(), _thumbnail_window, _gl_ctx);
   if (want_highlight) {
     _c.glUseProgram(0);
@@ -145,13 +165,14 @@ x_client_thumbnail::handle(xcb_generic_event_t * ge)
 
   } else if (XCB_CONFIGURE_NOTIFY == (ge->response_type & ~0x80)) {
     xcb_configure_notify_event_t * e = (xcb_configure_notify_event_t *)ge;
-    if (e->window == _c.root_window()) {
-      configure_parent_pixmap();
-      release_gl();
-      configure_gl();
-      init_gl_shader();
-      update();
+    if (e->window == _c.root_window() || e->window == _x_client->window()) {
+      if (_visible) {
+        purge();
+      } else {
+        _purge = true;
+      }
     }
+
     result = true;
   }
 
