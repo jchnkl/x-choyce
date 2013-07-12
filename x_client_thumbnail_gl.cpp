@@ -147,10 +147,19 @@ x_client_thumbnail::highlight(bool want_highlight)
 {
   _highlight = want_highlight;
   glXMakeCurrent(_c.dpy(), _thumbnail_window, _gl_ctx);
+  _c.glXBindTexImageEXT(_c.dpy(), _thumbnail_gl_pixmap, GLX_FRONT_EXT, NULL);
+
   if (want_highlight) {
     _c.glUseProgram(0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+    _c.glGenerateMipmapEXT(GL_TEXTURE_2D);
+
   } else {
     _c.glUseProgram(_programs["grayscale_shader"]);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   }
   glXMakeCurrent(_c.dpy(), XCB_NONE, NULL);
 
@@ -164,6 +173,16 @@ x_client_thumbnail::handle(xcb_generic_event_t * ge)
   if (_c.damage_event_id() == (ge->response_type & ~0x80)) {
     xcb_damage_notify_event_t * e = (xcb_damage_notify_event_t *)ge;
     xcb_damage_subtract(_c(), e->damage, XCB_NONE, XCB_NONE);
+
+    if (_highlight) {
+      glXMakeCurrent(_c.dpy(), _thumbnail_window, _gl_ctx);
+
+      _c.glXBindTexImageEXT(_c.dpy(), _thumbnail_gl_pixmap, GLX_FRONT_EXT, NULL);
+      _c.glGenerateMipmapEXT(GL_TEXTURE_2D);
+
+      glXMakeCurrent(_c.dpy(), XCB_NONE, NULL);
+    }
+
     update(e->area.x * _scale, e->area.y * _scale,
            e->area.width * _scale, e->area.height * _scale);
     result = true;
@@ -268,8 +287,8 @@ x_client_thumbnail::configure_gl(XVisualInfo * vi)
   glGenTextures(1, &_thumbnail_gl_texture_id);
   glBindTexture(GL_TEXTURE_2D, _thumbnail_gl_texture_id);
   _c.glXBindTexImageEXT(_c.dpy(), _thumbnail_gl_pixmap, GLX_FRONT_EXT, NULL);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
   glXMakeCurrent(_c.dpy(), XCB_NONE, NULL);
