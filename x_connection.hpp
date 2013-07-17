@@ -94,6 +94,7 @@ class x_connection : public x_event_handler_t
     void init_gl(void);
     void init_damage(void);
     void init_render(void);
+    void init_xfixes(void);
     void init_xinerama(void);
     void update_xinerama(void);
 };

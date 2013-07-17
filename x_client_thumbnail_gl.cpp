@@ -219,6 +219,43 @@ x_client_thumbnail::update_rectangle(const rectangle & rect)
 void
 x_client_thumbnail::configure_thumbnail_window(void)
 {
+  xcb_xfixes_region_t region = xcb_generate_id(_c());
+  xcb_xfixes_create_region_from_window(_c(), region, _x_client->window(),
+                                       XCB_SHAPE_SK_BOUNDING);
+
+  xcb_xfixes_fetch_region_cookie_t fetch_region_cookie =
+    xcb_xfixes_fetch_region(_c(), region);
+  xcb_xfixes_fetch_region_reply_t * fetch_region_reply =
+    xcb_xfixes_fetch_region_reply(_c(), fetch_region_cookie, NULL);
+
+  int nrects = xcb_xfixes_fetch_region_rectangles_length(fetch_region_reply);
+  xcb_rectangle_t * rects =
+    xcb_xfixes_fetch_region_rectangles(fetch_region_reply);
+
+  delete fetch_region_reply;
+  xcb_xfixes_destroy_region(_c(), region);
+
+  double ar = (double)_x_client->rect().width() / _x_client->rect().height();
+  unsigned int width_cutoff = std::ceil(10.0 * ar * _scale) ;
+  unsigned int height_cutoff = std::ceil(10.0 * (1.0/ar) * _scale);
+  for (int i = 0; i < nrects; ++i) {
+    rects[i].x *= _scale;
+    rects[i].y *= _scale;
+    if (rects[i].width > width_cutoff) {
+      rects[i].width = std::round(_scale * (double)rects[i].width);
+    }
+    if (rects[i].height > height_cutoff) {
+      rects[i].height = std::round(_scale * (double)rects[i].height);
+    }
+  }
+
+  region = xcb_generate_id(_c());
+  xcb_xfixes_create_region(_c(), region, nrects, rects);
+
+  xcb_xfixes_set_window_shape_region(_c(), _thumbnail_window,
+                                     XCB_SHAPE_SK_BOUNDING, 0, 0, region);
+  xcb_xfixes_destroy_region(_c(), region);
+
   uint32_t mask = XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y
                 | XCB_CONFIG_WINDOW_WIDTH | XCB_CONFIG_WINDOW_HEIGHT
                 | XCB_CONFIG_WINDOW_STACK_MODE;

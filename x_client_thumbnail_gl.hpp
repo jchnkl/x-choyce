@@ -3,6 +3,7 @@
 
 #include <fstream>
 #include <memory>
+#include <cmath>
 #include <unordered_map>
 #include <xcb/xcb.h>
 #include <xcb/damage.h>

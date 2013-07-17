@@ -3,6 +3,7 @@
 #include <climits>
 #include <cstring>
 #include <xcb/damage.h>
+#include <xcb/xfixes.h>
 #include <xcb/xinerama.h>
 #include <xcb/xcb_keysyms.h>
 
@@ -37,6 +38,7 @@ x_connection::x_connection(std::shared_ptr<x_ewmh> ewmh,
   init_gl();
   init_damage();
   init_render();
+  init_xfixes();
   init_xinerama();
   update_input(_root_window, XCB_EVENT_MASK_STRUCTURE_NOTIFY);
 }
@@ -450,6 +452,14 @@ x_connection::init_damage(void)
 
 void
 x_connection::init_render(void) { xcb_prefetch_extension_data(_c, &xcb_render_id); }
+
+void
+x_connection::init_xfixes(void)
+{
+  xcb_prefetch_extension_data(_c, &xcb_xfixes_id);
+  xcb_xfixes_query_version(_c, XCB_XFIXES_MAJOR_VERSION,
+                               XCB_XFIXES_MINOR_VERSION);
+}
 
 void
 x_connection::init_xinerama(void)
