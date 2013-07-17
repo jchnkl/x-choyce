@@ -101,6 +101,27 @@ x_connection::default_visual_of_screen(void)
   return NULL;
 }
 
+xcb_visualtype_t * const
+x_connection::find_visual(unsigned int depth)
+{
+  xcb_depth_iterator_t depth_iter =
+    xcb_screen_allowed_depths_iterator(default_screen());
+
+  if (depth_iter.data) {
+    for (; depth_iter.rem; xcb_depth_next (&depth_iter)) {
+      if (depth_iter.data->depth == depth) {
+        xcb_visualtype_iterator_t visual_iter =
+          xcb_depth_visuals_iterator(depth_iter.data);
+        for (; visual_iter.rem; xcb_visualtype_next(&visual_iter)) {
+          return visual_iter.data;
+        }
+      }
+    }
+  }
+
+  return NULL;
+}
+
 void
 x_connection::flush(void) const { xcb_flush(_c); }
 
@@ -564,24 +585,4 @@ make_picture(const x_connection & c, xcb_window_t window)
   }
 
   return XCB_NONE;
-}
-
-xcb_visualtype_t *
-argb_visual(const x_connection & c)
-{
-  xcb_depth_iterator_t depth_iter =
-    xcb_screen_allowed_depths_iterator(c.default_screen());
-
-  if (depth_iter.data) {
-    for (; depth_iter.rem; xcb_depth_next (&depth_iter)) {
-      if (depth_iter.data->depth == 32) {
-        xcb_visualtype_iterator_t visual_iter = xcb_depth_visuals_iterator(depth_iter.data);
-        for (; visual_iter.rem; xcb_visualtype_next(&visual_iter)) {
-          return visual_iter.data;
-        }
-      }
-    }
-  }
-
-  return NULL;
 }

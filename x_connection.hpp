@@ -36,6 +36,7 @@ class x_connection : public x_event_handler_t
     void select_input(xcb_window_t window, uint32_t event_mask) const;
     void update_input(xcb_window_t window, uint32_t event_mask) const;
     xcb_visualtype_t * default_visual_of_screen(void);
+    xcb_visualtype_t * const find_visual(unsigned int depth);
     void flush(void) const;
     xcb_screen_t * const default_screen(void) const;
     xcb_window_t const & root_window(void) const;
@@ -104,8 +105,5 @@ render_find_visual_format(const x_connection & c, xcb_visualid_t visual);
 
 xcb_render_picture_t
 make_picture(const x_connection & c, xcb_window_t window);
-
-xcb_visualtype_t *
-argb_visual(const x_connection & c);
 
 #endif
