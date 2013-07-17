@@ -30,26 +30,25 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
   _thumbnail_window = xcb_generate_id(_c());
   xcb_colormap_t colormap = xcb_generate_id(_c());
 
-  GLint gl_vi_attr[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
-  XVisualInfo * vi =
-    glXChooseVisual(_c.dpy(), DefaultScreen(_c.dpy()), gl_vi_attr);
+  unsigned int depth = 32;
+  xcb_visualtype_t * const vt = _c.find_visual(depth);
 
   xcb_create_colormap(_c(), XCB_COLORMAP_ALLOC_NONE, colormap,
-                      _c.root_window(), vi->visualid);
+                      _c.root_window(), vt->visual_id);
 
-  uint32_t valuemask = XCB_CW_OVERRIDE_REDIRECT | XCB_CW_COLORMAP;
-  uint32_t valuelist[] = { 1, colormap, 0 };
-  xcb_create_window(_c(), XCB_COPY_FROM_PARENT, _thumbnail_window,
+  uint32_t valuemask = XCB_CW_BACK_PIXEL | XCB_CW_BORDER_PIXEL
+                     | XCB_CW_OVERRIDE_REDIRECT | XCB_CW_COLORMAP;
+  uint32_t valuelist[] = { 0, 0, 1, colormap };
+  xcb_create_window(_c(), depth, _thumbnail_window,
                     _c.root_window(), 0, 0,
                     _x_client->rect().width(), _x_client->rect().height(),
-                    0, XCB_WINDOW_CLASS_INPUT_OUTPUT, vi->visualid,
+                    0, XCB_WINDOW_CLASS_INPUT_OUTPUT, vt->visual_id,
                     valuemask, valuelist);
 
   xcb_free_colormap(_c(), colormap);
 
-  configure_gl(vi);
+  configure_gl();
   init_gl_shader();
-  delete vi;
 
   update();
 }
