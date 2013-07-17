@@ -115,14 +115,12 @@ void
 x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height)
 {
   glXMakeCurrent(_c.dpy(), _thumbnail_window, _gl_ctx);
+  glEnable(GL_SCISSOR_TEST);
+  glScissor(x, y, width, height);
 
   glViewport(0, 0, _rectangle.width(), _rectangle.height());
 
-  glEnable(GL_SCISSOR_TEST);
-  glScissor(x * _scale, y * _scale, width * _scale, height * _scale);
-  glDisable(GL_SCISSOR_TEST);
-
-  glClearColor(0.0, 0.0, 0.0, 1.0);
+  glClearColor(0.0, 0.0, 0.0, 0.0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
   glMatrixMode(GL_PROJECTION);
@@ -139,6 +137,8 @@ x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height
   glEnd();
 
   glXSwapBuffers(_c.dpy(), _thumbnail_window);
+
+  glDisable(GL_SCISSOR_TEST);
   glXMakeCurrent(_c.dpy(), XCB_NONE, NULL);
 }
 
