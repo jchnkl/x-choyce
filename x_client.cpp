@@ -51,6 +51,29 @@ void x_client::update_geometry(void)
   delete geometry_reply;
 }
 
+bool
+x_client::handle(xcb_generic_event_t * ge)
+{
+  if (XCB_CONFIGURE_NOTIFY == (ge->response_type & ~0x80)) {
+    xcb_configure_notify_event_t * e = (xcb_configure_notify_event_t *)ge;
+    if (e->window == _window) {
+      _rectangle.x() = e->x; _rectangle.y() = e->y;
+      _rectangle.width() = e->width; _rectangle.height() = e->height;
+    }
+
+    if (e->window == _c.root_window() || e->window == _window) {
+      update_parent_window();
+      update_name_window_pixmap();
+    }
+
+    return true;
+  }
+
+  return false;
+}
+
+// private
+
 void x_client::get_net_wm_desktop(void)
 {
   std::string atom_name = "_NET_WM_DESKTOP";
@@ -79,29 +102,6 @@ void x_client::get_net_wm_desktop(void)
 
   delete property_reply;
 }
-
-bool
-x_client::handle(xcb_generic_event_t * ge)
-{
-  if (XCB_CONFIGURE_NOTIFY == (ge->response_type & ~0x80)) {
-    xcb_configure_notify_event_t * e = (xcb_configure_notify_event_t *)ge;
-    if (e->window == _window) {
-      _rectangle.x() = e->x; _rectangle.y() = e->y;
-      _rectangle.width() = e->width; _rectangle.height() = e->height;
-    }
-
-    if (e->window == _c.root_window() || e->window == _window) {
-      update_parent_window();
-      update_name_window_pixmap();
-    }
-
-    return true;
-  }
-
-  return false;
-}
-
-// private
 
 void
 x_client::update_parent_window(void)
