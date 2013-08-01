@@ -36,6 +36,7 @@ x_connection::x_connection(std::shared_ptr<x_ewmh> ewmh,
   }
 
   init_gl();
+  init_composite();
   init_damage();
   init_render();
   init_xfixes();
@@ -454,6 +455,18 @@ x_connection::init_gl(void)
     glXGetProcAddress((const GLubyte *)"glDeleteProgram");
   glGenerateMipmapEXT = (PFNGLGENERATEMIPMAPEXTPROC)
     glXGetProcAddress((const GLubyte *)"glGenerateMipmapEXT");
+}
+
+void
+x_connection::init_composite(void)
+{
+  xcb_prefetch_extension_data(_c, &xcb_composite_id);
+
+  xcb_composite_query_version(_c, XCB_COMPOSITE_MAJOR_VERSION,
+                                  XCB_COMPOSITE_MINOR_VERSION);
+
+  xcb_composite_redirect_subwindows(_c, _root_window,
+                                    XCB_COMPOSITE_REDIRECT_AUTOMATIC);
 }
 
 void

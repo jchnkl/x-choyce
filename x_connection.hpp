@@ -7,6 +7,7 @@
 #include <map>
 #include <xcb/xcb.h>
 #include <xcb/render.h>
+#include <xcb/composite.h>
 
 #include <X11/Xlib.h>
 #include <X11/Xlib-xcb.h>
@@ -93,6 +94,7 @@ class x_connection : public x_event_handler_t
 
     void find_default_screen(void);
     void init_gl(void);
+    void init_composite(void);
     void init_damage(void);
     void init_render(void);
     void init_xfixes(void);
