@@ -27,6 +27,8 @@ class x_client : public x_event_handler_t {
     const rectangle &  rect(void) const;
           xcb_window_t & window(void);
     const xcb_window_t & window(void) const;
+          xcb_window_t & parent(void);
+    const xcb_window_t & parent(void) const;
           unsigned int   net_wm_desktop(void) const;
 
     bool handle(xcb_generic_event_t * ge);
@@ -37,8 +39,10 @@ class x_client : public x_event_handler_t {
     rectangle _rectangle;
     unsigned int _net_wm_desktop;
     xcb_window_t _window;
+    xcb_window_t _parent;
 
     void get_net_wm_desktop(void);
+    void update_parent_window(void);
 };
 
 

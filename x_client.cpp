@@ -7,6 +7,8 @@ x_client::x_client(x_connection & c, const xcb_window_t & window)
   _c.update_input(_window, XCB_EVENT_MASK_STRUCTURE_NOTIFY);
   update_geometry();
   get_net_wm_desktop();
+
+  update_parent_window();
 }
 
 x_client::~x_client(void)
@@ -18,6 +20,8 @@ x_client::~x_client(void)
 const rectangle &  x_client::rect(void) const { return _rectangle; }
       xcb_window_t & x_client::window(void)          { return _window; }
 const xcb_window_t & x_client::window(void) const    { return _window; }
+      xcb_window_t & x_client::parent(void)          { return _parent; }
+const xcb_window_t & x_client::parent(void) const    { return _parent; }
 
 unsigned int x_client::net_wm_desktop(void) const { return _net_wm_desktop; }
 
@@ -72,11 +76,27 @@ x_client::handle(xcb_generic_event_t * ge)
       _rectangle.x() = e->x; _rectangle.y() = e->y;
       _rectangle.width() = e->width; _rectangle.height() = e->height;
     }
+
+    if (e->window == _c.root_window() || e->window == _window) {
+      update_parent_window();
+    }
+
     return true;
   }
 
   return false;
 }
+
+// private
+
+void
+x_client::update_parent_window(void)
+{
+  auto query_tree_result = _c.query_tree(_window);
+  _parent = std::get<0>(query_tree_result);
+}
+
+// free functions
 
 std::list<x_client>
 make_x_clients(x_connection & c, const std::vector<xcb_window_t> & windows)
