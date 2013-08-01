@@ -274,7 +274,14 @@ x_client_thumbnail::configure_parent_pixmap(void)
 {
   xcb_free_pixmap(_c(), _parent_pixmap);
   _parent_pixmap = xcb_generate_id(_c());
-  xcb_composite_name_window_pixmap(_c(), _x_client->window(), _parent_pixmap);
+
+  xcb_window_t parent = _x_client->window(), next_parent = _x_client->parent();
+  while (next_parent != _c.root_window()) {
+    parent = next_parent;
+    next_parent = std::get<0>(_c.query_tree(next_parent));
+  }
+
+  xcb_composite_name_window_pixmap(_c(), parent, _parent_pixmap);
 }
 
 void
