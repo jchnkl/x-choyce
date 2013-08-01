@@ -57,8 +57,6 @@ class x_client_thumbnail : public x_event_handler_t
     xcb_window_t _thumbnail_window;
     xcb_damage_damage_t _damage;
 
-    xcb_pixmap_t _parent_pixmap;
-
     GLXContext _gl_ctx;
     GLXPixmap _thumbnail_gl_pixmap;
     std::unordered_map<std::string, GLuint> _programs;
@@ -66,7 +64,6 @@ class x_client_thumbnail : public x_event_handler_t
     void purge(void);
     void update(int x, int y, unsigned int width, unsigned int height);
     void configure_thumbnail_window(void);
-    void configure_parent_pixmap(void);
     void configure_gl(XVisualInfo * vi = NULL);
     void init_gl_shader(void);
     void release_gl(void);

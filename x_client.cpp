@@ -9,6 +9,7 @@ x_client::x_client(x_connection & c, const xcb_window_t & window)
   get_net_wm_desktop();
 
   update_parent_window();
+  update_name_window_pixmap();
 }
 
 x_client::~x_client(void)
@@ -22,6 +23,18 @@ const rectangle &  x_client::rect(void) const { return _rectangle; }
 const xcb_window_t & x_client::window(void) const    { return _window; }
       xcb_window_t & x_client::parent(void)          { return _parent; }
 const xcb_window_t & x_client::parent(void) const    { return _parent; }
+
+xcb_window_t &
+x_client::name_window_pixmap(void)
+{
+  return _name_window_pixmap;
+}
+
+const xcb_window_t &
+x_client::name_window_pixmap(void) const
+{
+  return _name_window_pixmap;
+}
 
 unsigned int x_client::net_wm_desktop(void) const { return _net_wm_desktop; }
 
@@ -79,6 +92,7 @@ x_client::handle(xcb_generic_event_t * ge)
 
     if (e->window == _c.root_window() || e->window == _window) {
       update_parent_window();
+      update_name_window_pixmap();
     }
 
     return true;
@@ -94,6 +108,20 @@ x_client::update_parent_window(void)
 {
   auto query_tree_result = _c.query_tree(_window);
   _parent = std::get<0>(query_tree_result);
+}
+
+void
+x_client::update_name_window_pixmap(void)
+{
+  xcb_window_t parent = _window, next_parent = _parent;
+  while (next_parent != _c.root_window()) {
+    parent = next_parent;
+    next_parent = std::get<0>(_c.query_tree(next_parent));
+  }
+
+  xcb_free_pixmap(_c(), _name_window_pixmap);
+  _name_window_pixmap = xcb_generate_id(_c());
+  xcb_composite_name_window_pixmap(_c(), parent, _name_window_pixmap);
 }
 
 // free functions

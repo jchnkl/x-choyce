@@ -25,8 +25,6 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
 
   _damage = xcb_generate_id(_c());
 
-  configure_parent_pixmap();
-
   _thumbnail_window = xcb_generate_id(_c());
   xcb_colormap_t colormap = xcb_generate_id(_c());
 
@@ -58,7 +56,6 @@ x_client_thumbnail::~x_client_thumbnail(void)
   _c.deregister_handler(_c.damage_event_id(), this);
   _c.deregister_handler(XCB_CONFIGURE_NOTIFY, this);
   release_gl();
-  xcb_free_pixmap(_c(), _parent_pixmap);
   xcb_destroy_window(_c(), _thumbnail_window);
 }
 
@@ -103,7 +100,6 @@ x_client_thumbnail::update(void)
 void
 x_client_thumbnail::purge(void)
 {
-  configure_parent_pixmap();
   release_gl();
   configure_gl();
   init_gl_shader();
@@ -270,21 +266,6 @@ x_client_thumbnail::configure_thumbnail_window(void)
 }
 
 void
-x_client_thumbnail::configure_parent_pixmap(void)
-{
-  xcb_free_pixmap(_c(), _parent_pixmap);
-  _parent_pixmap = xcb_generate_id(_c());
-
-  xcb_window_t parent = _x_client->window(), next_parent = _x_client->parent();
-  while (next_parent != _c.root_window()) {
-    parent = next_parent;
-    next_parent = std::get<0>(_c.query_tree(next_parent));
-  }
-
-  xcb_composite_name_window_pixmap(_c(), parent, _parent_pixmap);
-}
-
-void
 x_client_thumbnail::configure_gl(XVisualInfo * vi)
 {
   const int pixmap_config[] = {
@@ -322,7 +303,8 @@ x_client_thumbnail::configure_gl(XVisualInfo * vi)
   GLXFBConfig * _gl_configs =
     glXChooseFBConfig(_c.dpy(), 0, pixmap_config, &config);
   _thumbnail_gl_pixmap =
-      glXCreatePixmap(_c.dpy(), _gl_configs[0], _parent_pixmap, pixmap_attr);
+      glXCreatePixmap(_c.dpy(), _gl_configs[0],
+                      _x_client->name_window_pixmap(), pixmap_attr);
   delete _gl_configs;
 
   GLuint _thumbnail_gl_texture_id;

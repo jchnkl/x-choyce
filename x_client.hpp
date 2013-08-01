@@ -29,6 +29,8 @@ class x_client : public x_event_handler_t {
     const xcb_window_t & window(void) const;
           xcb_window_t & parent(void);
     const xcb_window_t & parent(void) const;
+          xcb_pixmap_t & name_window_pixmap(void);
+    const xcb_pixmap_t & name_window_pixmap(void) const;
           unsigned int   net_wm_desktop(void) const;
 
     bool handle(xcb_generic_event_t * ge);
@@ -40,9 +42,11 @@ class x_client : public x_event_handler_t {
     unsigned int _net_wm_desktop;
     xcb_window_t _window;
     xcb_window_t _parent;
+    xcb_pixmap_t _name_window_pixmap;
 
     void get_net_wm_desktop(void);
     void update_parent_window(void);
+    void update_name_window_pixmap(void);
 };
 
 
