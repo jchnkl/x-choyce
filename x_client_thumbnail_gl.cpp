@@ -113,9 +113,15 @@ x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height
   glEnable(GL_SCISSOR_TEST);
   glScissor(x, y, width, height);
 
-  glViewport(0, 0, _rectangle.width(), _rectangle.height());
+  glViewport(_border_width, _border_width,
+             _rectangle.width() - 2 * _border_width,
+             _rectangle.height() - 2 * _border_width);
 
-  glClearColor(0.0, 0.0, 0.0, 0.0);
+  auto * bc = _highlight ? &_focused_border_color : &_unfocused_border_color;
+
+  glClearColor(std::get<0>(*bc), std::get<1>(*bc),
+               std::get<2>(*bc), std::get<3>(*bc));
+
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
   glMatrixMode(GL_PROJECTION);

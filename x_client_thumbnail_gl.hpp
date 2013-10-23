@@ -50,6 +50,14 @@ class x_client_thumbnail : public x_event_handler_t
     x_connection & _c;
     x_client_ptr _x_client;
 
+    int _border_width = 4;
+
+    // red, green, blue, alpha
+    std::tuple<double, double, double, double> _focused_border_color =
+      std::make_tuple(0.855, 0.648, 0.125, 0.75); // goldenrod
+    std::tuple<double, double, double, double> _unfocused_border_color =
+      std::make_tuple(0.25, 0.25, 0.25, 0.5);
+
     double _scale;
     bool _highlight = false, _visible = false, _purge = false;
     rectangle _rectangle;
