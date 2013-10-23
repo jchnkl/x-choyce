@@ -37,7 +37,7 @@ class x_event_source : public x_event_source_t {
         ge = xcb_wait_for_event(_c());
 
         if (! ge) {
-          continue;
+          break;
 
         } else {
           bool taken = false;
