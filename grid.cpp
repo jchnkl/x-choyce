@@ -28,8 +28,9 @@ grid_t::arrange(const rectangle & screen, unsigned int nrects) const
     int rowh = screen.height() / nrow;
     for (int r = 0; r < nrow; ++r) {
       rects.push_back(rectangle(c * colw + screen.x() + gap,
-                                  r * rowh + screen.y() + gap,
-                                  colw - 2 * gap, rowh - 2 * gap));
+                                r * rowh + screen.y() + gap,
+                                colw - 2 * gap,
+                                rowh - 2 * gap));
     }
   }
 
