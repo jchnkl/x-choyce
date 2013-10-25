@@ -1,6 +1,7 @@
 #ifndef _X_EVENT_SOURCE
 #define _X_EVENT_SOURCE
 
+#include <iostream>
 #include <algorithm>
 #include <list>
 #include <unordered_map>
