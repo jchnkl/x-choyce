@@ -119,7 +119,15 @@ x_client::update_name_window_pixmap(void)
 {
   xcb_free_pixmap(_c(), _name_window_pixmap);
   _name_window_pixmap = xcb_generate_id(_c());
-  xcb_composite_name_window_pixmap(_c(), parent, _name_window_pixmap);
+  xcb_void_cookie_t c = xcb_composite_name_window_pixmap_checked(
+      _c(), _parent, _name_window_pixmap);
+
+  xcb_generic_error_t * e = xcb_request_check(_c(), c);
+
+  if (e) {
+    delete e;
+    _name_window_pixmap = XCB_NONE;
+  }
 }
 
 // free functions
