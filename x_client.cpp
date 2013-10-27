@@ -106,19 +106,17 @@ void x_client::get_net_wm_desktop(void)
 void
 x_client::update_parent_window(void)
 {
-  auto query_tree_result = _c.query_tree(_window);
-  _parent = std::get<0>(query_tree_result);
+  xcb_window_t next_parent = _window;
+
+  while (next_parent != _c.root_window() && next_parent != XCB_NONE) {
+    _parent = next_parent;
+    next_parent = std::get<0>(_c.query_tree(next_parent));
+  }
 }
 
 void
 x_client::update_name_window_pixmap(void)
 {
-  xcb_window_t parent = _window, next_parent = _parent;
-  while (next_parent != _c.root_window()) {
-    parent = next_parent;
-    next_parent = std::get<0>(_c.query_tree(next_parent));
-  }
-
   xcb_free_pixmap(_c(), _name_window_pixmap);
   _name_window_pixmap = xcb_generate_id(_c());
   xcb_composite_name_window_pixmap(_c(), parent, _name_window_pixmap);
