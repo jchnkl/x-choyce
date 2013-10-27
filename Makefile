@@ -1,6 +1,6 @@
 LIBS=xcb xcb-atom xcb-keysyms xcb-composite xcb-damage xcb-xinerama \
 		 xcb-renderutil xcb-xfixes x11 x11-xcb gl
-CXXFLAGS=-g -std=c++11 -Wall $(shell pkg-config --cflags ${LIBS})
+CXXFLAGS=-g -std=c++11 -Wall -O3 $(shell pkg-config --cflags ${LIBS})
 LDFLAGS=$(shell pkg-config --libs ${LIBS})
 
 CPPSRCS=main.cpp \
