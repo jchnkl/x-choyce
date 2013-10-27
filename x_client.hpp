@@ -36,6 +36,8 @@ class x_client : public x_event_handler_t {
     bool handle(xcb_generic_event_t * ge);
     void update_geometry(void);
 
+    void update_name_window_pixmap(void);
+
   private:
     x_connection & _c;
     rectangle _rectangle;
@@ -46,7 +48,6 @@ class x_client : public x_event_handler_t {
 
     void get_net_wm_desktop(void);
     void update_parent_window(void);
-    void update_name_window_pixmap(void);
 };
 
 
