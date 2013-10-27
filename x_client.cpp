@@ -122,10 +122,10 @@ x_client::update_name_window_pixmap(void)
   xcb_void_cookie_t c = xcb_composite_name_window_pixmap_checked(
       _c(), _parent, _name_window_pixmap);
 
-  xcb_generic_error_t * e = xcb_request_check(_c(), c);
+  xcb_generic_error_t * error = xcb_request_check(_c(), c);
 
-  if (e) {
-    delete e;
+  if (error) {
+    delete error;
     _name_window_pixmap = XCB_NONE;
   }
 }
