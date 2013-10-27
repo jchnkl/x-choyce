@@ -275,6 +275,10 @@ x_client_thumbnail::configure_thumbnail_window(void)
 void
 x_client_thumbnail::configure_gl(XVisualInfo * vi)
 {
+  while (_x_client->name_window_pixmap() == XCB_NONE) {
+    _x_client->update_name_window_pixmap();
+  }
+
   const int pixmap_config[] = {
     GLX_BIND_TO_TEXTURE_RGBA_EXT, True,
     GLX_DRAWABLE_TYPE, GLX_PIXMAP_BIT,
