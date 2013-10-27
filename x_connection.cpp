@@ -256,17 +256,22 @@ x_connection::keysym_to_string(xcb_keysym_t keysym) const
 std::tuple<xcb_window_t, std::vector<xcb_window_t>>
 x_connection::query_tree(xcb_window_t parent)
 {
+  xcb_generic_error_t * error;
   xcb_query_tree_cookie_t cookie = xcb_query_tree(_c, parent);
-  xcb_query_tree_reply_t * reply = xcb_query_tree_reply(_c, cookie, NULL);
+  xcb_query_tree_reply_t * reply = xcb_query_tree_reply(_c, cookie, &error);
+
+  if (error) {
+    delete error;
+    return std::make_tuple(XCB_NONE, std::vector<xcb_window_t>());
+  }
 
   std::tuple<xcb_window_t, std::vector<xcb_window_t>> result;
 
   if (reply) {
     int length = xcb_query_tree_children_length(reply);
     xcb_window_t * windows = xcb_query_tree_children(reply);
-    result =
-      std::make_tuple(reply->parent,
-                      std::vector<xcb_window_t>(windows, windows + length));
+    result = std::make_tuple(
+        reply->parent, std::vector<xcb_window_t>(windows, windows + length));
     delete reply;
   }
 
