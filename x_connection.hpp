@@ -56,6 +56,8 @@ class x_connection : public x_event_handler_t
     xcb_window_t net_active_window(void) const;
     void request_change_current_desktop(unsigned int desktop_id) const;
     void request_change_active_window(xcb_window_t window) const;
+    // root, window; XCB_NONE ^= use root_window
+    std::pair<position, position> query_pointer(const xcb_window_t & window = XCB_NONE) const;
     rectangle current_screen(void) const;
     bool handle(xcb_generic_event_t * ge);
 

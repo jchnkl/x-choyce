@@ -372,6 +372,26 @@ x_connection::request_change_active_window(xcb_window_t window) const
   xcb_send_event(_c, false, _root_window, mask, (const char *)&event);
 }
 
+// root, window
+std::pair<position, position>
+x_connection::query_pointer(const xcb_window_t & window) const
+{
+  xcb_generic_error_t * error;
+  xcb_query_pointer_cookie_t c =
+    xcb_query_pointer(_c, window == XCB_NONE ? _root_window : window);
+  xcb_query_pointer_reply_t * r = xcb_query_pointer_reply(_c, c, &error);
+
+  if (error) {
+    delete error;
+    throw "query_pointer failed";
+  } else {
+    position root = { r->root_x, r->root_y };
+    position win  = { r->win_x,  r->win_y };
+    delete r;
+    return { root, win };
+  }
+}
+
 rectangle
 x_connection::current_screen(void) const
 {
