@@ -62,6 +62,8 @@ x_client_thumbnail::~x_client_thumbnail(void)
 void
 x_client_thumbnail::show(void)
 {
+  if (_visible) return;
+
   _visible = true;
   xcb_damage_create(_c(), _damage, _x_client->window(),
                     XCB_DAMAGE_REPORT_LEVEL_NON_EMPTY);
