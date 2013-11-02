@@ -38,6 +38,7 @@ class x_client_thumbnail : public x_event_handler_t
     void hide(void);
     void select(void);
     void update(void);
+    const xcb_window_t & window(void);
     void highlight(bool want_highlight);
 
     bool handle(xcb_generic_event_t * ge);

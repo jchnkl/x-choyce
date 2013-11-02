@@ -143,6 +143,12 @@ x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height
   glXMakeCurrent(_c.dpy(), XCB_NONE, NULL);
 }
 
+const xcb_window_t &
+x_client_thumbnail::window(void)
+{
+  return _x_client->window();
+}
+
 void
 x_client_thumbnail::highlight(bool want_highlight)
 {
