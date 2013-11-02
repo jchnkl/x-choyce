@@ -40,6 +40,8 @@ class x_client_thumbnail_factory : public x_event_handler_t
 
     void update(bool all, unsigned int id = 0);
     void update(thumbnail_container_t & container);
+
+    rectangle query_current_screen(void);
 };
 
 #include "x_client_thumbnail_factory.cpp"

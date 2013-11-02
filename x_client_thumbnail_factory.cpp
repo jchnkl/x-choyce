@@ -32,7 +32,7 @@ void
 x_client_thumbnail_factory<container_t>::make(back_insert_iterator insert)
 {
   auto windows = _c.net_client_list_stacking();
-  auto rects = _layout->arrange(_c.current_screen(), windows.size());
+  auto rects = _layout->arrange(query_current_screen(), windows.size());
 
   for (size_t i = 0; i < windows.size(); ++i) {
     *insert = thumbnail_t::thumbnail_ptr(
@@ -94,7 +94,7 @@ void
 x_client_thumbnail_factory<container_t>::update(bool all, unsigned int id)
 {
   _windows = _c.net_client_list_stacking();
-  auto rects = _layout->arrange(_c.current_screen(), _windows.size());
+  auto rects = _layout->arrange(query_current_screen(), _windows.size());
 
   for (auto item = _thumbnails.begin(); item != _thumbnails.end(); ) {
     auto result = std::find(_windows.begin(), _windows.end(), item->first);
@@ -140,6 +140,21 @@ update(thumbnail_container_t & container)
       container.push_back(_thumbnails.at(window));
     } catch (...) {}
   }
+
+template<template<class t = thumbnail_t::thumbnail_ptr,
+                  class = std::allocator<t>>
+         class container_t>
+rectangle
+x_client_thumbnail_factory<container_t>::query_current_screen(void)
+{
+  rectangle screen = { 0, 0, 800, 600 };
+
+  try {
+    auto pos = _c.query_pointer();
+    screen = _c.current_screen(pos.first);
+  } catch (...) {}
+
+  return screen;
 }
 
 #endif
