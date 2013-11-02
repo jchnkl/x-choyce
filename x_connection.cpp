@@ -413,26 +413,18 @@ x_connection::get_geometry(const xcb_window_t & window) const
 }
 
 rectangle
-x_connection::current_screen(void) const
+x_connection::current_screen(const position & p) const
 {
-  xcb_get_geometry_cookie_t geometry_cookie =
-    xcb_get_geometry(_c, net_active_window());
-  xcb_get_geometry_reply_t * geometry_reply =
-    xcb_get_geometry_reply(_c, geometry_cookie, NULL);
-
-  if (geometry_reply) {
-    int cx = geometry_reply->x + geometry_reply->width / 2;
-    int cy = geometry_reply->y + geometry_reply->height / 2;
-    delete geometry_reply;
+  if (! _screens.empty()) {
     for (auto & screen : _screens) {
-      if (cx >= screen.x() && cx <= screen.x() + (int)screen.width()
-          && cy >= screen.y() && cy <= screen.y() + (int)screen.height()) {
+      if (p.x >= screen.x() && p.x <= screen.x() + (int)screen.width()
+          && p.y >= screen.y() && p.y <= screen.y() + (int)screen.height()) {
         return screen;
       }
     }
   }
 
-  return rectangle(0, 0, 800, 600);
+  throw "no screens available";
 }
 
 bool
@@ -587,7 +579,9 @@ x_connection::update_xinerama(void)
   xcb_xinerama_query_screens_reply_t * query_screens_reply =
     xcb_xinerama_query_screens_reply(_c, query_screens_cookie, NULL);
 
-  if (query_screens_reply) {
+  if (query_screens_reply
+      && 0 < xcb_xinerama_query_screens_screen_info_length(query_screens_reply))
+  {
     _screens.clear();
     xcb_xinerama_screen_info_t * screen_info =
       xcb_xinerama_query_screens_screen_info(query_screens_reply);
