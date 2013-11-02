@@ -224,6 +224,11 @@ x_client_thumbnail::update_rectangle(const rectangle & rect)
 
   _rectangle.x() = rect.x() + (rect.width() - _rectangle.width()) / 2;
   _rectangle.y() = rect.y() + (rect.height() - _rectangle.height()) / 2;
+
+  if (_visible) {
+    configure_thumbnail_window();
+    update();
+  }
 }
 
 void
