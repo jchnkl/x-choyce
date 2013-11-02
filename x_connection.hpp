@@ -58,6 +58,8 @@ class x_connection : public x_event_handler_t
     void request_change_active_window(xcb_window_t window) const;
     // root, window; XCB_NONE ^= use root_window
     std::pair<position, position> query_pointer(const xcb_window_t & window = XCB_NONE) const;
+    // XCB_NONE ^= use root_window
+    rectangle get_geometry(const xcb_window_t & window = XCB_NONE) const;
     rectangle current_screen(void) const;
     bool handle(xcb_generic_event_t * ge);
 

@@ -393,6 +393,26 @@ x_connection::query_pointer(const xcb_window_t & window) const
 }
 
 rectangle
+x_connection::get_geometry(const xcb_window_t & window) const
+{
+  xcb_generic_error_t * error;
+  xcb_get_geometry_cookie_t c =
+    xcb_get_geometry(_c, window == XCB_NONE ? _root_window : window);
+  xcb_get_geometry_reply_t * r = xcb_get_geometry_reply(_c, c, &error);
+
+  if (error) {
+    delete error;
+    throw "get_geometry failed";
+  } else {
+    rectangle rect;
+    rect._position = { r->x, r->y };
+    rect._dimension = { r->width, r->height };
+    delete r;
+    return rect;
+  }
+}
+
+rectangle
 x_connection::current_screen(void) const
 {
   xcb_get_geometry_cookie_t geometry_cookie =
