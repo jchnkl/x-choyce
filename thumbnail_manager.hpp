@@ -10,7 +10,9 @@
 #include "x_event_handler_t.hpp"
 #include "x_connection.hpp"
 
-class thumbnail_manager : public chooser_t {
+class thumbnail_manager : public chooser_t
+                        , public thumbnail_container_t<std::vector>
+{
   public:
     thumbnail_manager(thumbnail_factory_t<std::vector> * thumbnail_factory);
 
@@ -21,6 +23,10 @@ class thumbnail_manager : public chooser_t {
     void next(void);
     void prev(void);
     void select(void);
+
+    inline void notify(void);
+    inline std::vector<thumbnail_t::thumbnail_ptr> & operator*(void);
+    inline std::vector<thumbnail_t::thumbnail_ptr> * operator->(void);
 
   private:
     typedef std::vector<thumbnail_t::thumbnail_ptr> thumbnail_list_t;

@@ -4,7 +4,7 @@ thumbnail_manager::thumbnail_manager(
     thumbnail_factory_t<std::vector> * thumbnail_factory)
   : _thumbnail_factory(thumbnail_factory)
 {
-  _thumbnail_factory->manage(id, _thumbnails);
+  _thumbnail_factory->manage(id, this);
 }
 
 void
@@ -34,6 +34,23 @@ void
 thumbnail_manager::select(void)
 {
   (*_thumbnail_cyclic_iterator)->select();
+}
+
+inline void
+thumbnail_manager::notify(void)
+{
+}
+
+inline std::vector<thumbnail_t::thumbnail_ptr> &
+thumbnail_manager::operator*(void)
+{
+  return _thumbnails;
+}
+
+inline std::vector<thumbnail_t::thumbnail_ptr> *
+thumbnail_manager::operator->(void)
+{
+  return &_thumbnails;
 }
 
 void
