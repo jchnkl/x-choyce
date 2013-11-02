@@ -38,8 +38,62 @@ cyclic_iterator<T>::operator->(void)
   return &(*_iterator);
 }
 
-// prefix operator: ++t
   template<typename T> typename cyclic_iterator<T>::self_type
+cyclic_iterator<T>::operator+(int n)
+{
+  cyclic_iterator<T> clone(*this);
+  clone += n;
+  return clone;
+}
+
+  template<typename T> typename cyclic_iterator<T>::self_type
+cyclic_iterator<T>::operator-(int n)
+{
+  cyclic_iterator<T> clone(*this);
+  clone -= n;
+  return clone;
+}
+
+  template<typename T> typename cyclic_iterator<T>::self_type &
+cyclic_iterator<T>::operator+=(int n)
+{
+  if (n != 0) {
+
+    int distance = (_container->end() - _iterator) - 1;
+    n %= _container->size();
+
+    if (n <= distance) {
+      _iterator += n;
+    } else {
+      _iterator = _container->begin() + (n - 1 - distance);
+    }
+
+  }
+
+  return *this;
+}
+
+  template<typename T> typename cyclic_iterator<T>::self_type &
+cyclic_iterator<T>::operator-=(int n)
+{
+  if (n != 0) {
+
+    int distance = _iterator - _container->begin();
+    n %= (_container->size() + 0);
+
+    if (n <= distance) {
+      _iterator -= n;
+    } else {
+      _iterator = _container->end() - (n - distance);
+    }
+
+  }
+
+  return *this;
+}
+
+// prefix operator: ++t
+  template<typename T> typename cyclic_iterator<T>::self_type &
 cyclic_iterator<T>::operator++(void)
 {
   if (_valid) {
@@ -61,7 +115,7 @@ cyclic_iterator<T>::operator++(int)
 }
 
 // prefix operator: --t
-  template<typename T> typename cyclic_iterator<T>::self_type
+  template<typename T> typename cyclic_iterator<T>::self_type &
 cyclic_iterator<T>::operator--(void)
 {
   if (_valid) {
@@ -114,7 +168,7 @@ const_cyclic_iterator<T>::const_cyclic_iterator(const T * container)
 
 template<typename T>
 const_cyclic_iterator<T>::const_cyclic_iterator(const self_type & rhs)
-  : _container(rhs._container), _iterator(rhs._iterator) {}
+  : _valid(rhs._valid), _container(rhs._container), _iterator(rhs._iterator) {}
 
   template<typename T> typename const_cyclic_iterator<T>::self_type
 const_cyclic_iterator<T>::operator=(const self_type & rhs)
@@ -137,8 +191,62 @@ const_cyclic_iterator<T>::operator->(void)
   return &(*_iterator);
 }
 
-// prefix operator: ++t
   template<typename T> typename const_cyclic_iterator<T>::self_type
+const_cyclic_iterator<T>::operator+(int n)
+{
+  const_cyclic_iterator<T> clone(*this);
+  clone += n;
+  return clone;
+}
+
+  template<typename T> typename const_cyclic_iterator<T>::self_type
+const_cyclic_iterator<T>::operator-(int n)
+{
+  const_cyclic_iterator<T> clone(*this);
+  clone -= n;
+  return clone;
+}
+
+  template<typename T> typename const_cyclic_iterator<T>::self_type &
+const_cyclic_iterator<T>::operator+=(int n)
+{
+  if (n != 0) {
+
+    int distance = (_container->end() - _iterator) - 1;
+    n %= _container->size();
+
+    if (n <= distance) {
+      _iterator += n;
+    } else {
+      _iterator = _container->begin() + (n - 1 - distance);
+    }
+
+  }
+
+  return *this;
+}
+
+  template<typename T> typename const_cyclic_iterator<T>::self_type &
+const_cyclic_iterator<T>::operator-=(int n)
+{
+  if (n != 0) {
+
+    int distance = _iterator - _container->begin();
+    n %= (_container->size() + 0);
+
+    if (n <= distance) {
+      _iterator -= n;
+    } else {
+      _iterator = _container->end() - (n - distance);
+    }
+
+  }
+
+  return *this;
+}
+
+// prefix operator: ++t
+  template<typename T> typename const_cyclic_iterator<T>::self_type &
 const_cyclic_iterator<T>::operator++(void)
 {
   if (_valid) {
@@ -160,7 +268,7 @@ const_cyclic_iterator<T>::operator++(int)
 }
 
 // prefix operator: --t
-  template<typename T> typename const_cyclic_iterator<T>::self_type
+  template<typename T> typename const_cyclic_iterator<T>::self_type &
 const_cyclic_iterator<T>::operator--(void)
 {
   if (_valid) {
