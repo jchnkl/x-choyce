@@ -37,6 +37,10 @@ class thumbnail_manager : public chooser_t
 
     const unsigned int id = 0;
 
+    bool _visible = false;
+    xcb_window_t _next_window = XCB_NONE;
+    xcb_window_t _current_window = XCB_NONE;
+
     std::vector<thumbnail_t::thumbnail_ptr> _thumbnails;
     thumbnail_cyclic_iterator _thumbnail_cyclic_iterator;
 
