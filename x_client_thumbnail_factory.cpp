@@ -134,9 +134,29 @@ void
 x_client_thumbnail_factory<container_t>::
 update(thumbnail_container_t<container_t> & container)
 {
-  container->clear();
-      container->push_back(_thumbnails.at(window));
+  bool needs_update = false;
+
+  if (container->size() == _windows.size()) {
+    for (std::size_t i = 0; i < _windows.size(); ++i) {
+      if ((*container)[i]->window() != _windows[i]) {
+        needs_update = true;
+        break;
+      }
+    }
+  } else {
+    needs_update = true;
   }
+
+  if (needs_update) {
+    container->clear();
+    for (auto & window : _windows) {
+      try {
+        container->push_back(_thumbnails.at(window));
+      } catch (...) {}
+    }
+    container.notify();
+  }
+}
 
 template<template<class t = thumbnail_t::thumbnail_ptr,
                   class = std::allocator<t>>
