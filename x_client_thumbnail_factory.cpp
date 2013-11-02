@@ -45,10 +45,10 @@ template<template<class t = thumbnail_t::thumbnail_ptr,
          class container_t>
 void
 x_client_thumbnail_factory<container_t>::
-manage(unsigned int id, thumbnail_container_t & container)
+manage(unsigned int id, thumbnail_container_t<container_t> * container)
 {
-  _container[id] = &container;
-  update(container);
+  _container[id] = container;
+  update(*container);
 }
 
 template<template<class t = thumbnail_t::thumbnail_ptr,
@@ -132,13 +132,10 @@ template<template<class t = thumbnail_t::thumbnail_ptr,
          class container_t>
 void
 x_client_thumbnail_factory<container_t>::
-update(thumbnail_container_t & container)
+update(thumbnail_container_t<container_t> & container)
 {
-  container.clear();
-  for (auto & window : _windows) {
-    try {
-      container.push_back(_thumbnails.at(window));
-    } catch (...) {}
+  container->clear();
+      container->push_back(_thumbnails.at(window));
   }
 
 template<template<class t = thumbnail_t::thumbnail_ptr,

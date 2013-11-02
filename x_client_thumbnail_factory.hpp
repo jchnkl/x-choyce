@@ -14,7 +14,6 @@ template<template<class t = thumbnail_t::thumbnail_ptr,
 class x_client_thumbnail_factory : public x_event_handler_t
                                  , public thumbnail_factory_t<container_t> {
   public:
-    typedef container_t<thumbnail_t::thumbnail_ptr> thumbnail_container_t;
     typedef std::back_insert_iterator<container_t<thumbnail_t::thumbnail_ptr>>
       back_insert_iterator;
 
@@ -22,7 +21,7 @@ class x_client_thumbnail_factory : public x_event_handler_t
     ~x_client_thumbnail_factory(void);
 
     void make(back_insert_iterator insert);
-    void manage(unsigned int id, thumbnail_container_t & container);
+    void manage(unsigned int id, thumbnail_container_t<container_t> * container);
     void giveup(unsigned int id);
     void update(unsigned int id);
 
@@ -36,10 +35,11 @@ class x_client_thumbnail_factory : public x_event_handler_t
     std::vector<xcb_window_t> _windows;
     std::unordered_map<xcb_window_t, x_client_thumbnail_ptr> _thumbnails;
 
-    std::unordered_map<unsigned int, thumbnail_container_t *> _container;
+    std::unordered_map<unsigned int,
+                       thumbnail_container_t<container_t> *> _container;
 
     void update(bool all, unsigned int id = 0);
-    void update(thumbnail_container_t & container);
+    void update(thumbnail_container_t<container_t> & container);
 
     rectangle query_current_screen(void);
 };
