@@ -69,6 +69,24 @@ thumbnail_manager::select(const xcb_window_t & window)
   }
 }
 
+void
+thumbnail_manager::highlight(const unsigned int & window)
+{
+  for (auto & item : _thumbnails) {
+    if (item.second->id() == window) {
+      try {
+        _thumbnails.at(_current_window)->highlight(false);
+        item.second->highlight(true);
+        while (*_cyclic_iterator != item.first) ++_cyclic_iterator;
+        _next_window = *(_cyclic_iterator + 1);
+        _current_window = *_cyclic_iterator;
+      } catch (...) {}
+
+      break;
+    }
+  }
+}
+
 bool
 thumbnail_manager::handle(xcb_generic_event_t * ge)
 {

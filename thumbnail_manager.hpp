@@ -26,6 +26,7 @@ class thumbnail_manager : public chooser_t
     void next(void);
     void prev(void);
     void select(const xcb_window_t & window = XCB_NONE);
+    void highlight(const unsigned int & window = XCB_NONE);
 
     bool handle(xcb_generic_event_t *);
 
