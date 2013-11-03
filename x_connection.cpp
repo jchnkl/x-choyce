@@ -177,6 +177,23 @@ x_connection::ungrab_keyboard(void) const
   xcb_ungrab_keyboard(_c, XCB_TIME_CURRENT_TIME);
 }
 
+void
+x_connection::grab_pointer(xcb_window_t grab_window, uint16_t event_mask) const
+{
+  xcb_grab_pointer_cookie_t c =
+    xcb_grab_pointer(_c, false, grab_window, event_mask,
+                     XCB_GRAB_MODE_ASYNC, XCB_GRAB_MODE_ASYNC,
+                     XCB_NONE, XCB_NONE, XCB_CURRENT_TIME);
+  xcb_grab_pointer_reply_t * r = xcb_grab_pointer_reply(_c, c, NULL);
+  if (r) delete r;
+}
+
+void
+x_connection::ungrab_pointer(void) const
+{
+  xcb_ungrab_pointer(_c, XCB_CURRENT_TIME);
+}
+
 x_connection::modifier_map
 x_connection::modifier_mapping(void) const
 {

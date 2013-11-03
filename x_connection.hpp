@@ -46,6 +46,8 @@ class x_connection : public x_event_handler_t
     void ungrab_key(uint16_t modifiers, xcb_keysym_t keysym) const;
     void grab_keyboard(void) const;
     void ungrab_keyboard(void) const;
+    void grab_pointer(xcb_window_t, uint16_t) const;
+    void ungrab_pointer(void) const;
     modifier_map modifier_mapping(void) const;
     xcb_keysym_t keycode_to_keysym(xcb_keycode_t keycode) const;
     xcb_keycode_t keysym_to_keycode(xcb_keysym_t keysym) const;
