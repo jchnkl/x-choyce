@@ -1,10 +1,20 @@
 #include "thumbnail_manager.hpp"
 
-thumbnail_manager::thumbnail_manager(
-    thumbnail_factory_t<std::vector> * thumbnail_factory)
-  : _thumbnail_factory(thumbnail_factory)
+#include <algorithm> // find
+
+thumbnail_manager::thumbnail_manager(x_connection & c,
+                                     const layout_t * layout,
+                                     const thumbnail_t::factory * factory)
+  : _c(c), _layout(layout), _factory(factory)
 {
-  _thumbnail_factory->manage(id, this);
+  _c.register_handler(XCB_PROPERTY_NOTIFY, this);
+  _c.update_input(_c.root_window(), XCB_EVENT_MASK_PROPERTY_CHANGE);
+  update();
+}
+
+thumbnail_manager::~thumbnail_manager(void)
+{
+  _c.deregister_handler(XCB_PROPERTY_NOTIFY, this);
 }
 
 void
@@ -12,12 +22,14 @@ thumbnail_manager::show(void)
 {
   _visible = true;
 
-  _thumbnail_factory->update(id);
-  _thumbnail_cyclic_iterator = thumbnail_cyclic_iterator(&_thumbnails);
-  for (auto & thumbnail : _thumbnails) { thumbnail->show(); }
+  _cyclic_iterator = window_cyclic_iterator(&_windows);
 
-  _next_window = (*(_thumbnail_cyclic_iterator + 1))->window();
-  _current_window = (*_thumbnail_cyclic_iterator)->window();
+  for (auto & item : _thumbnails) {
+    item.second->show();
+  }
+
+  _next_window = *(_cyclic_iterator + 1);
+  _current_window = *_cyclic_iterator;
 }
 
 void
@@ -25,9 +37,9 @@ thumbnail_manager::hide(void)
 {
   _visible = false;
 
-  for (auto & thumbnail : _thumbnails) {
-    thumbnail->hide();
-    thumbnail->highlight(false);
+  for (auto & item : _thumbnails) {
+    item.second->hide();
+    item.second->highlight(false);
   }
 }
 
@@ -41,78 +53,129 @@ void
 thumbnail_manager::select(const xcb_window_t & window)
 {
   if (window == XCB_NONE) {
-    (*_thumbnail_cyclic_iterator)->select();
+    try {
+      _thumbnails.at(*_cyclic_iterator)->select();
+    } catch (...) {}
 
   } else {
-    for (auto & thumbnail : _thumbnails) {
-      if (thumbnail->id() == window) {
-        thumbnail->select();
+    for (auto & item : _thumbnails) {
+      if (item.second->id() == window) {
+        item.second->select();
+        break;
       }
     }
   }
 }
 
+bool
+thumbnail_manager::handle(xcb_generic_event_t * ge)
+{
+  if (XCB_PROPERTY_NOTIFY == (ge->response_type & ~0x80)) {
+    xcb_property_notify_event_t * e = (xcb_property_notify_event_t *)ge;
+    if (e->window == _c.root_window()
+        && e->atom == _c.intern_atom("_NET_CLIENT_LIST_STACKING")) {
+      update();
+    }
+    return true;
+  }
+
+  return false;
+}
+
 inline void
-thumbnail_manager::notify(void)
+thumbnail_manager::reset(void)
 {
   if (! _visible) return;
 
-  for (auto & thumbnail : _thumbnails) {
-    thumbnail->show();
-    thumbnail->highlight(false);
+  for (auto & item : _thumbnails) {
+    item.second->show();
+    item.second->highlight(false);
   }
 
   bool found = false;
-  _thumbnail_cyclic_iterator = thumbnail_cyclic_iterator(&_thumbnails);
+  _cyclic_iterator = window_cyclic_iterator(&_windows);
 
   // search for current thumbnail
-  for (std::size_t i = 0; i < _thumbnails.size(); ++i) {
-    if ((*_thumbnail_cyclic_iterator)->window() == _current_window) {
+  for (std::size_t i = 0; i < _windows.size(); ++i) {
+    if (*_cyclic_iterator == _current_window) {
       found = true;
       break;
     } else {
-      ++_thumbnail_cyclic_iterator;
+      ++_cyclic_iterator;
     }
   }
 
   // search for next thumbnail if current was not found
   if (! found) {
-    _thumbnail_cyclic_iterator = thumbnail_cyclic_iterator(&_thumbnails);
+    _cyclic_iterator = window_cyclic_iterator(&_windows);
 
-    for (std::size_t i = 0; i < _thumbnails.size(); ++i) {
-      if ((*_thumbnail_cyclic_iterator)->window() == _next_window) {
+    for (std::size_t i = 0; i < _windows.size(); ++i) {
+      if (*_cyclic_iterator == _next_window) {
         break;
       } else {
-        ++_thumbnail_cyclic_iterator;
+        ++_cyclic_iterator;
       }
     }
   }
 
-  _next_window = (*(_thumbnail_cyclic_iterator + 1))->window();
-  _current_window = (*_thumbnail_cyclic_iterator)->window();
+  _next_window = *(_cyclic_iterator + 1);
+  _current_window = *_cyclic_iterator;
 
-  (*_thumbnail_cyclic_iterator)->highlight(true);
+  try {
+    _thumbnails.at(*_cyclic_iterator)->highlight(true);
+  } catch (...) {}
 }
 
-inline std::vector<thumbnail_t::thumbnail_ptr> &
-thumbnail_manager::operator*(void)
+inline void
+thumbnail_manager::update(void)
 {
-  return _thumbnails;
-}
+  _windows = _c.net_client_list_stacking();
+  auto rects = _layout->arrange(query_current_screen(), _windows.size());
 
-inline std::vector<thumbnail_t::thumbnail_ptr> *
-thumbnail_manager::operator->(void)
-{
-  return &_thumbnails;
+  for (auto item = _thumbnails.begin(); item != _thumbnails.end(); ) {
+    auto result = std::find(_windows.begin(), _windows.end(), item->first);
+    if (result == _windows.end()) {
+      item = _thumbnails.erase(item);
+    } else {
+      ++item;
+    }
+  }
+
+  for (size_t i = 0; i < _windows.size(); ++i) {
+    auto result = _thumbnails.find(_windows[i]);
+
+    if (result == _thumbnails.end()) {
+      _thumbnails[_windows[i]] = _factory->make(_c, _windows[i], rects[i]);
+    } else {
+      result->second->update(rects[i]);
+    }
+  }
+
+  reset();
 }
 
 void
 thumbnail_manager::next_or_prev(bool next)
 {
-  (*_thumbnail_cyclic_iterator)->highlight(false);
-  next ? ++_thumbnail_cyclic_iterator : --_thumbnail_cyclic_iterator;
-  (*_thumbnail_cyclic_iterator)->highlight(true);
+  try {
+    _thumbnails.at(*_cyclic_iterator)->highlight(false);
+    next ? ++_cyclic_iterator : --_cyclic_iterator;
+    _thumbnails.at(*_cyclic_iterator)->highlight(true);
+  } catch (...) {}
 
-  _current_window = (*_thumbnail_cyclic_iterator)->window();
-  _next_window = (*(_thumbnail_cyclic_iterator + 1))->window();
+  _next_window = *(_cyclic_iterator + 1);
+  _current_window = *_cyclic_iterator;
+}
+
+rectangle
+thumbnail_manager::query_current_screen(void)
+{
+  rectangle screen = { 0, 0, 800, 600 };
+
+  try {
+    auto pos = _c.query_pointer();
+    screen = _c.current_screen(pos.first);
+  } catch (...) {}
+
+  return screen;
 }
