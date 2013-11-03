@@ -22,7 +22,7 @@ class thumbnail_manager : public chooser_t
     void hide(void);
     void next(void);
     void prev(void);
-    void select(void);
+    void select(const xcb_window_t & window = XCB_NONE);
 
     inline void notify(void);
     inline std::vector<thumbnail_t::thumbnail_ptr> & operator*(void);

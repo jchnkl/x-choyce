@@ -38,9 +38,18 @@ void
 thumbnail_manager::prev(void) { next_or_prev(false); }
 
 void
-thumbnail_manager::select(void)
+thumbnail_manager::select(const xcb_window_t & window)
 {
-  (*_thumbnail_cyclic_iterator)->select();
+  if (window == XCB_NONE) {
+    (*_thumbnail_cyclic_iterator)->select();
+
+  } else {
+    for (auto & thumbnail : _thumbnails) {
+      if (thumbnail->id() == window) {
+        thumbnail->select();
+      }
+    }
+  }
 }
 
 inline void
