@@ -12,7 +12,6 @@ CPPSRCS=main.cpp \
 				x_client.cpp \
 				x_client_chooser.cpp \
 				x_client_thumbnail_gl.cpp \
-				x_client_thumbnail_factory.cpp \
 				grid.cpp
 
 HPPSRCS=chooser_t.hpp \
@@ -24,7 +23,6 @@ HPPSRCS=chooser_t.hpp \
 				thumbnail_t.hpp \
 				x_client_chooser.hpp \
 				x_client.hpp \
-				x_client_thumbnail_factory.hpp \
 				x_client_thumbnail_gl.hpp \
 				x_client_thumbnail.hpp \
 				x_connection.hpp \
