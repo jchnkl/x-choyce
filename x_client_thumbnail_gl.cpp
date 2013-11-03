@@ -146,6 +146,12 @@ x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height
 }
 
 const xcb_window_t &
+x_client_thumbnail::id(void)
+{
+  return _thumbnail_window;
+}
+
+const xcb_window_t &
 x_client_thumbnail::window(void)
 {
   return _x_client->window();
