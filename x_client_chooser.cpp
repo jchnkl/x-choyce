@@ -12,6 +12,7 @@ x_client_chooser::x_client_chooser(x_connection & c,
 {
   _c.register_handler(XCB_KEY_PRESS, this);
   _c.register_handler(XCB_KEY_RELEASE, this);
+  _c.register_handler(XCB_BUTTON_PRESS, this);
   _c.grab_key(_action_modmask, action_keysym);
   _action_keycode = _c.keysym_to_keycode(action_keysym);
   _modifier_map = _c.modifier_mapping();
@@ -56,6 +57,15 @@ x_client_chooser::handle(xcb_generic_event_t * ge)
       }
       break;
     }
+
+  } else if (XCB_BUTTON_PRESS == (ge->response_type & ~0x80)) {
+    result = true;
+    xcb_button_press_event_t * e = (xcb_button_press_event_t *)ge;
+    _active = false;
+    _c.ungrab_keyboard();
+    _chooser->hide();
+    _chooser->select(e->event);
+
   }
 
   return result;
