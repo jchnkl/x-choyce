@@ -22,6 +22,8 @@ thumbnail_manager::show(void)
 {
   _visible = true;
 
+  update();
+
   _cyclic_iterator = window_cyclic_iterator(&_windows);
 
   for (auto & item : _thumbnails) {
@@ -129,6 +131,8 @@ thumbnail_manager::reset(void)
 inline void
 thumbnail_manager::update(void)
 {
+  if (! _visible) return;
+
   _windows = _c.net_client_list_stacking();
   auto rects = _layout->arrange(query_current_screen(), _windows.size());
 
