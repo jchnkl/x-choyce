@@ -5,6 +5,7 @@
 
 x_client_chooser::x_client_chooser(x_connection & c,
                                    chooser_t * chooser,
+                                   xcb_keysym_t quit_keysym,
                                    xcb_keysym_t action_keysym,
                                    xcb_mod_mask_t action_modmask)
   : _c(c), _chooser(chooser)
@@ -15,6 +16,7 @@ x_client_chooser::x_client_chooser(x_connection & c,
   _c.register_handler(XCB_BUTTON_PRESS, this);
   _c.register_handler(XCB_MOTION_NOTIFY, this);
   _c.grab_key(_action_modmask, action_keysym);
+  _quit_keycode = _c.keysym_to_keycode(quit_keysym);
   _action_keycode = _c.keysym_to_keycode(action_keysym);
   _modifier_map = _c.modifier_mapping();
 }
@@ -57,6 +59,9 @@ x_client_chooser::handle(xcb_generic_event_t * ge)
         _chooser->show();
         _chooser->next();
       }
+
+    } else if (e->detail == _quit_keycode) {
+      quit();
     }
 
   } else if (XCB_KEY_RELEASE == (ge->response_type & ~0x80)) {

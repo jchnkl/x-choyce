@@ -8,8 +8,9 @@
 
 int main(int argc, char ** argv)
 {
-  xcb_keysym_t key = XK_Tab;
-  xcb_mod_mask_t mod = XCB_MOD_MASK_4;
+  xcb_keysym_t quit_key = XK_Escape;
+  xcb_keysym_t action_key = XK_Tab;
+  xcb_mod_mask_t mod = XCB_MOD_MASK_1;
 
   x_connection c;
 
@@ -18,7 +19,7 @@ int main(int argc, char ** argv)
   x_client_thumbnail::factory factory;
 
   thumbnail_manager tm(c, &grid, &factory);
-  x_client_chooser cp(c, &tm, key, mod);
+  x_client_chooser cp(c, &tm, quit_key, action_key, mod);
 
   c.run_event_loop();
 
