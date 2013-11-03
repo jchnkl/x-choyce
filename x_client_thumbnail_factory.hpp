@@ -8,13 +8,13 @@
 #include "x_connection.hpp"
 #include "x_client_thumbnail_gl.hpp"
 
-template<template<class t = thumbnail_t::thumbnail_ptr,
+template<template<class t = thumbnail_t::ptr,
                   class = std::allocator<t>>
          class container_t>
 class x_client_thumbnail_factory : public x_event_handler_t
                                  , public thumbnail_factory_t<container_t> {
   public:
-    typedef std::back_insert_iterator<container_t<thumbnail_t::thumbnail_ptr>>
+    typedef std::back_insert_iterator<container_t<thumbnail_t::ptr>>
       back_insert_iterator;
 
     x_client_thumbnail_factory(x_connection & c, const layout_t * layout);

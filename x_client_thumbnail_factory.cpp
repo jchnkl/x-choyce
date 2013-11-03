@@ -5,7 +5,7 @@
 
 #include "x_client_thumbnail_factory.hpp"
 
-template<template<class t = thumbnail_t::thumbnail_ptr,
+template<template<class t = thumbnail_t::ptr,
                   class = std::allocator<t>>
          class container_t>
 x_client_thumbnail_factory<container_t>::x_client_thumbnail_factory(
@@ -17,7 +17,7 @@ x_client_thumbnail_factory<container_t>::x_client_thumbnail_factory(
   update(true);
 }
 
-template<template<class t = thumbnail_t::thumbnail_ptr,
+template<template<class t = thumbnail_t::ptr,
                   class = std::allocator<t>>
          class container_t>
 x_client_thumbnail_factory<container_t>::~x_client_thumbnail_factory(void)
@@ -25,7 +25,7 @@ x_client_thumbnail_factory<container_t>::~x_client_thumbnail_factory(void)
   _c.deregister_handler(XCB_PROPERTY_NOTIFY, this);
 }
 
-template<template<class t = thumbnail_t::thumbnail_ptr,
+template<template<class t = thumbnail_t::ptr,
                   class = std::allocator<t>>
          class container_t>
 void
@@ -35,12 +35,12 @@ x_client_thumbnail_factory<container_t>::make(back_insert_iterator insert)
   auto rects = _layout->arrange(query_current_screen(), windows.size());
 
   for (size_t i = 0; i < windows.size(); ++i) {
-    *insert = thumbnail_t::thumbnail_ptr(
+    *insert = thumbnail_t::ptr(
           new x_client_thumbnail(_c, rects[i], windows[i]));
   }
 }
 
-template<template<class t = thumbnail_t::thumbnail_ptr,
+template<template<class t = thumbnail_t::ptr,
                   class = std::allocator<t>>
          class container_t>
 void
@@ -51,7 +51,7 @@ manage(unsigned int id, thumbnail_container_t<container_t> * container)
   update(*container);
 }
 
-template<template<class t = thumbnail_t::thumbnail_ptr,
+template<template<class t = thumbnail_t::ptr,
                   class = std::allocator<t>>
          class container_t>
 void
@@ -60,7 +60,7 @@ x_client_thumbnail_factory<container_t>::giveup(unsigned int id)
   _container.erase(id);
 }
 
-template<template<class t = thumbnail_t::thumbnail_ptr,
+template<template<class t = thumbnail_t::ptr,
                   class = std::allocator<t>>
          class container_t>
 void
@@ -69,7 +69,7 @@ x_client_thumbnail_factory<container_t>::update(unsigned int id)
   update(false, id);
 }
 
-template<template<class t = thumbnail_t::thumbnail_ptr,
+template<template<class t = thumbnail_t::ptr,
                   class = std::allocator<t>>
          class container_t>
 bool
@@ -87,7 +87,7 @@ x_client_thumbnail_factory<container_t>::handle(xcb_generic_event_t * ge)
   return false;
 }
 
-template<template<class t = thumbnail_t::thumbnail_ptr,
+template<template<class t = thumbnail_t::ptr,
                   class = std::allocator<t>>
          class container_t>
 void
@@ -127,7 +127,7 @@ x_client_thumbnail_factory<container_t>::update(bool all, unsigned int id)
   }
 }
 
-template<template<class t = thumbnail_t::thumbnail_ptr,
+template<template<class t = thumbnail_t::ptr,
                   class = std::allocator<t>>
          class container_t>
 void
@@ -158,7 +158,7 @@ update(thumbnail_container_t<container_t> & container)
   }
 }
 
-template<template<class t = thumbnail_t::thumbnail_ptr,
+template<template<class t = thumbnail_t::ptr,
                   class = std::allocator<t>>
          class container_t>
 rectangle

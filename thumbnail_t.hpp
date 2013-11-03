@@ -6,7 +6,7 @@
 
 class thumbnail_t {
   public:
-    typedef std::shared_ptr<thumbnail_t> thumbnail_ptr;
+    typedef std::shared_ptr<thumbnail_t> ptr;
     virtual void show(void) = 0;
     virtual void hide(void) = 0;
     virtual void update(void) = 0;
@@ -16,22 +16,22 @@ class thumbnail_t {
     virtual void highlight(bool want_highlight) = 0;
 };
 
-template<template<class t = thumbnail_t::thumbnail_ptr,
+template<template<class t = thumbnail_t::ptr,
                   class = std::allocator<t>>
          class container_t>
 class thumbnail_container_t {
   public:
     virtual void notify(void) = 0;
-    virtual container_t<thumbnail_t::thumbnail_ptr> & operator*(void) = 0;
-    virtual container_t<thumbnail_t::thumbnail_ptr> * operator->(void) = 0;
+    virtual container_t<thumbnail_t::ptr> & operator*(void) = 0;
+    virtual container_t<thumbnail_t::ptr> * operator->(void) = 0;
 };
 
-template<template<class t = thumbnail_t::thumbnail_ptr,
+template<template<class t = thumbnail_t::ptr,
                   class = std::allocator<t>>
          class container_t>
 class thumbnail_factory_t {
   public:
-    typedef std::back_insert_iterator<container_t<thumbnail_t::thumbnail_ptr>>
+    typedef std::back_insert_iterator<container_t<thumbnail_t::ptr>>
       back_insert_iterator;
 
     virtual void make(back_insert_iterator insert) = 0;
