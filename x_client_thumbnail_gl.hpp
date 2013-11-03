@@ -45,6 +45,11 @@ class x_client_thumbnail : public x_event_handler_t
 
     bool handle(xcb_generic_event_t * ge);
 
+    class factory : public thumbnail_t::factory {
+      public:
+        thumbnail_t::ptr
+          make(x_connection &, const xcb_window_t &, const rectangle &) const;
+    };
 
   private:
     typedef std::shared_ptr<x_client> x_client_ptr;

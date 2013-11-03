@@ -420,3 +420,10 @@ bool operator==(const xcb_window_t & window, const x_client_thumbnail & thumbnai
 {
   return thumbnail == window;
 }
+
+thumbnail_t::ptr
+x_client_thumbnail::factory::
+make(x_connection & c, const xcb_window_t & w, const rectangle & r) const
+{
+  return thumbnail_t::ptr(new x_client_thumbnail(c, r, w));
+}

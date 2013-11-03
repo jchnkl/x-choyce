@@ -5,6 +5,7 @@
 #include <iterator>
 
 #include "data_types.hpp"
+#include "x_connection.hpp"
 
 class thumbnail_t {
   public:
@@ -17,6 +18,12 @@ class thumbnail_t {
     virtual const unsigned int & id(void) = 0;
     virtual const unsigned int & window(void) = 0;
     virtual void highlight(bool want_highlight) = 0;
+
+    class factory {
+      public:
+        virtual ptr
+          make(x_connection &, const xcb_window_t &, const rectangle &) const = 0;
+    };
 };
 
 template<template<class t = thumbnail_t::ptr,
