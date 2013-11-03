@@ -20,7 +20,9 @@ class x_client_chooser : public x_event_handler_t {
 
   private:
     bool _active = false;
-    xcb_window_t _active_window;
+    bool _ignore_release = false;
+
+    xcb_window_t _last_motion = XCB_NONE;
 
     x_connection & _c;
     chooser_t * _chooser;
