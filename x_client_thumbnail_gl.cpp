@@ -37,16 +37,10 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
   uint32_t valuemask = XCB_CW_BACK_PIXEL
                      | XCB_CW_BORDER_PIXEL
                      | XCB_CW_OVERRIDE_REDIRECT
-                     | XCB_CW_EVENT_MASK
                      | XCB_CW_COLORMAP
                      ;
 
-  const int event_mask = XCB_EVENT_MASK_BUTTON_PRESS
-                       | XCB_EVENT_MASK_ENTER_WINDOW
-                       | XCB_EVENT_MASK_LEAVE_WINDOW
-                       ;
-
-  uint32_t valuelist[] = { 0, 0, 1, event_mask, colormap };
+  uint32_t valuelist[] = { 0, 0, 1, colormap };
 
   xcb_create_window(_c(), depth, _thumbnail_window,
                     _c.root_window(), 0, 0,
