@@ -18,7 +18,7 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
     _x_client = xclient;
   }
 
-  update_rectangle(rect);
+  update(rect);
 
   _c.register_handler(_c.damage_event_id(), this);
   _c.register_handler(XCB_CONFIGURE_NOTIFY, this);
@@ -108,6 +108,25 @@ void
 x_client_thumbnail::update(void)
 {
   update(0, 0, _rectangle.width(), _rectangle.height());
+}
+
+void
+x_client_thumbnail::update(const rectangle & r)
+{
+  _scale = std::min((double)r.width() / _x_client->rect().width(),
+                    (double)r.height() / _x_client->rect().height());
+  _scale = std::min(1.0, _scale);
+
+  _rectangle.width() = _x_client->rect().width() * _scale;
+  _rectangle.height() = _x_client->rect().height() * _scale;
+
+  _rectangle.x() = r.x() + (r.width() - _rectangle.width()) / 2;
+  _rectangle.y() = r.y() + (r.height() - _rectangle.height()) / 2;
+
+  if (_visible) {
+    configure_thumbnail_window();
+    update();
+  }
 }
 
 void
@@ -227,25 +246,6 @@ x_client_thumbnail::handle(xcb_generic_event_t * ge)
   }
 
   return result;
-}
-
-void
-x_client_thumbnail::update_rectangle(const rectangle & rect)
-{
-  _scale = std::min((double)rect.width() / _x_client->rect().width(),
-                    (double)rect.height() / _x_client->rect().height());
-  _scale = std::min(1.0, _scale);
-
-  _rectangle.width() = _x_client->rect().width() * _scale;
-  _rectangle.height() = _x_client->rect().height() * _scale;
-
-  _rectangle.x() = rect.x() + (rect.width() - _rectangle.width()) / 2;
-  _rectangle.y() = rect.y() + (rect.height() - _rectangle.height()) / 2;
-
-  if (_visible) {
-    configure_thumbnail_window();
-    update();
-  }
 }
 
 void

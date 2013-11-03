@@ -38,13 +38,13 @@ class x_client_thumbnail : public x_event_handler_t
     void hide(void);
     void select(void);
     void update(void);
+    void update(const rectangle &);
     const xcb_window_t & id(void);
     const xcb_window_t & window(void);
     void highlight(bool want_highlight);
 
     bool handle(xcb_generic_event_t * ge);
 
-    void update_rectangle(const rectangle & rect);
 
   private:
     typedef std::shared_ptr<x_client> x_client_ptr;
