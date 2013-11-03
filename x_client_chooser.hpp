@@ -14,11 +14,7 @@ class x_client_chooser : public x_event_handler_t {
                      xcb_keysym_t action_keysym,
                      xcb_mod_mask_t action_modmask);
 
-    ~x_client_chooser(void)
-    {
-      _c.deregister_handler(XCB_KEY_PRESS, this);
-      _c.deregister_handler(XCB_KEY_RELEASE, this);
-    }
+    ~x_client_chooser(void);
 
     bool handle(xcb_generic_event_t * ge);
 

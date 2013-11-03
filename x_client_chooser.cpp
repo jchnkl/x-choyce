@@ -18,6 +18,14 @@ x_client_chooser::x_client_chooser(x_connection & c,
   _modifier_map = _c.modifier_mapping();
 }
 
+x_client_chooser::~x_client_chooser(void)
+{
+  _c.deregister_handler(XCB_KEY_PRESS, this);
+  _c.deregister_handler(XCB_KEY_RELEASE, this);
+  _c.deregister_handler(XCB_BUTTON_PRESS, this);
+  _c.deregister_handler(XCB_MOTION_NOTIFY, this);
+}
+
 bool
 x_client_chooser::handle(xcb_generic_event_t * ge)
 {
