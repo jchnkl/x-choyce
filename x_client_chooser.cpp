@@ -58,9 +58,7 @@ x_client_chooser::handle(xcb_generic_event_t * ge)
     xcb_key_release_event_t * e = (xcb_key_release_event_t *)ge;
     for (auto & keycode : _modifier_map[_action_modmask]) {
       if (e->detail == keycode) {
-        _active = false;
-        _c.ungrab_keyboard();
-        _chooser->hide();
+        quit();
         _chooser->select();
       }
       break;
@@ -69,12 +67,19 @@ x_client_chooser::handle(xcb_generic_event_t * ge)
   } else if (XCB_BUTTON_PRESS == (ge->response_type & ~0x80)) {
     result = true;
     xcb_button_press_event_t * e = (xcb_button_press_event_t *)ge;
-    _active = false;
-    _c.ungrab_keyboard();
-    _chooser->hide();
-    _chooser->select(e->event);
+    quit();
+    _chooser->select(e->child);
 
   }
 
   return result;
+}
+
+void
+x_client_chooser::quit(void)
+{
+  _active = false;
+  _c.ungrab_pointer();
+  _c.ungrab_keyboard();
+  _chooser->hide();
 }

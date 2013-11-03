@@ -29,8 +29,7 @@ class x_client_chooser : public x_event_handler_t {
     xcb_keycode_t _action_keycode;
     xcb_mod_mask_t _action_modmask;
 
-    void move_client(bool next);
-    void configure_clients_preview(void);
+    void quit(void);
 };
 
 #endif
