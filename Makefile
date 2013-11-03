@@ -39,6 +39,10 @@ EXE=x:choyce
 all: ${HPPOBJS} ${CPPOBJS}
 	${CXX} ${CXXFLAGS} ${LDFLAGS} ${CPPOBJS} -o ${EXE}
 
+%.o: %.cpp
+	rm -f $(<:%.cpp=%.hpp.gch)
+	${CXX} ${CXXFLAGS} -c $<
+
 %.hpp.gch: %.hpp
 	rm -f $(<:%.hpp=%.o)
 	${CXX} ${CXXFLAGS} -c $<
