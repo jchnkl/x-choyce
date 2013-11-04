@@ -2,6 +2,8 @@
 
 #include <algorithm> // find
 
+#include "algorithm.hpp"
+
 thumbnail_manager::thumbnail_manager(x_connection & c,
                                      const layout_t * layout,
                                      const thumbnail_t::factory * factory)
@@ -187,6 +189,43 @@ thumbnail_manager::next_or_prev(bool next)
 
   _next_window = *(_cyclic_iterator + 1);
   _current_window = *_cyclic_iterator;
+}
+
+// 2*M_PI ^= 360°
+// 2*M_PI - M_PI/4 ^= 315°
+// 2*M_PI - M_PI/2 ^= 270°
+// M_PI + M_PI/4 ^= 225°
+// M_PI ^= 180°
+// M_PI - M_PI/4 ^= 135°
+// M_PI/2 ^= 90°
+// M_PI/4 ^= 45°
+
+inline bool
+thumbnail_manager::is_east(double angle)
+{
+  // (>=0° && <=67.5°) || >= 292.5°
+  return (angle >= 0 && angle <= 3*M_PI/8) || angle >= 13*M_PI/8;
+}
+
+inline bool
+thumbnail_manager::is_west(double angle)
+{
+  // >=112.5° && <=247.5°
+  return angle >= 5*M_PI/8 && angle <= 11*M_PI/8;
+}
+
+inline bool
+thumbnail_manager::is_north(double angle)
+{
+  // >=22.5° && <=157.5°
+  return angle >= M_PI/8 && angle <= 7*M_PI/8;
+}
+
+inline bool
+thumbnail_manager::is_south(double angle)
+{
+  // >=202.5° && <= 337.5
+  return angle >= 9*M_PI/8 && angle <= 15*M_PI/8;
 }
 
 rectangle

@@ -51,6 +51,11 @@ class thumbnail_manager : public chooser_t
     void update(void);
     void next_or_prev(bool next);
     rectangle query_current_screen(void);
+
+    bool is_east(double);
+    bool is_west(double);
+    bool is_north(double);
+    bool is_south(double);
 };
 
 #endif
