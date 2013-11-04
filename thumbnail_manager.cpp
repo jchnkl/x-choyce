@@ -191,6 +191,48 @@ thumbnail_manager::next_or_prev(bool next)
   _current_window = *_cyclic_iterator;
 }
 
+inline xcb_window_t
+thumbnail_manager::
+nearest_thumbnail(const std::function<bool(double)> & direction)
+{
+  xcb_window_t thumbnail_id = XCB_NONE;
+
+  try {
+    auto & current = _thumbnails.at(_current_window);
+    auto & r1 = current->rect();
+
+    // in X (x,y) coordinates are actually flipped on the x axis
+    // this means that (0,0) is in the top left corner, not in bottom left
+    auto p1 = std::make_tuple(  r1.x() + (r1.width()  / 2),
+                              -(r1.y() + (r1.height() / 2)));
+
+    double min_distance = 0xffffffff;
+
+    for (auto & item : _thumbnails) {
+      if (item.second->id() == current->id()) {
+        continue;
+      } else {
+        auto & r2 = item.second->rect();
+        // in X (x,y) coordinates are actually flipped on the x axis
+        // this means that (0,0) is in the top left corner, not in bottom left
+        auto p2 = std::make_tuple(  r2.x() + (r2.width()  / 2),
+                                  -(r2.y() + (r2.height() / 2)));
+
+        if (direction(algorithm::angle()(p1, p2))) {
+          double distance = algorithm::distance()(p1, p2);
+          if (distance < min_distance) {
+            min_distance = distance;
+            thumbnail_id = item.second->id();
+          }
+        }
+      }
+    }
+
+  } catch (...) {}
+
+  return thumbnail_id;
+}
+
 // 2*M_PI ^= 360°
 // 2*M_PI - M_PI/4 ^= 315°
 // 2*M_PI - M_PI/2 ^= 270°

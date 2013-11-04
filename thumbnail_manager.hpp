@@ -56,6 +56,7 @@ class thumbnail_manager : public chooser_t
     bool is_west(double);
     bool is_north(double);
     bool is_south(double);
+    xcb_window_t nearest_thumbnail(const std::function<bool(double)> &);
 };
 
 #endif
