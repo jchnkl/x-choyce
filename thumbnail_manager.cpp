@@ -89,6 +89,38 @@ thumbnail_manager::highlight(const unsigned int & window)
   }
 }
 
+void
+thumbnail_manager::east(void)
+{
+  xcb_window_t tid = nearest_thumbnail(
+      std::bind(&thumbnail_manager::is_east, this, std::placeholders::_1));
+  if (tid != XCB_NONE) highlight(tid);
+}
+
+void
+thumbnail_manager::west(void)
+{
+  xcb_window_t tid = nearest_thumbnail(
+      std::bind(&thumbnail_manager::is_west, this, std::placeholders::_1));
+  if (tid != XCB_NONE) highlight(tid);
+}
+
+void
+thumbnail_manager::north(void)
+{
+  xcb_window_t tid = nearest_thumbnail(
+      std::bind(&thumbnail_manager::is_north, this, std::placeholders::_1));
+  if (tid != XCB_NONE) highlight(tid);
+}
+
+void
+thumbnail_manager::south(void)
+{
+  xcb_window_t tid = nearest_thumbnail(
+      std::bind(&thumbnail_manager::is_south, this, std::placeholders::_1));
+  if (tid != XCB_NONE) highlight(tid);
+}
+
 bool
 thumbnail_manager::handle(xcb_generic_event_t * ge)
 {

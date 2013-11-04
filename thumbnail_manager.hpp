@@ -25,6 +25,10 @@ class thumbnail_manager : public chooser_t
     void hide(void);
     void next(void);
     void prev(void);
+    void east(void);
+    void west(void);
+    void north(void);
+    void south(void);
     void select(const xcb_window_t & window = XCB_NONE);
     void highlight(const unsigned int & window = XCB_NONE);
 
