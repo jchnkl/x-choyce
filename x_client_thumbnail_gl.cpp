@@ -123,6 +123,12 @@ x_client_thumbnail::update(const rectangle & r)
   }
 }
 
+const rectangle &
+x_client_thumbnail::rect(void)
+{
+  return _rectangle;
+}
+
 void
 x_client_thumbnail::purge(void)
 {

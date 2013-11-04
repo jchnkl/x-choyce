@@ -39,6 +39,7 @@ class x_client_thumbnail : public x_event_handler_t
     void select(void);
     void update(void);
     void update(const rectangle &);
+    const rectangle & rect(void);
     const xcb_window_t & id(void);
     const xcb_window_t & window(void);
     void highlight(bool want_highlight);
