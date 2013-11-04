@@ -5,6 +5,10 @@
 
 x_client_chooser::x_client_chooser(x_connection & c,
                                    chooser_t * chooser,
+                                   xcb_keysym_t east_keysym,
+                                   xcb_keysym_t west_keysym,
+                                   xcb_keysym_t north_keysym,
+                                   xcb_keysym_t south_keysym,
                                    xcb_keysym_t quit_keysym,
                                    xcb_keysym_t action_keysym,
                                    xcb_mod_mask_t action_modmask)
@@ -16,6 +20,10 @@ x_client_chooser::x_client_chooser(x_connection & c,
   _c.register_handler(XCB_BUTTON_PRESS, this);
   _c.register_handler(XCB_MOTION_NOTIFY, this);
   _c.grab_key(_action_modmask, action_keysym);
+  _east_keycode = _c.keysym_to_keycode(east_keysym);
+  _west_keycode = _c.keysym_to_keycode(west_keysym);
+  _north_keycode = _c.keysym_to_keycode(north_keysym);
+  _south_keycode = _c.keysym_to_keycode(south_keysym);
   _quit_keycode = _c.keysym_to_keycode(quit_keysym);
   _action_keycode = _c.keysym_to_keycode(action_keysym);
   _modifier_map = _c.modifier_mapping();
@@ -59,6 +67,18 @@ x_client_chooser::handle(xcb_generic_event_t * ge)
         _chooser->show();
         _chooser->next();
       }
+
+    } else if (e->detail == _east_keycode) {
+      _chooser->east();
+
+    } else if (e->detail == _west_keycode) {
+      _chooser->west();
+
+    } else if (e->detail == _north_keycode) {
+      _chooser->north();
+
+    } else if (e->detail == _south_keycode) {
+      _chooser->south();
 
     } else if (e->detail == _quit_keycode) {
       quit();

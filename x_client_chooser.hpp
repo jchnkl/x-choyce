@@ -11,6 +11,10 @@ class x_client_chooser : public x_event_handler_t {
   public:
     x_client_chooser(x_connection & c,
                      chooser_t * chooser,
+                     xcb_keysym_t east_keysym,
+                     xcb_keysym_t west_keysym,
+                     xcb_keysym_t north_keysym,
+                     xcb_keysym_t south_keysym,
                      xcb_keysym_t quit_keysym,
                      xcb_keysym_t action_keysym,
                      xcb_mod_mask_t action_modmask);
@@ -29,6 +33,10 @@ class x_client_chooser : public x_event_handler_t {
     chooser_t * _chooser;
     x_connection::modifier_map _modifier_map;
 
+    xcb_keycode_t _east_keycode;
+    xcb_keycode_t _west_keycode;
+    xcb_keycode_t _north_keycode;
+    xcb_keycode_t _south_keycode;
     xcb_keycode_t _quit_keycode;
     xcb_keycode_t _action_keycode;
     xcb_mod_mask_t _action_modmask;
