@@ -1,5 +1,5 @@
 LIBS=xcb xcb-atom xcb-keysyms xcb-composite xcb-damage xcb-xinerama \
-		 xcb-renderutil xcb-xfixes x11 x11-xcb gl
+		 xcb-xfixes x11 x11-xcb gl
 CXXFLAGS=-g -std=c++11 -Wall -O3 $(shell pkg-config --cflags ${LIBS})
 LDFLAGS=$(shell pkg-config --libs ${LIBS})
 
@@ -39,12 +39,10 @@ EXE=x:choyce
 all: ${HPPOBJS} ${CPPOBJS}
 	${CXX} ${CXXFLAGS} ${LDFLAGS} ${CPPOBJS} -o ${EXE}
 
-%.o: %.cpp
-	rm -f $(<:%.cpp=%.hpp.gch)
+%.o: %.cpp %.hpp
 	${CXX} ${CXXFLAGS} -c $<
 
 %.hpp.gch: %.hpp
-	rm -f $(<:%.hpp=%.o)
 	${CXX} ${CXXFLAGS} -c $<
 
 clean:
