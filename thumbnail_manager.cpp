@@ -11,7 +11,6 @@ thumbnail_manager::thumbnail_manager(x_connection & c,
 {
   _c.register_handler(XCB_PROPERTY_NOTIFY, this);
   _c.update_input(_c.root_window(), XCB_EVENT_MASK_PROPERTY_CHANGE);
-  update();
 }
 
 thumbnail_manager::~thumbnail_manager(void)
@@ -27,13 +26,12 @@ thumbnail_manager::show(void)
   update();
 
   _cyclic_iterator = window_cyclic_iterator(&_windows);
+  _next_window = *(_cyclic_iterator + 1);
+  _current_window = *_cyclic_iterator;
 
   for (auto & item : _thumbnails) {
     item.second->show();
   }
-
-  _next_window = *(_cyclic_iterator + 1);
-  _current_window = *_cyclic_iterator;
 }
 
 void
@@ -126,9 +124,12 @@ thumbnail_manager::handle(xcb_generic_event_t * ge)
 {
   if (XCB_PROPERTY_NOTIFY == (ge->response_type & ~0x80)) {
     xcb_property_notify_event_t * e = (xcb_property_notify_event_t *)ge;
-    if (e->window == _c.root_window()
-        && e->atom == _c.intern_atom("_NET_CLIENT_LIST_STACKING")) {
+    if (_active
+        && e->window == _c.root_window()
+        && e->atom == _c.intern_atom("_NET_CLIENT_LIST_STACKING"))
+    {
       update();
+      reset();
     }
     return true;
   }
@@ -139,8 +140,6 @@ thumbnail_manager::handle(xcb_generic_event_t * ge)
 inline void
 thumbnail_manager::reset(void)
 {
-  if (! _active) return;
-
   for (auto & item : _thumbnails) {
     item.second->show();
     item.second->highlight(false);
@@ -183,8 +182,6 @@ thumbnail_manager::reset(void)
 inline void
 thumbnail_manager::update(void)
 {
-  if (! _active) return;
-
   _windows = _c.net_client_list_stacking();
   auto rects = _layout->arrange(query_current_screen(), _windows.size());
 
@@ -206,8 +203,6 @@ thumbnail_manager::update(void)
       result->second->update(rects[i]);
     }
   }
-
-  reset();
 }
 
 void
