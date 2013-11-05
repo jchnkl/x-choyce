@@ -47,7 +47,7 @@ class thumbnail_manager : public chooser_t
     window_list_t _windows;
     std::unordered_map<xcb_window_t, thumbnail_t::ptr> _thumbnails;
 
-    bool _visible = false;
+    bool _active = false;
     xcb_window_t _next_window = XCB_NONE;
     xcb_window_t _current_window = XCB_NONE;
 

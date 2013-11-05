@@ -22,7 +22,7 @@ thumbnail_manager::~thumbnail_manager(void)
 void
 thumbnail_manager::show(void)
 {
-  _visible = true;
+  _active = true;
 
   update();
 
@@ -39,7 +39,7 @@ thumbnail_manager::show(void)
 void
 thumbnail_manager::hide(void)
 {
-  _visible = false;
+  _active = false;
 
   for (auto & item : _thumbnails) {
     item.second->hide();
@@ -139,7 +139,7 @@ thumbnail_manager::handle(xcb_generic_event_t * ge)
 inline void
 thumbnail_manager::reset(void)
 {
-  if (! _visible) return;
+  if (! _active) return;
 
   for (auto & item : _thumbnails) {
     item.second->show();
@@ -183,7 +183,7 @@ thumbnail_manager::reset(void)
 inline void
 thumbnail_manager::update(void)
 {
-  if (! _visible) return;
+  if (! _active) return;
 
   _windows = _c.net_client_list_stacking();
   auto rects = _layout->arrange(query_current_screen(), _windows.size());
