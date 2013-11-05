@@ -6,8 +6,7 @@ x_client::x_client(x_connection & c, const xcb_window_t & window)
   _c.register_handler(XCB_CONFIGURE_NOTIFY, this);
   _c.update_input(_window, XCB_EVENT_MASK_STRUCTURE_NOTIFY);
   update_geometry();
-  get_net_wm_desktop();
-
+  update_net_wm_desktop();
   update_parent_window();
   update_name_window_pixmap();
 }
@@ -74,33 +73,22 @@ x_client::handle(xcb_generic_event_t * ge)
 
 // private
 
-void x_client::get_net_wm_desktop(void)
+void
+x_client::update_net_wm_desktop(void)
 {
-  std::string atom_name = "_NET_WM_DESKTOP";
-  xcb_intern_atom_cookie_t atom_cookie =
-    xcb_intern_atom(_c(), false, atom_name.length(), atom_name.c_str());
-  xcb_intern_atom_reply_t * atom_reply =
-    xcb_intern_atom_reply(_c(), atom_cookie, NULL);
-
-  xcb_get_property_cookie_t property_cookie =
-    xcb_get_property(_c(), false, _window,
-                     atom_reply->atom, XCB_ATOM_CARDINAL, 0, 32);
-
-  delete atom_reply;
-
   xcb_generic_error_t * error = NULL;
-  xcb_get_property_reply_t * property_reply =
-    xcb_get_property_reply(_c(), property_cookie, &error);
+  xcb_get_property_cookie_t c = xcb_get_property(
+      _c(), false, _window, a_net_wm_desktop, XCB_ATOM_CARDINAL, 0, 32);
+  xcb_get_property_reply_t * r = xcb_get_property_reply(_c(), c, &error);
 
-  if (error || property_reply->value_len == 0) {
+  if (error || r->value_len == 0) {
     delete error;
     _net_wm_desktop = 0;
   } else {
-    _net_wm_desktop =
-      *(unsigned int *)xcb_get_property_value(property_reply);
+    _net_wm_desktop = *(unsigned int *)xcb_get_property_value(r);
   }
 
-  delete property_reply;
+  delete r;
 }
 
 void

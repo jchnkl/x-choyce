@@ -46,7 +46,9 @@ class x_client : public x_event_handler_t {
     xcb_window_t _parent;
     xcb_pixmap_t _name_window_pixmap;
 
-    void get_net_wm_desktop(void);
+    xcb_atom_t a_net_wm_desktop = _c.intern_atom("_NET_WM_DESKTOP");
+
+    void update_net_wm_desktop(void);
     void update_parent_window(void);
 };
 
