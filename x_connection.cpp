@@ -356,6 +356,7 @@ x_connection::request_change_current_desktop(unsigned int desktop_id) const
 
   event.response_type = XCB_CLIENT_MESSAGE;
   event.format = 32;
+  event.window = _root_window;
   event.type = intern_atom("_NET_CURRENT_DESKTOP");
 
   event.data.data32[0] = desktop_id;
