@@ -272,29 +272,29 @@ nearest_thumbnail(const std::function<bool(double)> & direction)
 inline bool
 thumbnail_manager::is_east(double angle)
 {
-  // (>=0° && <=67.5°) || >= 292.5°
-  return (angle >= 0 && angle <= 3*M_PI/8) || angle >= 13*M_PI/8;
+  // (>=0° && <=45°) || >= 315°
+  return (angle >= 0 && angle <= M_PI/4) || angle >= 7*M_PI/4;
 }
 
 inline bool
 thumbnail_manager::is_west(double angle)
 {
-  // >=112.5° && <=247.5°
-  return angle >= 5*M_PI/8 && angle <= 11*M_PI/8;
+  // >=135° && <=225°
+  return angle >= 3*M_PI/4 && angle <= 5*M_PI/4;
 }
 
 inline bool
 thumbnail_manager::is_north(double angle)
 {
-  // >=22.5° && <=157.5°
-  return angle >= M_PI/8 && angle <= 7*M_PI/8;
+  // >=45° && <=135°
+  return angle >= M_PI/4 && angle <= 3*M_PI/4;
 }
 
 inline bool
 thumbnail_manager::is_south(double angle)
 {
-  // >=202.5° && <= 337.5
-  return angle >= 9*M_PI/8 && angle <= 15*M_PI/8;
+  // >=225° && <= 315°
+  return angle >= 5*M_PI/4 && angle <= 7*M_PI/4;
 }
 
 rectangle
