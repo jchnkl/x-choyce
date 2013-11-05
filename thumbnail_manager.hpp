@@ -56,16 +56,11 @@ class thumbnail_manager : public chooser_t
     void next_or_prev(bool next);
     rectangle query_current_screen(void);
 
-    double east_weight(double);
-    double west_weight(double);
-    double north_weight(double);
-    double south_weight(double);
     bool is_east(double);
     bool is_west(double);
     bool is_north(double);
     bool is_south(double);
-    xcb_window_t nearest_thumbnail(const std::function<bool(double)> &,
-                                   const std::function<double(double)> &);
+    xcb_window_t nearest_thumbnail(const std::function<bool(double)> &);
 };
 
 #endif
