@@ -91,7 +91,8 @@ void
 thumbnail_manager::east(void)
 {
   xcb_window_t tid = nearest_thumbnail(
-      std::bind(&thumbnail_manager::is_east, this, std::placeholders::_1));
+      std::bind(&thumbnail_manager::is_east, this, std::placeholders::_1),
+      std::bind(&thumbnail_manager::east_weight, this, std::placeholders::_1));
   if (tid != XCB_NONE) highlight(tid);
 }
 
@@ -99,7 +100,8 @@ void
 thumbnail_manager::west(void)
 {
   xcb_window_t tid = nearest_thumbnail(
-      std::bind(&thumbnail_manager::is_west, this, std::placeholders::_1));
+      std::bind(&thumbnail_manager::is_west, this, std::placeholders::_1),
+      std::bind(&thumbnail_manager::west_weight, this, std::placeholders::_1));
   if (tid != XCB_NONE) highlight(tid);
 }
 
@@ -107,7 +109,8 @@ void
 thumbnail_manager::north(void)
 {
   xcb_window_t tid = nearest_thumbnail(
-      std::bind(&thumbnail_manager::is_north, this, std::placeholders::_1));
+      std::bind(&thumbnail_manager::is_north, this, std::placeholders::_1),
+      std::bind(&thumbnail_manager::north_weight, this, std::placeholders::_1));
   if (tid != XCB_NONE) highlight(tid);
 }
 
@@ -115,7 +118,8 @@ void
 thumbnail_manager::south(void)
 {
   xcb_window_t tid = nearest_thumbnail(
-      std::bind(&thumbnail_manager::is_south, this, std::placeholders::_1));
+      std::bind(&thumbnail_manager::is_south, this, std::placeholders::_1),
+      std::bind(&thumbnail_manager::south_weight, this, std::placeholders::_1));
   if (tid != XCB_NONE) highlight(tid);
 }
 
@@ -220,7 +224,8 @@ thumbnail_manager::next_or_prev(bool next)
 
 inline xcb_window_t
 thumbnail_manager::
-nearest_thumbnail(const std::function<bool(double)> & direction)
+nearest_thumbnail(const std::function<bool(double)> & direction,
+                  const std::function<double(double)> & weight)
 {
   xcb_window_t thumbnail_id = XCB_NONE;
 
@@ -245,8 +250,9 @@ nearest_thumbnail(const std::function<bool(double)> & direction)
         auto p2 = std::make_tuple(  r2.x() + (r2.width()  / 2),
                                   -(r2.y() + (r2.height() / 2)));
 
-        if (direction(algorithm::angle()(p1, p2))) {
-          double distance = algorithm::distance()(p1, p2);
+        double angle = algorithm::angle()(p1, p2);
+        if (direction(angle)) {
+          double distance = weight(angle) * algorithm::distance()(p1, p2);
           if (distance < min_distance) {
             min_distance = distance;
             thumbnail_id = item.second->id();
@@ -268,6 +274,35 @@ nearest_thumbnail(const std::function<bool(double)> & direction)
 // M_PI - M_PI/4 ^= 135°
 // M_PI/2 ^= 90°
 // M_PI/4 ^= 45°
+
+inline double
+thumbnail_manager::east_weight(double angle)
+{
+  // optimum: 0°
+  angle += M_PI;
+  return west_weight(angle);
+}
+
+inline double
+thumbnail_manager::west_weight(double angle)
+{
+  // optimum: 180°
+  return std::max(M_PI, angle) / std::min(M_PI, angle);
+}
+
+inline double
+thumbnail_manager::north_weight(double angle)
+{
+  // optimum: 90°
+  return std::max(M_PI/2, angle) / std::min(M_PI/2, angle);
+}
+
+inline double
+thumbnail_manager::south_weight(double angle)
+{
+  // optimum: 270°
+  return std::max(3*M_PI/2, angle) / std::min(3*M_PI/2, angle);
+}
 
 inline bool
 thumbnail_manager::is_east(double angle)
