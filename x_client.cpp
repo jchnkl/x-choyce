@@ -4,7 +4,9 @@ x_client::x_client(x_connection & c, const xcb_window_t & window)
   : _c(c), _window(window)
 {
   _c.register_handler(XCB_CONFIGURE_NOTIFY, this);
-  _c.update_input(_window, XCB_EVENT_MASK_STRUCTURE_NOTIFY);
+  _c.register_handler(XCB_PROPERTY_NOTIFY, this);
+  _c.update_input(_window, XCB_EVENT_MASK_STRUCTURE_NOTIFY
+                           | XCB_EVENT_MASK_PROPERTY_CHANGE);
   update_geometry();
   update_net_wm_desktop();
   update_parent_window();
@@ -14,6 +16,7 @@ x_client::x_client(x_connection & c, const xcb_window_t & window)
 x_client::~x_client(void)
 {
   _c.deregister_handler(XCB_CONFIGURE_NOTIFY, this);
+  _c.deregister_handler(XCB_PROPERTY_NOTIFY, this);
 }
 
       rectangle &  x_client::rect(void)       { return _rectangle; }
@@ -63,6 +66,15 @@ x_client::handle(xcb_generic_event_t * ge)
     if (e->window == _c.root_window() || e->window == _window) {
       update_parent_window();
       update_name_window_pixmap();
+    }
+
+    return true;
+
+  } else if (XCB_PROPERTY_NOTIFY == (ge->response_type & ~0x80)) {
+    xcb_property_notify_event_t * e = (xcb_property_notify_event_t *)ge;
+
+    if (e->window == _window && e->atom == a_net_wm_desktop) {
+      update_net_wm_desktop();
     }
 
     return true;
