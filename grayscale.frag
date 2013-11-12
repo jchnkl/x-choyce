@@ -1,6 +1,5 @@
 #version 130
 
-
 uniform sampler2D texture_0;
 uniform sampler2D texture_1;
 uniform sampler2D texture_2;
