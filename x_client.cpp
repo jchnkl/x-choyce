@@ -34,6 +34,7 @@ x_client::~x_client(void)
 
   xcb_free_pixmap(_c(), _net_wm_icon_pixmap);
   xcb_free_pixmap(_c(), _wm_hints_icon_pixmap);
+  xcb_free_pixmap(_c(), _name_window_pixmap);
 }
 
       rectangle &  x_client::rect(void)       { return _rectangle; }
