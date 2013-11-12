@@ -1,7 +1,6 @@
 #include "x_client_thumbnail_gl.hpp"
 
 #include <xcb/composite.h>
-#include <xcb/xcb_renderutil.h>
 
 x_client_thumbnail::x_client_thumbnail(x_connection & c,
                                        const rectangle & rect,
