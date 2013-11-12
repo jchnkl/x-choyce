@@ -237,10 +237,10 @@ x_client_thumbnail::handle(xcb_generic_event_t * ge)
 
     if (_highlight) {
       glXMakeCurrent(_c.dpy(), _thumbnail_window, _gl_ctx);
-
-      _c.glXBindTexImageEXT(_c.dpy(), _thumbnail_gl_pixmap, GLX_FRONT_EXT, NULL);
-      _c.glGenerateMipmapEXT(GL_TEXTURE_2D);
-
+      with_texture(0, [this](GLuint &) {
+          _c.glXBindTexImageEXT(_c.dpy(), _gl_pixmap[0], GLX_FRONT_EXT, NULL);
+          _c.glGenerateMipmapEXT(GL_TEXTURE_2D);
+          });
       glXMakeCurrent(_c.dpy(), XCB_NONE, NULL);
     }
 
