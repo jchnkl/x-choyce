@@ -44,6 +44,11 @@ const xcb_window_t & x_client::window(void) const    { return _window; }
       xcb_window_t & x_client::parent(void)          { return _parent; }
 const xcb_window_t & x_client::parent(void) const    { return _parent; }
 
+const std::string & x_client::net_wm_name(void) const { return _net_wm_name; }
+const std::string & x_client::wm_name(void) const { return _wm_name; }
+const std::string & x_client::wm_class_name(void) const { return _class_name; }
+const std::string & x_client::wm_instance_name(void) const { return _instance_name; }
+
 xcb_window_t &
 x_client::name_window_pixmap(void)
 {
@@ -57,6 +62,28 @@ x_client::name_window_pixmap(void) const
 }
 
 unsigned int x_client::net_wm_desktop(void) const { return _net_wm_desktop; }
+
+const xcb_pixmap_t &
+x_client::icon_pixmap(void) const
+{
+  if (_net_wm_icon_pixmap == XCB_NONE) {
+    return _wm_hints_icon_pixmap;
+  } else {
+    return _net_wm_icon_pixmap;
+  }
+}
+
+const xcb_pixmap_t &
+x_client::title_pixmap(void) const
+{
+  return _title_pixmap;
+}
+
+const std::pair<unsigned int, unsigned int> &
+x_client::icon_geometry(void) const
+{
+  return _icon_geometry;
+}
 
 void x_client::update_geometry(void)
 {

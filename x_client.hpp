@@ -32,8 +32,14 @@ class x_client : public x_event_handler_t {
           xcb_pixmap_t & name_window_pixmap(void);
     const xcb_pixmap_t & name_window_pixmap(void) const;
           unsigned int   net_wm_desktop(void) const;
+    const xcb_pixmap_t & icon_pixmap(void) const;
+    const xcb_pixmap_t & title_pixmap(void) const;
+    const std::pair<unsigned int, unsigned int> & icon_geometry(void) const;
 
     const std::string & net_wm_name(void) const;
+    const std::string & wm_name(void) const;
+    const std::string & wm_class_name(void) const;
+    const std::string & wm_instance_name(void) const;
 
     bool handle(xcb_generic_event_t * ge);
     void update_geometry(void);
