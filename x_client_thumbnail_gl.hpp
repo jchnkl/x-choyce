@@ -12,6 +12,7 @@
 #include "x_event_handler_t.hpp"
 #include "x_client.hpp"
 #include "x_connection.hpp"
+#include "x_xft.hpp"
 
 // http://svn.enlightenment.org/svn/e/tags/evas-1.0.2/src/modules/engines/xrender_x11/evas_engine_xcb_render.c
 #define DOUBLE_TO_FIXED(d) ((xcb_render_fixed_t) ((d) * 65536))
@@ -57,9 +58,24 @@ class x_client_thumbnail : public x_event_handler_t
 
     x_connection & _c;
     x_client_ptr _x_client;
+    std::shared_ptr<x::xft> _x_xft;
 
     const int _border_width = 4;
     const int _icon_size = 64;
+
+    const double _title_bg_alpha = 0.375;
+    const uint32_t _title_bg_color =
+      0 | (uint32_t)(0xff * 0.5) << 24
+        | (uint32_t)(0xff * _title_bg_alpha) << 16
+        | (uint32_t)(0xff * _title_bg_alpha) << 8
+        | (uint32_t)(0xff * _title_bg_alpha)
+        ;
+    const x::type::colorname _colorname = std::string("#404040"); // 0.25 * 0xff
+
+    const x::type::fontname _pnamefont =
+      std::string("Sans:bold:pixelsize=26:antialias=true");
+    const x::type::fontname _titlefont =
+      std::string("Sans:bold:pixelsize=16:antialias=true");
 
     // red, green, blue, alpha
     std::tuple<double, double, double, double> _focused_border_color =
@@ -82,6 +98,7 @@ class x_client_thumbnail : public x_event_handler_t
     rectangle _rectangle;
 
     xcb_window_t _thumbnail_window;
+    xcb_pixmap_t _title_pixmap = XCB_NONE;
     xcb_damage_damage_t _damage;
 
     GLuint _gl_texture_id[3];
@@ -92,6 +109,7 @@ class x_client_thumbnail : public x_event_handler_t
     void purge(void);
     void update(int x, int y, unsigned int width, unsigned int height);
     void configure_thumbnail_window(void);
+    void configure_title(void);
     void configure_gl(XVisualInfo * vi = NULL);
     void init_gl_shader(void);
     void load_gl_shader(const std::string & filename, const std::string & name);

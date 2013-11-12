@@ -49,6 +49,8 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
 
   xcb_free_colormap(_c(), colormap);
 
+  configure_title();
+
   configure_gl();
   init_gl_shader();
 
@@ -61,6 +63,7 @@ x_client_thumbnail::~x_client_thumbnail(void)
   _c.deregister_handler(XCB_CONFIGURE_NOTIFY, this);
   release_gl();
   xcb_destroy_window(_c(), _thumbnail_window);
+  xcb_free_pixmap(_c(), _title_pixmap);
 }
 
 void
@@ -358,6 +361,43 @@ x_client_thumbnail::configure_thumbnail_window(void)
 
   xcb_configure_window(_c(), _thumbnail_window, mask, values);
   xcb_map_window(_c(), _thumbnail_window);
+}
+
+void
+x_client_thumbnail::configure_title(void)
+{
+  xcb_free_pixmap(_c(), _title_pixmap);
+
+  _title_pixmap = xcb_generate_id(_c());
+  xcb_create_pixmap(_c(), 32, _title_pixmap, _c.root_window(),
+                    _title_width, _title_height);
+
+  xcb_gcontext_t gc = xcb_generate_id(_c());
+  xcb_create_gc(_c(), gc, _title_pixmap, XCB_GC_FOREGROUND, &_title_bg_color );
+  xcb_rectangle_t r = { 0, 0, (uint16_t)_title_width, (uint16_t)_title_height };
+  xcb_poly_fill_rectangle(_c(), _title_pixmap, gc, 1, &r);
+  xcb_free_gc(_c(), gc);
+
+  _x_xft = std::shared_ptr<x::xft>(new x::xft(_c.dpy(), _title_pixmap, 32));
+
+  std::string pname = _x_client->wm_class_name();
+  std::string title = _x_client->net_wm_name().empty()
+                    ? _x_client->wm_name()
+                    : _x_client->net_wm_name();
+
+  std::string lower = "abcdefghijklmnopqrstuvwxy";
+  std::string upper = "ABCDEFGHIJKLMNOPQRSTUVWXY";
+
+  XGlyphInfo text_extents = _x_xft->text_extents_utf8(_pnamefont, lower + upper);
+
+  int x_off = _icon_size + 3 * _border_width;
+  int y_off = _border_width;
+
+  y_off += text_extents.height;
+  _x_xft->draw_string_utf8(pname, x_off, y_off, _pnamefont, _colorname, 0.75);
+
+  y_off += text_extents.height;
+  _x_xft->draw_string_utf8(title, x_off, y_off, _titlefont, _colorname, 0.75);
 }
 
 void
