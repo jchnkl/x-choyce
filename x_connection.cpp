@@ -536,6 +536,42 @@ x_connection::init_gl(void)
     glXGetProcAddress((const GLubyte *)"glDeleteProgram");
   glGenerateMipmapEXT = (PFNGLGENERATEMIPMAPEXTPROC)
     glXGetProcAddress((const GLubyte *)"glGenerateMipmapEXT");
+  glActiveTextureEXT = (PFNGLACTIVETEXTUREPROC)
+    glXGetProcAddress((const GLubyte *)"glActiveTexture");
+  glBlendFuncSeparate = (PFNGLBLENDFUNCSEPARATEPROC)
+    glXGetProcAddress((const GLubyte *)"glBlendFuncSeparate");
+
+  glGenSamplers = (PFNGLGENSAMPLERSPROC)
+    glXGetProcAddress((const GLubyte *)"glGenSamplers");
+  glDeleteSamplers = (PFNGLDELETESAMPLERSPROC)
+    glXGetProcAddressARB((const GLubyte *)"glDeleteSamplers");
+  glBindSampler = (PFNGLBINDSAMPLERPROC)
+    glXGetProcAddressARB((const GLubyte *)"glBindSampler");
+
+  glUniform1fEXT = (PFNGLUNIFORM1FPROC)
+    glXGetProcAddress((const GLubyte *)"glUniform1f");
+  glUniform2fEXT = (PFNGLUNIFORM2FPROC)
+    glXGetProcAddress((const GLubyte *)"glUniform2f");
+  glUniform3fEXT = (PFNGLUNIFORM3FPROC)
+    glXGetProcAddress((const GLubyte *)"glUniform3f");
+  glUniform4fEXT = (PFNGLUNIFORM4FPROC)
+    glXGetProcAddress((const GLubyte *)"glUniform4f");
+
+  glUniform1iEXT = (PFNGLUNIFORM1IPROC)
+    glXGetProcAddress((const GLubyte *)"glUniform1i");
+  glUniform2iEXT = (PFNGLUNIFORM2IPROC)
+    glXGetProcAddress((const GLubyte *)"glUniform2i");
+  glUniform3iEXT = (PFNGLUNIFORM3IPROC)
+    glXGetProcAddress((const GLubyte *)"glUniform3i");
+  glUniform4iEXT = (PFNGLUNIFORM4IPROC)
+    glXGetProcAddress((const GLubyte *)"glUniform4i");
+
+  glGetUniformLocationEXT = (PFNGLGETUNIFORMLOCATIONPROC)
+    glXGetProcAddress((const GLubyte *)"glGetUniformLocation");
+  glGetUniformBlockIndex = (PFNGLGETUNIFORMBLOCKINDEXPROC)
+    glXGetProcAddress((const GLubyte *)"glGetUniformBlockIndex");
+  glUniformBlockBinding = (PFNGLUNIFORMBLOCKBINDINGPROC)
+    glXGetProcAddress((const GLubyte *)"glUniformBlockBinding");
 }
 
 void
