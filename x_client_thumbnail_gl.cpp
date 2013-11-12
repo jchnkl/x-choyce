@@ -397,6 +397,7 @@ x_client_thumbnail::configure_gl(XVisualInfo * vi)
 void
 x_client_thumbnail::init_gl_shader(void)
 {
+  load_gl_shader("./normal.frag", "normal_shader");
   load_gl_shader("./grayscale.frag", "grayscale_shader");
 }
 
