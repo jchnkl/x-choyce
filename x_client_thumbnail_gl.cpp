@@ -410,6 +410,18 @@ x_client_thumbnail::release_gl(void)
   glXMakeCurrent(_c.dpy(), None, NULL);
 }
 
+void
+x_client_thumbnail::with_texture(GLuint tid, std::function<void(GLuint &)> f)
+{
+  glActiveTexture(GL_TEXTURE0 + tid);
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D, _gl_texture_id[tid]);
+  f(_gl_texture_id[tid]);
+  glBindTexture(GL_TEXTURE_2D, 0);
+  glDisable(GL_TEXTURE_2D);
+  glActiveTexture(GL_TEXTURE0);
+}
+
 bool operator==(const x_client_thumbnail & thumbnail, const xcb_window_t & window)
 {
   return *(thumbnail._x_client) == window;

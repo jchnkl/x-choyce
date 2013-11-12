@@ -83,6 +83,7 @@ class x_client_thumbnail : public x_event_handler_t
     void configure_gl(XVisualInfo * vi = NULL);
     void init_gl_shader(void);
     void release_gl(void);
+    void with_texture(GLuint tid, std::function<void(GLuint &)> f);
 };
 
 bool
