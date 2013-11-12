@@ -35,4 +35,35 @@ struct rectangle {
 
 std::ostream & operator<<(std::ostream & os, const rectangle & rect);
 
+namespace x {
+
+namespace type {
+
+namespace generic {
+
+class name {
+  public:
+    name(const std::string & name) : m_name(name) {}
+    std::string & operator*(void) { return m_name; }
+    const std::string & operator*(void) const { return m_name; }
+    std::string * const operator->(void) { return &m_name; }
+    const std::string * const operator->(void) const { return &m_name; }
+  private:
+    std::string m_name;
+}; // class name
+
+}; // namespace generic
+
+class colorname : public generic::name {
+  using generic::name::name;
+};
+
+class fontname : public generic::name {
+  using generic::name::name;
+};
+
+}; // namespace type
+
+}; // namespace x
+
 #endif
