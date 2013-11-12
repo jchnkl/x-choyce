@@ -62,6 +62,11 @@ class x_client : public x_event_handler_t {
     std::string _class_name;
     std::string _instance_name;
 
+    xcb_atom_t a_wm_name = _c.intern_atom("WM_NAME");
+    xcb_atom_t a_wm_class = _c.intern_atom("WM_CLASS");
+    xcb_atom_t a_wm_hints = _c.intern_atom("WM_HINTS");
+    xcb_atom_t a_net_wm_icon = _c.intern_atom("_NET_WM_ICON");
+    xcb_atom_t a_net_wm_name = _c.intern_atom("_NET_WM_NAME");
     xcb_atom_t a_net_wm_desktop = _c.intern_atom("_NET_CURRENT_DESKTOP");
 
     std::pair<unsigned int, unsigned int> _icon_geometry;

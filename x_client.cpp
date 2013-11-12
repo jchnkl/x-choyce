@@ -118,8 +118,26 @@ x_client::handle(xcb_generic_event_t * ge)
   } else if (XCB_PROPERTY_NOTIFY == (ge->response_type & ~0x80)) {
     xcb_property_notify_event_t * e = (xcb_property_notify_event_t *)ge;
 
-    if (e->window == _window && e->atom == a_net_wm_desktop) {
+    if (e->window != _window) return true;
+
+    if (e->atom == a_net_wm_desktop) {
       update_net_wm_desktop();
+
+    } else if (e->atom == a_net_wm_icon) {
+      update_net_wm_icon();
+
+    } else if (e->atom == a_wm_hints) {
+      update_wm_hints_icon();
+
+    } else if (e->atom == a_wm_name) {
+      update_wm_name();
+
+    } else if (e->atom == a_wm_class) {
+      update_wm_class();
+
+    } else if (e->atom == a_net_wm_name) {
+      update_net_wm_name();
+
     }
 
     return true;
