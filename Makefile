@@ -1,5 +1,5 @@
 LIBS=xcb xcb-atom xcb-keysyms xcb-composite xcb-damage xcb-xinerama \
-		 xcb-xfixes x11 x11-xcb gl
+		 xcb-xfixes x11 x11-xcb gl xcb-ewmh xcb-icccm xcb-image xft
 CXXFLAGS=-g -std=c++11 -Wall -O3 $(shell pkg-config --cflags ${LIBS})
 LDFLAGS=$(shell pkg-config --libs ${LIBS})
 
@@ -7,6 +7,7 @@ CPPSRCS=main.cpp \
 				data_types.cpp \
 				cyclic_iterator.cpp \
 				thumbnail_manager.cpp \
+				x_xft.cpp \
 				x_connection.cpp \
 				x_ewmh.cpp \
 				x_client.cpp \
@@ -25,6 +26,7 @@ HPPSRCS=chooser_t.hpp \
 				x_client.hpp \
 				x_client_thumbnail_gl.hpp \
 				x_client_thumbnail.hpp \
+				x_xft.hpp \
 				x_connection.hpp \
 				x_event_handler_t.hpp \
 				x_event_source.hpp \
