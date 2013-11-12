@@ -392,8 +392,14 @@ x_client_thumbnail::configure_gl(XVisualInfo * vi)
 void
 x_client_thumbnail::init_gl_shader(void)
 {
-  std::string shader_name = "grayscale_shader";
-  std::ifstream file("./grayscale.frag");
+  load_gl_shader("./grayscale.frag", "grayscale_shader");
+}
+
+void
+x_client_thumbnail::load_gl_shader(const std::string & filename,
+                                   const std::string & name)
+{
+  std::ifstream file(filename);
   std::string shader_source_str((std::istreambuf_iterator<char>(file)),
                                  std::istreambuf_iterator<char>());
   file.close();
@@ -412,19 +418,18 @@ x_client_thumbnail::init_gl_shader(void)
 
   _c.glGetShaderInfoLog(shader, max_len, &log_length, log_buffer);
   if (log_length > 0) {
-    std::cerr << "Shader compilation failed:" << std::endl
+    std::cerr << "Shader compilation for " << name << " failed:" << std::endl
               << log_buffer << std::endl;
   }
 
-  _programs[shader_name] = _c.glCreateProgram();
-  _c.glAttachShader(_programs[shader_name], shader);
-  _c.glLinkProgram(_programs[shader_name]);
-  _c.glUseProgram(_programs[shader_name]);
+  _programs[name] = _c.glCreateProgram();
+  _c.glAttachShader(_programs[name], shader);
+  _c.glLinkProgram(_programs[name]);
 
-  _c.glGetProgramInfoLog(_programs[shader_name],
+  _c.glGetProgramInfoLog(_programs[name],
                          max_len, &log_length, log_buffer);
   if (log_length > 0) {
-    std::cerr << "Program creation failed:" << std::endl
+    std::cerr << "Program creation for " << name << " failed:" << std::endl
               << log_buffer << std::endl;
   }
 
