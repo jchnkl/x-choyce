@@ -478,7 +478,8 @@ x_client_thumbnail::configure_gl(XVisualInfo * vi)
           _gl_pixmap[texture_id], texture_id, std::placeholders::_1));
   };
 
-  if (! _use_icon)               bind_texture(0);
+  bind_texture(0);
+
   if (_title_pixmap != XCB_NONE) bind_texture(1);
   if (_title_pixmap != XCB_NONE) bind_texture(2);
 
