@@ -317,7 +317,7 @@ x_client_thumbnail::configure_gl(XVisualInfo * vi)
     None
   };
 
-  const int pixmap_attr[] = {
+  int pixmap_attr[] = {
     GLX_TEXTURE_TARGET_EXT, GLX_TEXTURE_2D_EXT,
     GLX_TEXTURE_FORMAT_EXT, GLX_TEXTURE_FORMAT_RGB_EXT,
     None
@@ -342,19 +342,49 @@ x_client_thumbnail::configure_gl(XVisualInfo * vi)
   int config = 0;
   GLXFBConfig * _gl_configs =
     glXChooseFBConfig(_c.dpy(), 0, pixmap_config, &config);
-  _thumbnail_gl_pixmap =
-      glXCreatePixmap(_c.dpy(), _gl_configs[0],
-                      _x_client->name_window_pixmap(), pixmap_attr);
+
+  _gl_pixmap[0] = glXCreatePixmap(
+      _c.dpy(), _gl_configs[0], _x_client->name_window_pixmap(), pixmap_attr);
+
+  pixmap_attr[3] = GLX_TEXTURE_FORMAT_RGBA_EXT;
+
+  if (_title_pixmap != XCB_NONE) {
+    _gl_pixmap[1] = glXCreatePixmap(
+        _c.dpy(), _gl_configs[0], _title_pixmap, pixmap_attr);
+  } else {
+    _gl_pixmap[1] = XCB_NONE;
+  }
+
+  if (_x_client->icon_pixmap() != XCB_NONE) {
+    _gl_pixmap[2] = glXCreatePixmap(
+        _c.dpy(), _gl_configs[0], _x_client->icon_pixmap(), pixmap_attr);
+  } else {
+    _gl_pixmap[2] = XCB_NONE;
+  }
+
   delete _gl_configs;
 
-  GLuint _thumbnail_gl_texture_id;
-  glEnable(GL_TEXTURE_2D);
-  glGenTextures(1, &_thumbnail_gl_texture_id);
-  glBindTexture(GL_TEXTURE_2D, _thumbnail_gl_texture_id);
-  _c.glXBindTexImageEXT(_c.dpy(), _thumbnail_gl_pixmap, GLX_FRONT_EXT, NULL);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+  glGenTextures(3, _gl_texture_id);
+
+  auto make_texture = [this](GLXPixmap & gl_pixmap, GLuint tid, GLuint &)
+  {
+    _c.glXBindTexImageEXT(_c.dpy(), gl_pixmap, GLX_FRONT_EXT, NULL);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  };
+
+  auto bind_texture = [this, &make_texture](GLuint texture_id)
+  {
+    with_texture(texture_id, std::bind(make_texture,
+          _gl_pixmap[texture_id], texture_id, std::placeholders::_1));
+  };
+
+  if (! _use_icon)               bind_texture(0);
+  if (_title_pixmap != XCB_NONE) bind_texture(1);
+  if (_title_pixmap != XCB_NONE) bind_texture(2);
+
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
   glXMakeCurrent(_c.dpy(), XCB_NONE, NULL);
 }

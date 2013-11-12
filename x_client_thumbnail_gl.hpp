@@ -73,8 +73,9 @@ class x_client_thumbnail : public x_event_handler_t
     xcb_window_t _thumbnail_window;
     xcb_damage_damage_t _damage;
 
+    GLuint _gl_texture_id[3];
     GLXContext _gl_ctx;
-    GLXPixmap _thumbnail_gl_pixmap;
+    GLXPixmap _gl_pixmap[3] = { XCB_NONE, XCB_NONE, XCB_NONE };
     std::unordered_map<std::string, GLuint> _programs;
 
     void purge(void);
