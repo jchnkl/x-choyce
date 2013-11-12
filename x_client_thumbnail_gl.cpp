@@ -195,23 +195,35 @@ void
 x_client_thumbnail::highlight(bool want_highlight)
 {
   _highlight = want_highlight;
+
+  auto use_program = [this](const std::string & program)
+  {
+    _c.glUseProgram(_programs[program]);
+    GLint location = _c.glGetUniformLocationEXT(_programs[program], 0);
+    _c.glUniform1iEXT(location, tid);
+  };
+
   glXMakeCurrent(_c.dpy(), _thumbnail_window, _gl_ctx);
-  _c.glXBindTexImageEXT(_c.dpy(), _thumbnail_gl_pixmap, GLX_FRONT_EXT, NULL);
 
   if (want_highlight) {
-    _c.glUseProgram(0);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
-    _c.glGenerateMipmapEXT(GL_TEXTURE_2D);
+    use_program("normal_shader");
+    with_texture(0, [this](GLuint &) {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+        _c.glGenerateMipmapEXT(GL_TEXTURE_2D);
+        });
 
   } else {
-    _c.glUseProgram(_programs["grayscale_shader"]);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    use_program("grayscale_shader");
+    with_texture(0, [this](GLuint &) {
+        _c.glXBindTexImageEXT(_c.dpy(), _gl_pixmap[0], GLX_FRONT_EXT, NULL);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        });
   }
-  glXMakeCurrent(_c.dpy(), XCB_NONE, NULL);
 
+  glXMakeCurrent(_c.dpy(), XCB_NONE, NULL);
   update();
 }
 
