@@ -56,6 +56,12 @@ x_connection::operator()(void) const { return _c; }
 Display * const
 x_connection::dpy(void) const { return _dpy; }
 
+xcb_ewmh_connection_t *
+x_connection::ewmh(void) const
+{
+  return _ewmh->connection();
+}
+
 void
 x_connection::select_input(xcb_window_t window, uint32_t event_mask) const
 {

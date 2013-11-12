@@ -4,16 +4,26 @@ x_ewmh::x_ewmh(x_connection & c) : _c(c)
 {
   _c.register_handler(XCB_PROPERTY_NOTIFY, this);
   update_net_active_window();
+
+  xcb_intern_atom_cookie_t * cookie = xcb_ewmh_init_atoms(_c(), &_ewmh);
+  xcb_ewmh_init_atoms_replies(&_ewmh, cookie, NULL);
 }
 
 x_ewmh::~x_ewmh(void)
 {
   _c.deregister_handler(XCB_PROPERTY_NOTIFY, this);
+  xcb_ewmh_connection_wipe(&_ewmh);
 }
 
 xcb_window_t x_ewmh::net_active_window(void) const
 {
   return _net_active_window;
+}
+
+xcb_ewmh_connection_t *
+x_ewmh::connection(void) const
+{
+  return const_cast<xcb_ewmh_connection_t *>(&_ewmh);
 }
 
 bool

@@ -8,6 +8,7 @@
 #include <xcb/xcb.h>
 #include <xcb/render.h>
 #include <xcb/composite.h>
+#include <xcb/xcb_ewmh.h>
 
 #include <X11/Xlib.h>
 #include <X11/Xlib-xcb.h>
@@ -34,6 +35,7 @@ class x_connection : public x_event_handler_t
     xcb_connection_t * const operator()(void) const;
 
     Display * const dpy(void) const;
+    xcb_ewmh_connection_t * ewmh(void) const;
     void select_input(xcb_window_t window, uint32_t event_mask) const;
     void update_input(xcb_window_t window, uint32_t event_mask) const;
     xcb_visualtype_t * default_visual_of_screen(void);
