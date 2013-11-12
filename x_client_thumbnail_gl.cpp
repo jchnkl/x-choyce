@@ -162,12 +162,16 @@ x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  glBegin(GL_QUADS);
-  glTexCoord2f(0.0, 0.0); glVertex3f(-1.0,  1.0, 0.0);
-  glTexCoord2f(1.0, 0.0); glVertex3f( 1.0,  1.0, 0.0);
-  glTexCoord2f(1.0, 1.0); glVertex3f( 1.0, -1.0, 0.0);
-  glTexCoord2f(0.0, 1.0); glVertex3f(-1.0, -1.0, 0.0);
-  glEnd();
+  with_texture(0, [this](GLuint &) {
+      glPushMatrix();
+      glBegin(GL_QUADS);
+      glTexCoord2f(0.0, 0.0); glVertex3f(-1.0,  1.0, 0.0);
+      glTexCoord2f(1.0, 0.0); glVertex3f( 1.0,  1.0, 0.0);
+      glTexCoord2f(1.0, 1.0); glVertex3f( 1.0, -1.0, 0.0);
+      glTexCoord2f(0.0, 1.0); glVertex3f(-1.0, -1.0, 0.0);
+      glEnd();
+      glPopMatrix();
+      });
 
   glXSwapBuffers(_c.dpy(), _thumbnail_window);
 
