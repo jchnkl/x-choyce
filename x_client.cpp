@@ -73,12 +73,6 @@ x_client::icon_pixmap(void) const
   }
 }
 
-const xcb_pixmap_t &
-x_client::title_pixmap(void) const
-{
-  return _title_pixmap;
-}
-
 const std::pair<unsigned int, unsigned int> &
 x_client::icon_geometry(void) const
 {
