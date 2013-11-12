@@ -48,6 +48,7 @@ class x_client : public x_event_handler_t {
     xcb_window_t _window;
     xcb_window_t _parent;
     xcb_pixmap_t _net_wm_icon_pixmap = XCB_NONE;
+    xcb_pixmap_t _wm_hints_icon_pixmap = XCB_NONE;
     xcb_pixmap_t _name_window_pixmap = XCB_NONE;
 
     xcb_atom_t a_net_wm_desktop = _c.intern_atom("_NET_CURRENT_DESKTOP");
@@ -55,6 +56,7 @@ class x_client : public x_event_handler_t {
     std::pair<unsigned int, unsigned int> _icon_geometry;
 
     void update_net_wm_icon(void);
+    void update_wm_hints_icon(void);
     void update_net_wm_desktop(void);
     void update_parent_window(void);
     void alpha_transform(uint8_t * data, unsigned int w, unsigned int h);
