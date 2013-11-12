@@ -52,7 +52,7 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
   configure_gl();
   init_gl_shader();
 
-  update();
+  highlight(false);
 }
 
 x_client_thumbnail::~x_client_thumbnail(void)
