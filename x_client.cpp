@@ -1,5 +1,9 @@
 #include "x_client.hpp"
 
+#include <cstring> // memset
+#include <xcb/xcb_ewmh.h>
+#include <xcb/xcb_image.h>
+
 x_client::x_client(x_connection & c, const xcb_window_t & window)
   : _c(c), _window(window)
 {
@@ -11,12 +15,16 @@ x_client::x_client(x_connection & c, const xcb_window_t & window)
   update_net_wm_desktop();
   update_parent_window();
   update_name_window_pixmap();
+
+  update_net_wm_icon();
 }
 
 x_client::~x_client(void)
 {
   _c.deregister_handler(XCB_CONFIGURE_NOTIFY, this);
   _c.deregister_handler(XCB_PROPERTY_NOTIFY, this);
+
+  xcb_free_pixmap(_c(), _net_wm_icon_pixmap);
 }
 
       rectangle &  x_client::rect(void)       { return _rectangle; }
@@ -127,6 +135,89 @@ x_client::update_name_window_pixmap(void)
   if (error) {
     delete error;
     _name_window_pixmap = XCB_NONE;
+  }
+}
+
+void
+x_client::update_net_wm_icon(void)
+{
+  xcb_free_pixmap(_c(), _net_wm_icon_pixmap);
+  _net_wm_icon_pixmap = XCB_NONE;
+
+  xcb_generic_error_t * error;
+  xcb_get_property_cookie_t c = xcb_ewmh_get_wm_icon(_c.ewmh(), _window);
+
+  xcb_ewmh_get_wm_icon_reply_t wm_icon;
+  std::memset(&wm_icon, 0, sizeof(xcb_ewmh_get_wm_icon_reply_t));
+  xcb_ewmh_get_wm_icon_reply(_c.ewmh(), c, &wm_icon, &error);
+
+  if (error) {
+    delete error;
+    return;
+
+  } else if (0 < xcb_ewmh_get_wm_icon_length(&wm_icon)) {
+
+    uint32_t width = 0;
+    uint32_t height = 0;
+    uint32_t * data = NULL;
+
+    xcb_ewmh_wm_icon_iterator_t iter = xcb_ewmh_get_wm_icon_iterator(&wm_icon);
+    for (; iter.rem; xcb_ewmh_get_wm_icon_next(&iter)) {
+      if (iter.width > width) {
+        width = iter.width;
+        height = iter.height;
+        data = iter.data;
+      }
+    }
+
+    _icon_geometry.first = width;
+    _icon_geometry.second = height;
+
+    _net_wm_icon_pixmap = xcb_generate_id(_c());
+    xcb_create_pixmap(
+        _c(), 32, _net_wm_icon_pixmap, _c.root_window(), width, height);
+
+    xcb_image_t * image = xcb_image_create_native(
+        _c(), width, height, XCB_IMAGE_FORMAT_Z_PIXMAP, 32, NULL, 0, NULL);
+
+    image->data = (uint8_t *)data;
+
+    alpha_transform(image->data, width, height);
+
+    xcb_gcontext_t gc = xcb_generate_id(_c());
+    xcb_create_gc(_c(), gc, _net_wm_icon_pixmap, 0, NULL);
+
+    xcb_image_put(_c(), _net_wm_icon_pixmap, gc, image, 0, 0, 0);
+
+    xcb_image_destroy(image);
+    xcb_free_gc(_c(), gc);
+  }
+
+  xcb_ewmh_get_wm_icon_reply_wipe(&wm_icon);
+}
+
+// stolen from openbox: tests/icons.c
+void
+x_client::alpha_transform(uint8_t * data, unsigned int w, unsigned int h)
+{
+  for (uint32_t j = 0; j < w * h; j++) {
+    unsigned char a = (unsigned char)data[j*sizeof(uint32_t)+3];
+    unsigned char r = (unsigned char)data[j*sizeof(uint32_t)+0];
+    unsigned char g = (unsigned char)data[j*sizeof(uint32_t)+1];
+    unsigned char b = (unsigned char)data[j*sizeof(uint32_t)+2];
+
+    // background color
+    unsigned char bgr = 0;
+    unsigned char bgg = 0;
+    unsigned char bgb = 0;
+
+    r = bgr + (r - bgr) * a / 256;
+    g = bgg + (g - bgg) * a / 256;
+    b = bgb + (b - bgb) * a / 256;
+
+    data[j*sizeof(uint32_t)+0] = (char)r;
+    data[j*sizeof(uint32_t)+1] = (char)g;
+    data[j*sizeof(uint32_t)+2] = (char)b;
   }
 }
 
