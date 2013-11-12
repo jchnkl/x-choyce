@@ -150,6 +150,7 @@ x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height
 
   auto * bc = _highlight ? &_focused_border_color : &_unfocused_border_color;
 
+  // r, g, b, a
   glClearColor(std::get<0>(*bc), std::get<1>(*bc),
                std::get<2>(*bc), std::get<3>(*bc));
 
