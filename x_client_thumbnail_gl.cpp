@@ -116,6 +116,15 @@ x_client_thumbnail::update(const rectangle & r)
   _rectangle.x() = r.x() + (r.width() - _rectangle.width()) / 2;
   _rectangle.y() = r.y() + (r.height() - _rectangle.height()) / 2;
 
+  _icon_scale_x = _icon_size / (double)_rectangle.width();
+  _icon_scale_y = _icon_size / (double)_rectangle.height();
+
+  _title_width = _rectangle.width() + _border_width;
+  _title_height = _icon_size + _border_width;
+
+  _title_scale_x = _title_width / (double)_rectangle.width();
+  _title_scale_y = _title_height / (double)_rectangle.height();
+
   if (_visible) {
     configure_thumbnail_window();
     update();
@@ -173,8 +182,38 @@ x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height
       glPopMatrix();
       });
 
-  glXSwapBuffers(_c.dpy(), _thumbnail_window);
+  if (_gl_pixmap[1] != XCB_NONE) {
+    with_texture(1, [this](GLuint &) {
+        glPushMatrix();
+        glTranslatef(-1.0 + _title_scale_x, -1.0 + _title_scale_y, 0.0);
+        glBegin(GL_QUADS);
+        glTexCoord2f(0.0, 0.0); glVertex3f(-_title_scale_x,  _title_scale_y, 0.0);
+        glTexCoord2f(1.0, 0.0); glVertex3f( _title_scale_x,  _title_scale_y, 0.0);
+        glTexCoord2f(1.0, 1.0); glVertex3f( _title_scale_x, -_title_scale_y, 0.0);
+        glTexCoord2f(0.0, 1.0); glVertex3f(-_title_scale_x, -_title_scale_y, 0.0);
+        glEnd();
+        glPopMatrix();
+        });
+  }
 
+  if (_gl_pixmap[2] != XCB_NONE) {
+    with_texture(2, [this](GLuint &) {
+        glPushMatrix();
+        glTranslatef(
+          -1.0 + _icon_scale_x + (_border_width / (double)_rectangle.width()),
+          -1.0 + _icon_scale_y + (_border_width / (double)_rectangle.height()),
+          0.0);
+        glBegin(GL_QUADS);
+        glTexCoord2f(0.0, 0.0); glVertex3f(-_icon_scale_x,  _icon_scale_y, 0.0);
+        glTexCoord2f(1.0, 0.0); glVertex3f( _icon_scale_x,  _icon_scale_y, 0.0);
+        glTexCoord2f(1.0, 1.0); glVertex3f( _icon_scale_x, -_icon_scale_y, 0.0);
+        glTexCoord2f(0.0, 1.0); glVertex3f(-_icon_scale_x, -_icon_scale_y, 0.0);
+        glEnd();
+        glPopMatrix();
+        });
+  }
+
+  glXSwapBuffers(_c.dpy(), _thumbnail_window);
   glDisable(GL_SCISSOR_TEST);
   glXMakeCurrent(_c.dpy(), XCB_NONE, NULL);
 }
@@ -199,8 +238,11 @@ x_client_thumbnail::highlight(bool want_highlight)
   auto use_program = [this](const std::string & program)
   {
     _c.glUseProgram(_programs[program]);
-    GLint location = _c.glGetUniformLocationEXT(_programs[program], 0);
-    _c.glUniform1iEXT(location, tid);
+    for (auto tid : { 0, 1, 2 }) {
+      GLint location = _c.glGetUniformLocationEXT(
+          _programs[program], ("texture_" + std::to_string(tid)).c_str());
+      _c.glUniform1iEXT(location, tid);
+    }
   };
 
   glXMakeCurrent(_c.dpy(), _thumbnail_window, _gl_ctx);
