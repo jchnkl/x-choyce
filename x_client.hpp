@@ -51,11 +51,19 @@ class x_client : public x_event_handler_t {
     xcb_pixmap_t _wm_hints_icon_pixmap = XCB_NONE;
     xcb_pixmap_t _name_window_pixmap = XCB_NONE;
 
+    std::string _net_wm_name;
+    std::string _wm_name;
+    std::string _class_name;
+    std::string _instance_name;
+
     xcb_atom_t a_net_wm_desktop = _c.intern_atom("_NET_CURRENT_DESKTOP");
 
     std::pair<unsigned int, unsigned int> _icon_geometry;
 
     void update_net_wm_icon(void);
+    void update_net_wm_name(void);
+    void update_wm_name(void);
+    void update_wm_class(void);
     void update_wm_hints_icon(void);
     void update_net_wm_desktop(void);
     void update_parent_window(void);

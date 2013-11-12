@@ -21,6 +21,10 @@ x_client::x_client(x_connection & c, const xcb_window_t & window)
   if (_net_wm_icon_pixmap == XCB_NONE) {
     update_wm_hints_icon();
   }
+
+  update_wm_name();
+  update_wm_class();
+  update_net_wm_name();
 }
 
 x_client::~x_client(void)
@@ -199,6 +203,69 @@ x_client::update_net_wm_icon(void)
   }
 
   xcb_ewmh_get_wm_icon_reply_wipe(&wm_icon);
+}
+
+void
+x_client::update_net_wm_name(void)
+{
+  _net_wm_name.clear();
+
+  xcb_generic_error_t * error;
+  xcb_get_property_cookie_t c = xcb_ewmh_get_wm_name(_c.ewmh(), _window);
+  xcb_get_property_reply_t * r = xcb_get_property_reply(_c(), c, &error);
+
+  if (error) {
+    delete error;
+
+  } else {
+    xcb_ewmh_get_utf8_strings_reply_t net_wm_name;
+    if (xcb_ewmh_get_wm_name_from_reply(_c.ewmh(), &net_wm_name, r)) {
+      _net_wm_name = std::string(net_wm_name.strings, net_wm_name.strings_len);
+      xcb_ewmh_get_utf8_strings_reply_wipe(&net_wm_name);
+    }
+  }
+}
+
+void
+x_client::update_wm_name(void)
+{
+  _wm_name.clear();
+
+  xcb_generic_error_t * error;
+  xcb_icccm_get_text_property_reply_t wm_name;
+  xcb_get_property_cookie_t c = xcb_icccm_get_wm_name(_c(), _window);
+  xcb_icccm_get_wm_name_reply(_c(), c, &wm_name, &error);
+
+  if (error) {
+    delete error;
+
+  } else {
+    _wm_name = std::string(wm_name.name, wm_name.name_len);
+    xcb_icccm_get_text_property_reply_wipe(&wm_name);
+  }
+}
+
+void
+x_client::update_wm_class(void)
+{
+  _class_name.clear();
+  _instance_name.clear();
+
+  xcb_generic_error_t * error;
+  xcb_get_property_cookie_t c = xcb_icccm_get_wm_class(_c(), _window);
+  xcb_get_property_reply_t * r = xcb_get_property_reply(_c(), c, &error);
+
+  if (error) {
+    delete error;
+
+  } else {
+    xcb_icccm_get_wm_class_reply_t wm_class;
+    if (xcb_icccm_get_wm_class_from_reply(&wm_class, r)) {
+      _class_name = wm_class.class_name;
+      _instance_name = wm_class.instance_name;
+      xcb_icccm_get_wm_class_reply_wipe(&wm_class);
+    }
+  }
 }
 
 void
