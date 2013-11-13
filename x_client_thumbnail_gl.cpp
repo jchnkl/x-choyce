@@ -541,7 +541,14 @@ void
 x_client_thumbnail::release_gl(void)
 {
   glXMakeCurrent(_c.dpy(), _thumbnail_window, _gl_ctx);
-  _c.glXReleaseTexImageEXT(_c.dpy(), _thumbnail_gl_pixmap, GLX_FRONT_EXT);
+
+  for (auto id : { 0, 1, 2 }) {
+    _c.glXReleaseTexImageEXT(_c.dpy(), _gl_pixmap[id], GLX_FRONT_EXT);
+    glXDestroyGLXPixmap(_c.dpy(), _gl_pixmap[id]);
+  }
+
+  glDeleteTextures(3, _gl_texture_id);
+
   glXDestroyContext(_c.dpy(), _gl_ctx);
   glXMakeCurrent(_c.dpy(), None, NULL);
 }
