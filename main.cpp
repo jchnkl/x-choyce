@@ -1,3 +1,4 @@
+#include <signal.h>
 #include <X11/keysym.h>
 
 #include "grid.hpp"
@@ -5,6 +6,13 @@
 #include "x_connection.hpp"
 #include "x_client_chooser.hpp"
 #include "x_client_thumbnail_gl.hpp"
+
+x_event_source_t * g_event_source = NULL;
+
+void sig_handler(int signum)
+{
+  if (g_event_source) g_event_source->shutdown();
+}
 
 int main(int argc, char ** argv)
 {
@@ -17,6 +25,10 @@ int main(int argc, char ** argv)
   xcb_mod_mask_t mod = XCB_MOD_MASK_1;
 
   x_connection c;
+  g_event_source = &c;
+
+  signal(SIGINT,  sig_handler);
+  signal(SIGTERM, sig_handler);
 
   grid_t grid;
 
