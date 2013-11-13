@@ -48,6 +48,9 @@ x_connection::~x_connection(void)
 {
   _event_source->deregister_handler(XCB_CONFIGURE_NOTIFY, this);
   xcb_disconnect(_c);
+
+  // Force object d'tor here, to prevent calling an invald _event_source
+  _ewmh.reset();
 }
 
 xcb_connection_t * const
