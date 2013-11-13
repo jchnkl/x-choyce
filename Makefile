@@ -9,6 +9,7 @@ CPPSRCS=main.cpp \
 				thumbnail_manager.cpp \
 				x_xft.cpp \
 				x_connection.cpp \
+				x_event_source.cpp \
 				x_ewmh.cpp \
 				x_client.cpp \
 				x_client_chooser.cpp \
