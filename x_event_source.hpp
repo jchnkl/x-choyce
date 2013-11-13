@@ -18,11 +18,15 @@ class x_event_source : public x_event_source_t {
     void register_handler(unsigned int event_id, x_event_handler_t * eh);
     void deregister_handler(unsigned int event_id, x_event_handler_t * eh);
     void run_event_loop(void);
+    void shutdown(void);
 
   private:
     typedef std::list<x_event_handler_t *> handler_list_t;
 
+    const uint32_t id = 0 | (unsigned long)this;
+
     x_connection & _c;
+    bool _running = true;
     std::unordered_map<unsigned int, handler_list_t> _handler;
 };
 

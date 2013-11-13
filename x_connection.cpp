@@ -485,6 +485,12 @@ x_connection::run_event_loop(void)
   _event_source->run_event_loop();
 }
 
+void
+x_connection::shutdown(void)
+{
+  _event_source->shutdown();
+}
+
 // private
 
 void

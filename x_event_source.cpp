@@ -25,11 +25,15 @@ void
 x_event_source::run_event_loop(void)
 {
   xcb_generic_event_t * ge = NULL;
-  while (true) {
+  while (_running) {
     _c.flush();
     ge = xcb_wait_for_event(_c());
 
     if (! ge) {
+      break;
+
+    } else if (XCB_CLIENT_MESSAGE == (ge->response_type & ~0x80)
+        && id == ((xcb_client_message_event_t *)ge)->data.data32[0]) {
       break;
 
     } else {
@@ -62,4 +66,24 @@ x_event_source::run_event_loop(void)
       delete ge;
     }
   }
+}
+
+void
+x_event_source::shutdown(void)
+{
+  _running = false;
+
+  xcb_client_message_event_t e;
+  memset(&e, 0, sizeof(xcb_client_message_event_t));
+
+  e.response_type = XCB_CLIENT_MESSAGE;
+  e.format = 32;
+  e.type = XCB_ATOM_CARDINAL;
+  e.window = _c.root_window();
+  e.data.data32[0] = id;
+
+  xcb_send_event(_c(), false, _c.root_window(),
+                 XCB_EVENT_MASK_STRUCTURE_NOTIFY, (const char *)&e);
+
+  _c.flush();
 }

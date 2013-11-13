@@ -70,6 +70,7 @@ class x_connection : public x_event_handler_t
     void register_handler(unsigned int event_id, x_event_handler_t * eh);
     void deregister_handler(unsigned int event_id, x_event_handler_t * eh);
     void run_event_loop(void);
+    void shutdown(void);
 
     PFNGLXBINDTEXIMAGEEXTPROC     glXBindTexImageEXT      = 0;
     PFNGLXRELEASETEXIMAGEEXTPROC  glXReleaseTexImageEXT   = 0;
