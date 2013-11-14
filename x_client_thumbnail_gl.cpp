@@ -409,10 +409,6 @@ x_client_thumbnail::configure_gl(XVisualInfo * vi)
 
   const int pixmap_config[] = {
     GLX_BIND_TO_TEXTURE_RGBA_EXT, True,
-    GLX_DRAWABLE_TYPE, GLX_PIXMAP_BIT,
-    GLX_BIND_TO_TEXTURE_TARGETS_EXT, GLX_TEXTURE_2D_BIT_EXT,
-    GLX_DOUBLEBUFFER, False,
-    GLX_Y_INVERTED_EXT,
     None
   };
 
