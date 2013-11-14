@@ -394,10 +394,10 @@ x_client_thumbnail::configure_title(void)
   int y_off = _border_width;
 
   y_off += text_extents.height;
-  _x_xft->draw_string_utf8(pname, x_off, y_off, _pnamefont, _colorname, 0.75);
+  _x_xft->draw_string_utf8(pname, x_off, y_off, _pnamefont, _colorname);
 
   y_off += text_extents.height;
-  _x_xft->draw_string_utf8(title, x_off, y_off, _titlefont, _colorname, 0.75);
+  _x_xft->draw_string_utf8(title, x_off, y_off, _titlefont, _colorname);
 }
 
 void
