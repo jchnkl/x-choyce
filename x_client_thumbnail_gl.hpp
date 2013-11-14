@@ -63,14 +63,10 @@ class x_client_thumbnail : public x_event_handler_t
     const int _border_width = 4;
     const int _icon_size = 64;
 
-    const double _title_bg_alpha = 0.375;
-    const uint32_t _title_bg_color =
-      0 | (uint32_t)(0xff * 0.5) << 24
-        | (uint32_t)(0xff * _title_bg_alpha) << 16
-        | (uint32_t)(0xff * _title_bg_alpha) << 8
-        | (uint32_t)(0xff * _title_bg_alpha)
-        ;
-    const x::type::colorname _colorname = std::string("#404040"); // 0.25 * 0xff
+    // 0.375 * 0xff; 0.25 * 0xff
+    const uint32_t _title_bg_color = 0x60484848;
+
+    const x::type::colorname _colorname = std::string("#303030");
 
     const x::type::fontname _pnamefont =
       std::string("Sans:bold:pixelsize=26:antialias=true");
