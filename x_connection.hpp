@@ -41,6 +41,7 @@ class x_connection : public x_event_handler_t
     xcb_visualtype_t * default_visual_of_screen(void);
     xcb_visualtype_t * const find_visual(unsigned int depth);
     void flush(void) const;
+    int screen_number(void) const;
     xcb_screen_t * const default_screen(void) const;
     xcb_window_t const & root_window(void) const;
     uint8_t damage_event_id(void) const;

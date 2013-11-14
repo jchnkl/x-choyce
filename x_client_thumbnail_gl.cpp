@@ -425,7 +425,7 @@ x_client_thumbnail::configure_gl(XVisualInfo * vi)
 
   if (vi == NULL) {
     GLint gl_vi_attr[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
-    vi = glXChooseVisual(_c.dpy(), DefaultScreen(_c.dpy()), gl_vi_attr);
+    vi = glXChooseVisual(_c.dpy(), _c.screen_number(), gl_vi_attr);
     create_ctx();
     delete vi;
   } else {
@@ -436,7 +436,7 @@ x_client_thumbnail::configure_gl(XVisualInfo * vi)
 
   int config = 0;
   GLXFBConfig * _gl_configs =
-    glXChooseFBConfig(_c.dpy(), 0, pixmap_config, &config);
+    glXChooseFBConfig(_c.dpy(), _c.screen_number(), pixmap_config, &config);
 
   _gl_pixmap[0] = glXCreatePixmap(
       _c.dpy(), _gl_configs[0], _x_client->name_window_pixmap(), pixmap_attr);

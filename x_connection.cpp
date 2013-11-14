@@ -135,6 +135,12 @@ x_connection::find_visual(unsigned int depth)
 void
 x_connection::flush(void) const { xcb_flush(_c); }
 
+int
+x_connection::screen_number(void) const
+{
+  return _screen_number;
+}
+
 xcb_screen_t * const
 x_connection::default_screen(void) const
 {
