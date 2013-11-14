@@ -434,9 +434,9 @@ x_client_thumbnail::configure_gl(XVisualInfo * vi)
 
   glXMakeCurrent(_c.dpy(), _thumbnail_window, _gl_ctx);
 
-  int config = 0;
+  int nconfigs = 0;
   GLXFBConfig * _gl_configs =
-    glXChooseFBConfig(_c.dpy(), _c.screen_number(), pixmap_config, &config);
+    glXChooseFBConfig(_c.dpy(), _c.screen_number(), pixmap_config, &nconfigs);
 
   _gl_pixmap[0] = glXCreatePixmap(
       _c.dpy(), _gl_configs[0], _x_client->name_window_pixmap(), pixmap_attr);
