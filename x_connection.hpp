@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <unordered_map>
 #include <xcb/xcb.h>
 #include <xcb/render.h>
 #include <xcb/composite.h>
@@ -57,10 +58,10 @@ class x_connection : public x_event_handler_t
     std::string keysym_to_string(xcb_keysym_t keysym) const;
     std::tuple<xcb_window_t, std::vector<xcb_window_t>> query_tree(xcb_window_t parent);
     std::vector<xcb_window_t> net_client_list_stacking(void) const;
-    xcb_atom_t intern_atom(const std::string & atom_name) const;
+    xcb_atom_t intern_atom(const std::string & name);
     xcb_window_t net_active_window(void) const;
-    void request_change_current_desktop(unsigned int desktop_id) const;
-    void request_change_active_window(xcb_window_t window) const;
+    void request_change_current_desktop(unsigned int desktop_id);
+    void request_change_active_window(xcb_window_t window);
     // root, window; XCB_NONE ^= use root_window
     std::pair<position, position> query_pointer(const xcb_window_t & window = XCB_NONE) const;
     // XCB_NONE ^= use root_window
@@ -119,6 +120,7 @@ class x_connection : public x_event_handler_t
     xcb_screen_t * _default_screen = NULL;
 
     std::vector<rectangle> _screens;
+    std::unordered_map<std::string, xcb_atom_t> _atoms;
 
     std::shared_ptr<x_ewmh> _ewmh;
     std::shared_ptr<x_event_source_t> _event_source;

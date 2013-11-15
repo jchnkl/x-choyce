@@ -341,20 +341,23 @@ x_connection::net_client_list_stacking(void) const
 }
 
 xcb_atom_t
-x_connection::intern_atom(const std::string & atom_name) const
+x_connection::intern_atom(const std::string & name)
 {
-  xcb_intern_atom_cookie_t atom_cookie =
-    xcb_intern_atom(_c, false, atom_name.length(), atom_name.c_str());
-  xcb_intern_atom_reply_t * atom_reply =
-    xcb_intern_atom_reply(_c, atom_cookie, NULL);
+  try {
+    return _atoms.at(name);
+  } catch (...) {
+    xcb_intern_atom_cookie_t c =
+      xcb_intern_atom(_c, false, name.length(), name.c_str());
+    xcb_intern_atom_reply_t * r = xcb_intern_atom_reply(_c, c, NULL);
 
-  if (atom_reply) {
-    xcb_atom_t atom = atom_reply->atom;
-    delete atom_reply;
-    return atom;
+    if (r) {
+      _atoms[name] = r->atom;
+      delete r;
+      return _atoms[name];
+    }
+
+    return XCB_ATOM_NONE;
   }
-
-  return XCB_ATOM_NONE;
 }
 
 xcb_window_t
@@ -364,7 +367,7 @@ x_connection::net_active_window(void) const
 }
 
 void
-x_connection::request_change_current_desktop(unsigned int desktop_id) const
+x_connection::request_change_current_desktop(unsigned int desktop_id)
 {
   xcb_client_message_event_t event;
   memset(&event, 0, sizeof(xcb_client_message_event_t));
@@ -384,7 +387,7 @@ x_connection::request_change_current_desktop(unsigned int desktop_id) const
 }
 
 void
-x_connection::request_change_active_window(xcb_window_t window) const
+x_connection::request_change_active_window(xcb_window_t window)
 {
   xcb_client_message_event_t event;
   memset(&event, 0, sizeof(xcb_client_message_event_t));
