@@ -1,0 +1,35 @@
+#ifndef X_CLIENT_ICON_HPP
+#define X_CLIENT_ICON_HPP
+
+#include "x_connection.hpp"
+#include "x_client.hpp"
+
+class x_client_icon : public x_event_handler_t {
+  public:
+    x_client_icon(x_connection & c, x_client * const x_client);
+    ~x_client_icon(void);
+
+    const xcb_pixmap_t & operator*(void) const;
+    inline const xcb_pixmap_t & net_wm_icon(void) const;
+    inline const xcb_pixmap_t & wm_hints_icon(void) const;
+    inline const std::pair<unsigned int, unsigned int> & icon_geometry(void) const;
+    bool handle(xcb_generic_event_t *);
+
+  private:
+    x_connection & _c;
+    x_client * const _x_client;
+
+    xcb_pixmap_t _net_wm_icon_pixmap = XCB_NONE;
+    xcb_pixmap_t _wm_hints_icon_pixmap = XCB_NONE;
+
+    std::pair<unsigned int, unsigned int> _icon_geometry;
+
+    xcb_atom_t _a_wm_hints = _c.intern_atom("WM_HINTS");
+    xcb_atom_t _a_net_wm_icon = _c.intern_atom("_NET_WM_ICON");
+
+    void update_net_wm_icon(void);
+    void update_wm_hints_icon(void);
+    void alpha_transform(uint8_t * data, unsigned int w, unsigned int h);
+};
+
+#endif

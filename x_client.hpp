@@ -32,8 +32,6 @@ class x_client : public x_event_handler_t {
           xcb_pixmap_t & name_window_pixmap(void);
     const xcb_pixmap_t & name_window_pixmap(void) const;
           unsigned int   net_wm_desktop(void) const;
-    const xcb_pixmap_t & icon_pixmap(void) const;
-    const std::pair<unsigned int, unsigned int> & icon_geometry(void) const;
 
     const std::string & net_wm_name(void) const;
     const std::string & wm_name(void) const;
@@ -52,8 +50,6 @@ class x_client : public x_event_handler_t {
     unsigned int _net_wm_desktop;
     xcb_window_t _window;
     xcb_window_t _parent;
-    xcb_pixmap_t _net_wm_icon_pixmap = XCB_NONE;
-    xcb_pixmap_t _wm_hints_icon_pixmap = XCB_NONE;
     xcb_pixmap_t _name_window_pixmap = XCB_NONE;
 
     std::string _net_wm_name;
@@ -63,21 +59,14 @@ class x_client : public x_event_handler_t {
 
     xcb_atom_t a_wm_name = _c.intern_atom("WM_NAME");
     xcb_atom_t a_wm_class = _c.intern_atom("WM_CLASS");
-    xcb_atom_t a_wm_hints = _c.intern_atom("WM_HINTS");
-    xcb_atom_t a_net_wm_icon = _c.intern_atom("_NET_WM_ICON");
     xcb_atom_t a_net_wm_name = _c.intern_atom("_NET_WM_NAME");
     xcb_atom_t a_net_wm_desktop = _c.intern_atom("_NET_CURRENT_DESKTOP");
 
-    std::pair<unsigned int, unsigned int> _icon_geometry;
-
-    void update_net_wm_icon(void);
     void update_net_wm_name(void);
     void update_wm_name(void);
     void update_wm_class(void);
-    void update_wm_hints_icon(void);
     void update_net_wm_desktop(void);
     void update_parent_window(void);
-    void alpha_transform(uint8_t * data, unsigned int w, unsigned int h);
 };
 
 

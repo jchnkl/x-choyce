@@ -17,6 +17,9 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
     _x_client = xclient;
   }
 
+  _x_client_icon = std::shared_ptr<x_client_icon>(
+      new x_client_icon(_c, _x_client.get()));
+
   update(rect);
 
   _c.register_handler(_c.damage_event_id(), this);
@@ -450,9 +453,9 @@ x_client_thumbnail::configure_gl(XVisualInfo * vi)
     _gl_pixmap[1] = XCB_NONE;
   }
 
-  if (_x_client->icon_pixmap() != XCB_NONE) {
+  if (**_x_client_icon != XCB_NONE) {
     _gl_pixmap[2] = glXCreatePixmap(
-        _c.dpy(), _gl_configs[0], _x_client->icon_pixmap(), pixmap_attr);
+        _c.dpy(), _gl_configs[0], **_x_client_icon, pixmap_attr);
   } else {
     _gl_pixmap[2] = XCB_NONE;
   }
