@@ -12,6 +12,7 @@
 #include "x_event_handler_t.hpp"
 #include "x_client.hpp"
 #include "x_client_icon.hpp"
+#include "x_client_name.hpp"
 #include "x_connection.hpp"
 #include "x_xft.hpp"
 
@@ -60,6 +61,7 @@ class x_client_thumbnail : public x_event_handler_t
     x_connection & _c;
     x_client_ptr _x_client;
     std::shared_ptr<x_client_icon> _x_client_icon;
+    std::shared_ptr<x_client_name> _x_client_name;
     std::shared_ptr<x::xft> _x_xft;
 
     const int _border_width = 4;

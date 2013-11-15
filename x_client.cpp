@@ -1,7 +1,5 @@
 #include "x_client.hpp"
 
-#include <xcb/xcb_icccm.h>
-
 x_client::x_client(x_connection & c, const xcb_window_t & window)
   : _c(c), _window(window)
 {
@@ -13,10 +11,6 @@ x_client::x_client(x_connection & c, const xcb_window_t & window)
   update_net_wm_desktop();
   update_parent_window();
   update_name_window_pixmap();
-
-  update_wm_name();
-  update_wm_class();
-  update_net_wm_name();
 }
 
 x_client::~x_client(void)
@@ -33,11 +27,6 @@ const rectangle &  x_client::rect(void) const { return _rectangle; }
 const xcb_window_t & x_client::window(void) const    { return _window; }
       xcb_window_t & x_client::parent(void)          { return _parent; }
 const xcb_window_t & x_client::parent(void) const    { return _parent; }
-
-const std::string & x_client::net_wm_name(void) const { return _net_wm_name; }
-const std::string & x_client::wm_name(void) const { return _wm_name; }
-const std::string & x_client::wm_class_name(void) const { return _class_name; }
-const std::string & x_client::wm_instance_name(void) const { return _instance_name; }
 
 xcb_window_t &
 x_client::name_window_pixmap(void)
@@ -90,16 +79,6 @@ x_client::handle(xcb_generic_event_t * ge)
 
     if (e->atom == a_net_wm_desktop) {
       update_net_wm_desktop();
-
-    } else if (e->atom == a_wm_name) {
-      update_wm_name();
-
-    } else if (e->atom == a_wm_class) {
-      update_wm_class();
-
-    } else if (e->atom == a_net_wm_name) {
-      update_net_wm_name();
-
     }
 
     return true;
@@ -152,69 +131,6 @@ x_client::update_name_window_pixmap(void)
   if (error) {
     delete error;
     _name_window_pixmap = XCB_NONE;
-  }
-}
-
-void
-x_client::update_net_wm_name(void)
-{
-  _net_wm_name.clear();
-
-  xcb_generic_error_t * error;
-  xcb_get_property_cookie_t c = xcb_ewmh_get_wm_name(_c.ewmh(), _window);
-  xcb_get_property_reply_t * r = xcb_get_property_reply(_c(), c, &error);
-
-  if (error) {
-    delete error;
-
-  } else {
-    xcb_ewmh_get_utf8_strings_reply_t net_wm_name;
-    if (xcb_ewmh_get_wm_name_from_reply(_c.ewmh(), &net_wm_name, r)) {
-      _net_wm_name = std::string(net_wm_name.strings, net_wm_name.strings_len);
-      xcb_ewmh_get_utf8_strings_reply_wipe(&net_wm_name);
-    }
-  }
-}
-
-void
-x_client::update_wm_name(void)
-{
-  _wm_name.clear();
-
-  xcb_generic_error_t * error;
-  xcb_icccm_get_text_property_reply_t wm_name;
-  xcb_get_property_cookie_t c = xcb_icccm_get_wm_name(_c(), _window);
-  xcb_icccm_get_wm_name_reply(_c(), c, &wm_name, &error);
-
-  if (error) {
-    delete error;
-
-  } else {
-    _wm_name = std::string(wm_name.name, wm_name.name_len);
-    xcb_icccm_get_text_property_reply_wipe(&wm_name);
-  }
-}
-
-void
-x_client::update_wm_class(void)
-{
-  _class_name.clear();
-  _instance_name.clear();
-
-  xcb_generic_error_t * error;
-  xcb_get_property_cookie_t c = xcb_icccm_get_wm_class(_c(), _window);
-  xcb_get_property_reply_t * r = xcb_get_property_reply(_c(), c, &error);
-
-  if (error) {
-    delete error;
-
-  } else {
-    xcb_icccm_get_wm_class_reply_t wm_class;
-    if (xcb_icccm_get_wm_class_from_reply(&wm_class, r)) {
-      _class_name = wm_class.class_name;
-      _instance_name = wm_class.instance_name;
-      xcb_icccm_get_wm_class_reply_wipe(&wm_class);
-    }
   }
 }
 

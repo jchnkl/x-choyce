@@ -20,6 +20,9 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
   _x_client_icon = std::shared_ptr<x_client_icon>(
       new x_client_icon(_c, _x_client.get()));
 
+  _x_client_name = std::shared_ptr<x_client_name>(
+      new x_client_name(_c, _x_client.get()));
+
   update(rect);
 
   _c.register_handler(_c.damage_event_id(), this);
@@ -383,10 +386,10 @@ x_client_thumbnail::configure_title(void)
 
   _x_xft = std::shared_ptr<x::xft>(new x::xft(_c.dpy(), _title_pixmap, 32));
 
-  std::string pname = _x_client->wm_class_name();
-  std::string title = _x_client->net_wm_name().empty()
-                    ? _x_client->wm_name()
-                    : _x_client->net_wm_name();
+  std::string pname = _x_client_name->wm_class_name();
+  std::string title = _x_client_name->net_wm_name().empty()
+                    ? _x_client_name->wm_name()
+                    : _x_client_name->net_wm_name();
 
   std::string lower = "abcdefghijklmnopqrstuvwxy";
   std::string upper = "ABCDEFGHIJKLMNOPQRSTUVWXY";
