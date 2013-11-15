@@ -14,7 +14,6 @@
 #include "x_client_icon.hpp"
 #include "x_client_name.hpp"
 #include "x_connection.hpp"
-#include "x_xft.hpp"
 
 // http://svn.enlightenment.org/svn/e/tags/evas-1.0.2/src/modules/engines/xrender_x11/evas_engine_xcb_render.c
 #define DOUBLE_TO_FIXED(d) ((xcb_render_fixed_t) ((d) * 65536))
@@ -62,20 +61,9 @@ class x_client_thumbnail : public x_event_handler_t
     x_client_ptr _x_client;
     std::shared_ptr<x_client_icon> _x_client_icon;
     std::shared_ptr<x_client_name> _x_client_name;
-    std::shared_ptr<x::xft> _x_xft;
 
     const int _border_width = 4;
     const int _icon_size = 64;
-
-    // 0.375 * 0xff; 0.25 * 0xff
-    const uint32_t _title_bg_color = 0x60484848;
-
-    const x::type::colorname _colorname = std::string("#303030");
-
-    const x::type::fontname _pnamefont =
-      std::string("Sans:bold:pixelsize=26:antialias=true");
-    const x::type::fontname _titlefont =
-      std::string("Sans:bold:pixelsize=16:antialias=true");
 
     // red, green, blue, alpha
     std::tuple<double, double, double, double> _focused_border_color =
@@ -83,8 +71,6 @@ class x_client_thumbnail : public x_event_handler_t
     std::tuple<double, double, double, double> _unfocused_border_color =
       std::make_tuple(0.25, 0.25, 0.25, 0.5);
 
-    int _title_width;
-    int _title_height;
     double _scale;
     double _icon_scale_x;
     double _icon_scale_y;
@@ -98,7 +84,6 @@ class x_client_thumbnail : public x_event_handler_t
     rectangle _rectangle;
 
     xcb_window_t _thumbnail_window;
-    xcb_pixmap_t _title_pixmap = XCB_NONE;
     xcb_damage_damage_t _damage;
 
     GLuint _gl_texture_id[3];
@@ -109,7 +94,6 @@ class x_client_thumbnail : public x_event_handler_t
     void purge(void);
     void update(int x, int y, unsigned int width, unsigned int height);
     void configure_thumbnail_window(void);
-    void configure_title(void);
     void configure_gl(XVisualInfo * vi = NULL);
     void init_gl_shader(void);
     void load_gl_shader(const std::string & filename, const std::string & name);

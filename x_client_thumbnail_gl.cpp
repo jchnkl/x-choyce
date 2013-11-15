@@ -55,8 +55,6 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
 
   xcb_free_colormap(_c(), colormap);
 
-  configure_title();
-
   configure_gl();
   init_gl_shader();
 
@@ -69,7 +67,6 @@ x_client_thumbnail::~x_client_thumbnail(void)
   _c.deregister_handler(XCB_CONFIGURE_NOTIFY, this);
   release_gl();
   xcb_destroy_window(_c(), _thumbnail_window);
-  xcb_free_pixmap(_c(), _title_pixmap);
 }
 
 void
@@ -128,11 +125,9 @@ x_client_thumbnail::update(const rectangle & r)
   _icon_scale_x = _icon_size / (double)_rectangle.width();
   _icon_scale_y = _icon_size / (double)_rectangle.height();
 
-  _title_width = _rectangle.width() + _border_width;
-  _title_height = _icon_size + _border_width;
 
-  _title_scale_x = _title_width / (double)_rectangle.width();
-  _title_scale_y = _title_height / (double)_rectangle.height();
+  _title_scale_x = (double)_rectangle.width() / (double)_rectangle.width();
+  _title_scale_y = (_icon_size + _border_width) / (double)_rectangle.height();
 
   if (_visible) {
     configure_thumbnail_window();
@@ -370,43 +365,6 @@ x_client_thumbnail::configure_thumbnail_window(void)
 }
 
 void
-x_client_thumbnail::configure_title(void)
-{
-  xcb_free_pixmap(_c(), _title_pixmap);
-
-  _title_pixmap = xcb_generate_id(_c());
-  xcb_create_pixmap(_c(), 32, _title_pixmap, _c.root_window(),
-                    _title_width, _title_height);
-
-  xcb_gcontext_t gc = xcb_generate_id(_c());
-  xcb_create_gc(_c(), gc, _title_pixmap, XCB_GC_FOREGROUND, &_title_bg_color );
-  xcb_rectangle_t r = { 0, 0, (uint16_t)_title_width, (uint16_t)_title_height };
-  xcb_poly_fill_rectangle(_c(), _title_pixmap, gc, 1, &r);
-  xcb_free_gc(_c(), gc);
-
-  _x_xft = std::shared_ptr<x::xft>(new x::xft(_c.dpy(), _title_pixmap, 32));
-
-  std::string pname = _x_client_name->wm_class_name();
-  std::string title = _x_client_name->net_wm_name().empty()
-                    ? _x_client_name->wm_name()
-                    : _x_client_name->net_wm_name();
-
-  std::string lower = "abcdefghijklmnopqrstuvwxy";
-  std::string upper = "ABCDEFGHIJKLMNOPQRSTUVWXY";
-
-  XGlyphInfo text_extents = _x_xft->text_extents_utf8(_pnamefont, lower + upper);
-
-  int x_off = _icon_size + 3 * _border_width;
-  int y_off = _border_width;
-
-  y_off += text_extents.height;
-  _x_xft->draw_string_utf8(pname, x_off, y_off, _pnamefont, _colorname);
-
-  y_off += text_extents.height;
-  _x_xft->draw_string_utf8(title, x_off, y_off, _titlefont, _colorname);
-}
-
-void
 x_client_thumbnail::configure_gl(XVisualInfo * vi)
 {
   while (_x_client->name_window_pixmap() == XCB_NONE) {
@@ -449,9 +407,9 @@ x_client_thumbnail::configure_gl(XVisualInfo * vi)
 
   pixmap_attr[3] = GLX_TEXTURE_FORMAT_RGBA_EXT;
 
-  if (_title_pixmap != XCB_NONE) {
+  if (_x_client_name->title_pixmap() != XCB_NONE) {
     _gl_pixmap[1] = glXCreatePixmap(
-        _c.dpy(), _gl_configs[0], _title_pixmap, pixmap_attr);
+        _c.dpy(), _gl_configs[0], _x_client_name->title_pixmap(), pixmap_attr);
   } else {
     _gl_pixmap[1] = XCB_NONE;
   }
@@ -482,7 +440,7 @@ x_client_thumbnail::configure_gl(XVisualInfo * vi)
 
   bind_texture(0);
 
-  if (_title_pixmap != XCB_NONE) bind_texture(1);
+  if (_x_client_name->title_pixmap() != XCB_NONE) bind_texture(1);
   if (_title_pixmap != XCB_NONE) bind_texture(2);
 
   glEnable(GL_BLEND);

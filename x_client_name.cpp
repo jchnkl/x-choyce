@@ -17,6 +17,7 @@ x_client_name::x_client_name(x_connection & c, x_client * const x_client)
 x_client_name::~x_client_name(void)
 {
   _c.deregister_handler(XCB_PROPERTY_NOTIFY, this);
+  xcb_free_pixmap(_c(), _title_pixmap);
 }
 
 const std::string & x_client_name::net_wm_name(void) const
@@ -37,6 +38,11 @@ const std::string & x_client_name::wm_class_name(void) const
 const std::string & x_client_name::wm_instance_name(void) const
 {
   return _instance_name;
+}
+
+const xcb_pixmap_t & x_client_name::title_pixmap(void) const
+{
+  return _title_pixmap;
 }
 
 bool
@@ -129,4 +135,39 @@ x_client_name::update_wm_class(void)
       xcb_icccm_get_wm_class_reply_wipe(&wm_class);
     }
   }
+}
+
+void
+x_client_name::make_title_pixmap(void)
+{
+  xcb_free_pixmap(_c(), _title_pixmap);
+
+  _title_pixmap = xcb_generate_id(_c());
+  xcb_create_pixmap(_c(), 32, _title_pixmap, _c.root_window(),
+                    _title_width, _title_height);
+
+  xcb_gcontext_t gc = xcb_generate_id(_c());
+  xcb_create_gc(_c(), gc, _title_pixmap, XCB_GC_FOREGROUND, &_title_bg_color );
+  xcb_rectangle_t r = { 0, 0, (uint16_t)_title_width, (uint16_t)_title_height };
+  xcb_poly_fill_rectangle(_c(), _title_pixmap, gc, 1, &r);
+  xcb_free_gc(_c(), gc);
+
+  _x_xft = std::shared_ptr<x::xft>(new x::xft(_c.dpy(), _title_pixmap, 32));
+
+  std::string pname = _class_name;
+  std::string title = _net_wm_name.empty() ? _wm_name : _net_wm_name;
+
+  std::string lower = "abcdefghijklmnopqrstuvwxy";
+  std::string upper = "ABCDEFGHIJKLMNOPQRSTUVWXY";
+
+  XGlyphInfo text_extents = _x_xft->text_extents_utf8(_pnamefont, lower + upper);
+
+  int x_off = _icon_size + 3 * _border_width;
+  int y_off = _border_width;
+
+  y_off += text_extents.height;
+  _x_xft->draw_string_utf8(pname, x_off, y_off, _pnamefont, _colorname);
+
+  y_off += text_extents.height;
+  _x_xft->draw_string_utf8(title, x_off, y_off, _titlefont, _colorname);
 }
