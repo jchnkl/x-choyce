@@ -24,34 +24,6 @@ x_client_icon::~x_client_icon(void)
   xcb_free_pixmap(_c(), _wm_hints_icon_pixmap);
 }
 
-const xcb_pixmap_t &
-x_client_icon::operator*(void) const
-{
-  if (_net_wm_icon_pixmap == XCB_NONE) {
-    return _wm_hints_icon_pixmap;
-  } else {
-    return _net_wm_icon_pixmap;
-  }
-}
-
-const xcb_pixmap_t &
-x_client_icon::net_wm_icon(void) const
-{
-  return _net_wm_icon_pixmap;
-}
-
-const xcb_pixmap_t &
-x_client_icon::wm_hints_icon(void) const
-{
-  return _wm_hints_icon_pixmap;
-}
-
-const std::pair<unsigned int, unsigned int> &
-x_client_icon::icon_geometry(void) const
-{
-  return _icon_geometry;
-}
-
 bool
 x_client_icon::handle(xcb_generic_event_t * ge)
 {

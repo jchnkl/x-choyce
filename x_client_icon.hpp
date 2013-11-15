@@ -9,10 +9,10 @@ class x_client_icon : public x_event_handler_t {
     x_client_icon(x_connection & c, x_client * const x_client);
     ~x_client_icon(void);
 
-    const xcb_pixmap_t & operator*(void) const;
-    inline const xcb_pixmap_t & net_wm_icon(void) const;
-    inline const xcb_pixmap_t & wm_hints_icon(void) const;
-    inline const std::pair<unsigned int, unsigned int> & icon_geometry(void) const;
+    const xcb_pixmap_t & icon_pixmap(void) const;
+    const xcb_pixmap_t & net_wm_icon(void) const;
+    const xcb_pixmap_t & wm_hints_icon(void) const;
+    const std::pair<unsigned int, unsigned int> & icon_geometry(void) const;
     bool handle(xcb_generic_event_t *);
 
   private:
@@ -31,5 +31,35 @@ class x_client_icon : public x_event_handler_t {
     void update_wm_hints_icon(void);
     void alpha_transform(uint8_t * data, unsigned int w, unsigned int h);
 };
+
+// inline
+
+inline const xcb_pixmap_t &
+x_client_icon::icon_pixmap(void) const
+{
+  if (_net_wm_icon_pixmap == XCB_NONE) {
+    return _wm_hints_icon_pixmap;
+  } else {
+    return _net_wm_icon_pixmap;
+  }
+}
+
+inline const xcb_pixmap_t &
+x_client_icon::net_wm_icon(void) const
+{
+  return _net_wm_icon_pixmap;
+}
+
+inline const xcb_pixmap_t &
+x_client_icon::wm_hints_icon(void) const
+{
+  return _wm_hints_icon_pixmap;
+}
+
+inline const std::pair<unsigned int, unsigned int> &
+x_client_icon::icon_geometry(void) const
+{
+  return _icon_geometry;
+}
 
 #endif
