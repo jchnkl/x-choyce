@@ -407,9 +407,9 @@ x_client_thumbnail::configure_gl(XVisualInfo * vi)
 
   pixmap_attr[3] = GLX_TEXTURE_FORMAT_RGBA_EXT;
 
-  if (_x_client_name->title_pixmap() != XCB_NONE) {
+  if (_x_client_name->title() != XCB_NONE) {
     _gl_pixmap[1] = glXCreatePixmap(
-        _c.dpy(), _gl_configs[0], _x_client_name->title_pixmap(), pixmap_attr);
+        _c.dpy(), _gl_configs[0], _x_client_name->title(), pixmap_attr);
   } else {
     _gl_pixmap[1] = XCB_NONE;
   }
@@ -440,7 +440,7 @@ x_client_thumbnail::configure_gl(XVisualInfo * vi)
 
   bind_texture(0);
 
-  if (_x_client_name->title_pixmap() != XCB_NONE) bind_texture(1);
+  if (_x_client_name->title() != XCB_NONE) bind_texture(1);
   if (_x_client_icon->icon_pixmap() != XCB_NONE) bind_texture(2);
 
   glEnable(GL_BLEND);

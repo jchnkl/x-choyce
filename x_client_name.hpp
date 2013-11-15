@@ -15,8 +15,14 @@ class x_client_name : public x_event_handler_t {
     const std::string & wm_class_name(void) const;
     const std::string & wm_instance_name(void) const;
 
-    const xcb_pixmap_t & title_pixmap(void) const;
+    const xcb_pixmap_t & title(void) const;
 
+    const unsigned int & title_width(void) const { return _title_width; }
+    const unsigned int & title_height(void) const { return _title_height; }
+    void title_width(const unsigned int & w) { _title_width = w; }
+    void title_height(const unsigned int & h) { _title_height = h; }
+
+    void make_title(void);
     bool handle(xcb_generic_event_t *);
 
   private:
@@ -29,7 +35,7 @@ class x_client_name : public x_event_handler_t {
     std::string _class_name;
     std::string _instance_name;
 
-    xcb_pixmap_t _title_pixmap = XCB_NONE;
+    xcb_pixmap_t _title = XCB_NONE;
 
     xcb_atom_t _a_wm_name = _c.intern_atom("WM_NAME");
     xcb_atom_t _a_wm_class = _c.intern_atom("WM_CLASS");
@@ -54,7 +60,6 @@ class x_client_name : public x_event_handler_t {
     void update_wm_name(void);
     void update_wm_class(void);
     void update_net_wm_name(void);
-    void make_title_pixmap(void);
 };
 
 #endif // X_CLIENT_NAME_HPP
