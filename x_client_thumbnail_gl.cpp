@@ -129,6 +129,11 @@ x_client_thumbnail::update(const rectangle & r)
   _icon_scale_x = _icon_size / (double)_rectangle.width();
   _icon_scale_y = _icon_size / (double)_rectangle.height();
 
+  _x_client_name->title_width(_rectangle.width());
+  _x_client_name->title_height(_icon_size + _border_width);
+
+  _title_scale_x = _x_client_name->title_width() / (double)_rectangle.width();
+  _title_scale_y = _x_client_name->title_height() / (double)_rectangle.height();
 
   _title_scale_x = (double)_rectangle.width() / (double)_rectangle.width();
   _title_scale_y = (_icon_size + _border_width) / (double)_rectangle.height();
