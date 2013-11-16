@@ -91,7 +91,7 @@ class x_client_thumbnail : public x_event_handler_t
     int _gl_xfb_nconfigs = 0;
     GLXFBConfig * _gl_xfb_configs = NULL;
     GLuint _gl_texture_id[3];
-    GLXContext _gl_ctx;
+    GLXContext _gl_ctx = XCB_NONE;
     GLXPixmap _gl_pixmap[3] = { XCB_NONE, XCB_NONE, XCB_NONE };
     std::unordered_map<std::string, GLuint> _programs;
 
@@ -103,6 +103,7 @@ class x_client_thumbnail : public x_event_handler_t
     void init_gl_shader(void);
     void load_gl_shader(const std::string & filename, const std::string & name);
     void release_gl(void);
+    void with_context(std::function<void(void)> f);
     void with_texture(GLuint tid, std::function<void(GLuint &)> f);
 };
 

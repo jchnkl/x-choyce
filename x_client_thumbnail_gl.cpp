@@ -504,6 +504,16 @@ x_client_thumbnail::release_gl(void)
 }
 
 void
+x_client_thumbnail::with_context(std::function<void(void)> f)
+{
+  if (_gl_ctx != XCB_NONE) {
+    glXMakeCurrent(_c.dpy(), _thumbnail_window, _gl_ctx);
+    f();
+    glXMakeCurrent(_c.dpy(), None, NULL);
+  }
+}
+
+void
 x_client_thumbnail::with_texture(GLuint tid, std::function<void(GLuint &)> f)
 {
   glActiveTexture(GL_TEXTURE0 + tid);
