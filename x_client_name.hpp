@@ -44,8 +44,8 @@ class x_client_name : public x_event_handler_t {
     const int _border_width = 4;
     const int _icon_size = 64;
 
-    int _title_width;
-    int _title_height;
+    unsigned int _title_width = 0;
+    unsigned int _title_height = 0;
 
     // 0.375 * 0xff; 0.25 * 0xff
     const uint32_t _title_bg_color = 0x60484848;
