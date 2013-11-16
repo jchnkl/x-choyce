@@ -506,14 +506,19 @@ x_client_thumbnail::release_gl(void)
   glXMakeCurrent(_c.dpy(), _thumbnail_window, _gl_ctx);
 
   for (auto id : { 0, 1, 2 }) {
-    _c.glXReleaseTexImageEXT(_c.dpy(), _gl_pixmap[id], GLX_FRONT_EXT);
-    glXDestroyGLXPixmap(_c.dpy(), _gl_pixmap[id]);
+    if (_gl_pixmap[id] != XCB_NONE) {
+      _c.glXReleaseTexImageEXT(_c.dpy(), _gl_pixmap[id], GLX_FRONT_EXT);
+      glXDestroyGLXPixmap(_c.dpy(), _gl_pixmap[id]);
+      _gl_pixmap[id] = XCB_NONE;
+    }
   }
 
   glDeleteTextures(3, _gl_texture_id);
 
-  glXDestroyContext(_c.dpy(), _gl_ctx);
   glXMakeCurrent(_c.dpy(), None, NULL);
+
+  glXDestroyContext(_c.dpy(), _gl_ctx);
+  _gl_ctx = XCB_NONE;
 }
 
 void
