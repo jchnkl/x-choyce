@@ -86,6 +86,10 @@ class x_client_thumbnail : public x_event_handler_t
     xcb_window_t _thumbnail_window;
     xcb_damage_damage_t _damage;
 
+    const int _gl_pixmap_config[3] = { GLX_BIND_TO_TEXTURE_RGBA_EXT, True, None };
+
+    int _gl_xfb_nconfigs = 0;
+    GLXFBConfig * _gl_xfb_configs = NULL;
     GLuint _gl_texture_id[3];
     GLXContext _gl_ctx;
     GLXPixmap _gl_pixmap[3] = { XCB_NONE, XCB_NONE, XCB_NONE };
@@ -94,6 +98,7 @@ class x_client_thumbnail : public x_event_handler_t
     void purge(void);
     void update(int x, int y, unsigned int width, unsigned int height);
     void configure_thumbnail_window(void);
+    void load_texture(GLuint id, const xcb_pixmap_t & p, bool rgba = true);
     void configure_gl(XVisualInfo * vi = NULL);
     void init_gl_shader(void);
     void load_gl_shader(const std::string & filename, const std::string & name);
