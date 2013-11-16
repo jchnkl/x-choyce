@@ -54,15 +54,24 @@ x_client_name::handle(xcb_generic_event_t * ge)
 
     if (e->window != _x_client->window()) return true;
 
+    bool update_title = false;
     if (e->atom == _a_wm_name) {
+      update_title = true;
       update_wm_name();
 
     } else if (e->atom == _a_wm_class) {
+      update_title = true;
       update_wm_class();
 
     } else if (e->atom == _a_net_wm_name) {
+      update_title = true;
       update_net_wm_name();
 
+    }
+
+    if (update_title) {
+      make_title();
+      observable::notify();
     }
 
     return true;
@@ -70,6 +79,7 @@ x_client_name::handle(xcb_generic_event_t * ge)
 
   return false;
 }
+
 // private
 
 void

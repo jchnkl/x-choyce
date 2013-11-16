@@ -8,6 +8,7 @@
 #include <xcb/xcb.h>
 #include <xcb/damage.h>
 
+#include "observer.hpp"
 #include "thumbnail_t.hpp"
 #include "x_event_handler_t.hpp"
 #include "x_client.hpp"
@@ -19,7 +20,9 @@
 #define DOUBLE_TO_FIXED(d) ((xcb_render_fixed_t) ((d) * 65536))
 
 class x_client_thumbnail : public x_event_handler_t
-                         , public thumbnail_t {
+                         , public thumbnail_t
+                         , public observer<x_client_name>
+{
   public:
     friend bool operator==(const x_client_thumbnail &, const xcb_window_t &);
     friend bool operator==(const xcb_window_t &, const x_client_thumbnail &);
@@ -47,6 +50,7 @@ class x_client_thumbnail : public x_event_handler_t
     void highlight(bool want_highlight);
 
     bool handle(xcb_generic_event_t * ge);
+    void notify(x_client_name *);
 
     class factory : public thumbnail_t::factory {
       public:

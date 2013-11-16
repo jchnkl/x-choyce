@@ -1,11 +1,14 @@
 #ifndef X_CLIENT_NAME_HPP
 #define X_CLIENT_NAME_HPP
 
+#include "observer.hpp"
 #include "x_xft.hpp"
 #include "x_client.hpp"
 #include "x_connection.hpp"
 
-class x_client_name : public x_event_handler_t {
+class x_client_name : public x_event_handler_t
+                    , public observable<x_client_name>
+{
   public:
     x_client_name(x_connection & c, x_client * const x_client);
     ~x_client_name(void);

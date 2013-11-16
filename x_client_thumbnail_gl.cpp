@@ -311,9 +311,17 @@ x_client_thumbnail::handle(xcb_generic_event_t * ge)
     }
 
     result = true;
+
   }
 
   return result;
+}
+
+void
+x_client_thumbnail::notify(x_client_name * c)
+{
+  with_context([this](){ load_texture(1, _x_client_name->title(), true); });
+  update();
 }
 
 void
