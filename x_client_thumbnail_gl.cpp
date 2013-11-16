@@ -158,6 +158,7 @@ void
 x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height)
 {
   glXMakeCurrent(_c.dpy(), _thumbnail_window, _gl_ctx);
+
   glEnable(GL_SCISSOR_TEST);
   glScissor(x, y, width, height);
 
@@ -223,6 +224,7 @@ x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height
 
   glXSwapBuffers(_c.dpy(), _thumbnail_window);
   glDisable(GL_SCISSOR_TEST);
+
   glXMakeCurrent(_c.dpy(), XCB_NONE, NULL);
 }
 
