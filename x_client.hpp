@@ -53,7 +53,6 @@ class x_client : public x_event_handler_t {
     void update_parent_window(void);
 };
 
-
 std::list<x_client>
 make_x_clients(x_connection & c, const std::vector<xcb_window_t> & windows);
 
