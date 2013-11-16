@@ -40,7 +40,8 @@ const std::string & x_client_name::wm_instance_name(void) const
   return _instance_name;
 }
 
-const xcb_pixmap_t & x_client_name::title(void) const
+const xcb_pixmap_t &
+x_client_name::title(void) const
 {
   return _title;
 }
