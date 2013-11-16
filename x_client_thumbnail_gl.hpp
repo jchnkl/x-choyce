@@ -62,8 +62,8 @@ class x_client_thumbnail : public x_event_handler_t
     std::shared_ptr<x_client_icon> _x_client_icon;
     std::shared_ptr<x_client_name> _x_client_name;
 
-    const int _border_width = 4;
-    const int _icon_size = 64;
+    const unsigned int _border_width = 4;
+    const unsigned int _icon_size = 64;
 
     // red, green, blue, alpha
     std::tuple<double, double, double, double> _focused_border_color =
