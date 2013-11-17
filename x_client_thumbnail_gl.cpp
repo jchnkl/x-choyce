@@ -153,6 +153,7 @@ x_client_thumbnail::rect(void)
 void
 x_client_thumbnail::purge(void)
 {
+  _x_client_name->make_title();
   release_gl();
   configure_gl();
   init_gl_shader();
