@@ -15,10 +15,10 @@ x_client_chooser::x_client_chooser(x_connection & c,
   : _c(c), _chooser(chooser)
   , _action_modmask(action_modmask)
 {
-  _c.register_handler(XCB_KEY_PRESS, this);
-  _c.register_handler(XCB_KEY_RELEASE, this);
-  _c.register_handler(XCB_BUTTON_PRESS, this);
-  _c.register_handler(XCB_MOTION_NOTIFY, this);
+  _c.attach(XCB_KEY_PRESS, this);
+  _c.attach(XCB_KEY_RELEASE, this);
+  _c.attach(XCB_BUTTON_PRESS, this);
+  _c.attach(XCB_MOTION_NOTIFY, this);
   _c.grab_key(_action_modmask, action_keysym);
   _east_keycode = _c.keysym_to_keycode(east_keysym);
   _west_keycode = _c.keysym_to_keycode(west_keysym);
@@ -31,10 +31,10 @@ x_client_chooser::x_client_chooser(x_connection & c,
 
 x_client_chooser::~x_client_chooser(void)
 {
-  _c.deregister_handler(XCB_KEY_PRESS, this);
-  _c.deregister_handler(XCB_KEY_RELEASE, this);
-  _c.deregister_handler(XCB_BUTTON_PRESS, this);
-  _c.deregister_handler(XCB_MOTION_NOTIFY, this);
+  _c.detach(XCB_KEY_PRESS, this);
+  _c.detach(XCB_KEY_RELEASE, this);
+  _c.detach(XCB_BUTTON_PRESS, this);
+  _c.detach(XCB_MOTION_NOTIFY, this);
 }
 
 bool

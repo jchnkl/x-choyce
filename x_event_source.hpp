@@ -15,8 +15,8 @@
 class x_event_source : public x_event_source_t {
   public:
     x_event_source(x_connection & c);
-    void register_handler(event_id_t i, x_event_handler_t * eh);
-    void deregister_handler(event_id_t i, x_event_handler_t * eh);
+    void attach(event_id_t i, x_event_handler_t * eh);
+    void detach(event_id_t i, x_event_handler_t * eh);
     void run_event_loop(void);
     void shutdown(void);
 

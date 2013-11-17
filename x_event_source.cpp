@@ -6,13 +6,13 @@ x_event_source::x_event_source(x_connection & c) : _c(c)
 }
 
 void
-x_event_source::register_handler(event_id_t i, x_event_handler_t * eh)
+x_event_source::attach(event_id_t i, x_event_handler_t * eh)
 {
   _handler[i].push_back(eh);
 }
 
 void
-x_event_source::deregister_handler(event_id_t i, x_event_handler_t * eh)
+x_event_source::detach(event_id_t i, x_event_handler_t * eh)
 {
   try {
     auto & list = _handler.at(i);

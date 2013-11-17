@@ -69,8 +69,8 @@ class x_connection : public x_event_handler_t
     rectangle current_screen(const position & p) const;
     bool handle(xcb_generic_event_t * ge);
 
-    void register_handler(event_id_t, x_event_handler_t * eh);
-    void deregister_handler(event_id_t, x_event_handler_t * eh);
+    void attach(event_id_t, x_event_handler_t * eh);
+    void detach(event_id_t, x_event_handler_t * eh);
     void run_event_loop(void);
     void shutdown(void);
 

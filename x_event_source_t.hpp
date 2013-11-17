@@ -7,9 +7,9 @@ struct x_event_source_t {
   typedef unsigned int event_id_t;
 
   virtual void
-    register_handler(event_id_t i, x_event_handler_t * eh) = 0;
+    attach(event_id_t i, x_event_handler_t * eh) = 0;
   virtual void
-    deregister_handler(event_id_t i, x_event_handler_t * eh) = 0;
+    detach(event_id_t i, x_event_handler_t * eh) = 0;
   virtual void run_event_loop(void) = 0;
   virtual void shutdown(void) = 0;
 };

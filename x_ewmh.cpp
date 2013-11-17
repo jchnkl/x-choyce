@@ -2,7 +2,7 @@
 
 x_ewmh::x_ewmh(x_connection & c) : _c(c)
 {
-  _c.register_handler(XCB_PROPERTY_NOTIFY, this);
+  _c.attach(XCB_PROPERTY_NOTIFY, this);
   update_net_active_window();
 
   xcb_intern_atom_cookie_t * cookie = xcb_ewmh_init_atoms(_c(), &_ewmh);
@@ -11,7 +11,7 @@ x_ewmh::x_ewmh(x_connection & c) : _c(c)
 
 x_ewmh::~x_ewmh(void)
 {
-  _c.deregister_handler(XCB_PROPERTY_NOTIFY, this);
+  _c.detach(XCB_PROPERTY_NOTIFY, this);
   xcb_ewmh_connection_wipe(&_ewmh);
 }
 

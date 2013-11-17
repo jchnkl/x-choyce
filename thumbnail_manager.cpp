@@ -9,13 +9,13 @@ thumbnail_manager::thumbnail_manager(x_connection & c,
                                      const thumbnail_t::factory * factory)
   : _c(c), _layout(layout), _factory(factory)
 {
-  _c.register_handler(XCB_PROPERTY_NOTIFY, this);
+  _c.attach(XCB_PROPERTY_NOTIFY, this);
   _c.update_input(_c.root_window(), XCB_EVENT_MASK_PROPERTY_CHANGE);
 }
 
 thumbnail_manager::~thumbnail_manager(void)
 {
-  _c.deregister_handler(XCB_PROPERTY_NOTIFY, this);
+  _c.detach(XCB_PROPERTY_NOTIFY, this);
 }
 
 void

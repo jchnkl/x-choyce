@@ -8,7 +8,7 @@
 x_client_icon::x_client_icon(x_connection & c, x_client * const x_client)
   : _c(c), _x_client(x_client)
 {
-  _c.register_handler(XCB_PROPERTY_NOTIFY, this);
+  _c.attach(XCB_PROPERTY_NOTIFY, this);
   _c.update_input(_x_client->window(), XCB_EVENT_MASK_PROPERTY_CHANGE);
 
   update_net_wm_icon();
@@ -19,7 +19,7 @@ x_client_icon::x_client_icon(x_connection & c, x_client * const x_client)
 
 x_client_icon::~x_client_icon(void)
 {
-  _c.deregister_handler(XCB_PROPERTY_NOTIFY, this);
+  _c.detach(XCB_PROPERTY_NOTIFY, this);
   xcb_free_pixmap(_c(), _net_wm_icon);
   xcb_free_pixmap(_c(), _wm_hints_icon);
 }
