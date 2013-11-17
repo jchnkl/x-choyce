@@ -25,6 +25,9 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
 
   update(rect);
 
+  _x_client_name->make_title();
+  _x_client_name->attach(this);
+
   _c.register_handler(_c.damage_event_id(), this);
   _c.register_handler(XCB_CONFIGURE_NOTIFY, this);
 
