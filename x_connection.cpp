@@ -477,15 +477,15 @@ x_connection::handle(xcb_generic_event_t * ge)
 }
 
 void
-x_connection::register_handler(unsigned int event_id, x_event_handler_t * eh)
+x_connection::register_handler(event_id_t i, x_event_handler_t * eh)
 {
-  _event_source->register_handler(event_id, eh);
+  _event_source->register_handler(i, eh);
 }
 
 void
-x_connection::deregister_handler(unsigned int event_id, x_event_handler_t * eh)
+x_connection::deregister_handler(event_id_t i, x_event_handler_t * eh)
 {
-  _event_source->deregister_handler(event_id, eh);
+  _event_source->deregister_handler(i, eh);
 }
 
 void

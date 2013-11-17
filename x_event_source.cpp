@@ -6,16 +6,16 @@ x_event_source::x_event_source(x_connection & c) : _c(c)
 }
 
 void
-x_event_source::register_handler(unsigned int event_id, x_event_handler_t * eh)
+x_event_source::register_handler(event_id_t i, x_event_handler_t * eh)
 {
-  _handler[event_id].push_back(eh);
+  _handler[i].push_back(eh);
 }
 
 void
-x_event_source::deregister_handler(unsigned int event_id, x_event_handler_t * eh)
+x_event_source::deregister_handler(event_id_t i, x_event_handler_t * eh)
 {
   try {
-    auto & list = _handler.at(event_id);
+    auto & list = _handler.at(i);
     auto newend = std::remove(list.begin(), list.end(), eh);
     list.erase(newend, list.end());
   } catch (...) {}
