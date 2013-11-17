@@ -88,11 +88,11 @@ x_client_thumbnail::show(void)
   configure_thumbnail_window();
 
   if (_purge) {
-    purge();
     _purge = false;
-  } else {
-    update();
+    purge();
   }
+
+  update();
 }
 
 void
@@ -159,7 +159,6 @@ x_client_thumbnail::purge(void)
   release_gl();
   configure_gl();
   init_gl_shader();
-  update();
 }
 
 void
@@ -313,13 +312,13 @@ x_client_thumbnail::handle(xcb_generic_event_t * ge)
     if (e->window == _c.root_window() || e->window == _x_client->window()) {
       if (_visible) {
         purge();
+        update();
       } else {
         _purge = true;
       }
     }
 
     result = true;
-
   }
 
   return result;
