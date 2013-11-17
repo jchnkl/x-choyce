@@ -6,7 +6,7 @@
 x_client_name::x_client_name(x_connection & c, x_client * const x_client)
   : _c(c), _x_client(x_client)
 {
-  _c.attach(XCB_PROPERTY_NOTIFY, this);
+  _c.attach(10, XCB_PROPERTY_NOTIFY, this);
   _c.update_input(_x_client->window(), XCB_EVENT_MASK_PROPERTY_CHANGE);
 
   update_wm_name();

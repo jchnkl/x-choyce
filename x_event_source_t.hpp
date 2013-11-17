@@ -5,9 +5,10 @@
 
 struct x_event_source_t {
   typedef unsigned int event_id_t;
+  typedef unsigned int priority_t;
 
   virtual void
-    attach(event_id_t i, x_event_handler_t * eh) = 0;
+    attach(priority_t p, event_id_t i, x_event_handler_t * eh) = 0;
   virtual void
     detach(event_id_t i, x_event_handler_t * eh) = 0;
   virtual void run_event_loop(void) = 0;

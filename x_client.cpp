@@ -3,8 +3,8 @@
 x_client::x_client(x_connection & c, const xcb_window_t & window)
   : _c(c), _window(window)
 {
-  _c.attach(XCB_CONFIGURE_NOTIFY, this);
-  _c.attach(XCB_PROPERTY_NOTIFY, this);
+  _c.attach(0, XCB_CONFIGURE_NOTIFY, this);
+  _c.attach(0, XCB_PROPERTY_NOTIFY, this);
   _c.update_input(_window, XCB_EVENT_MASK_STRUCTURE_NOTIFY
                            | XCB_EVENT_MASK_PROPERTY_CHANGE);
   update_geometry();

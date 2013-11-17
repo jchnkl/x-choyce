@@ -15,10 +15,10 @@ x_client_chooser::x_client_chooser(x_connection & c,
   : _c(c), _chooser(chooser)
   , _action_modmask(action_modmask)
 {
-  _c.attach(XCB_KEY_PRESS, this);
-  _c.attach(XCB_KEY_RELEASE, this);
-  _c.attach(XCB_BUTTON_PRESS, this);
-  _c.attach(XCB_MOTION_NOTIFY, this);
+  _c.attach(0, XCB_KEY_PRESS, this);
+  _c.attach(0, XCB_KEY_RELEASE, this);
+  _c.attach(0, XCB_BUTTON_PRESS, this);
+  _c.attach(0, XCB_MOTION_NOTIFY, this);
   _c.grab_key(_action_modmask, action_keysym);
   _east_keycode = _c.keysym_to_keycode(east_keysym);
   _west_keycode = _c.keysym_to_keycode(west_keysym);

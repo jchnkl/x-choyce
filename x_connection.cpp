@@ -27,7 +27,7 @@ x_connection::x_connection(std::shared_ptr<x_ewmh> ewmh,
     _event_source = event_source;
   }
 
-  _event_source->attach(XCB_CONFIGURE_NOTIFY, this);
+  _event_source->attach(0, XCB_CONFIGURE_NOTIFY, this);
 
   if (ewmh == NULL) {
     _ewmh = std::shared_ptr<x_ewmh>(new x_ewmh(*this));
@@ -477,9 +477,9 @@ x_connection::handle(xcb_generic_event_t * ge)
 }
 
 void
-x_connection::attach(event_id_t i, x_event_handler_t * eh)
+x_connection::attach(priority_t p, event_id_t i, x_event_handler_t * eh)
 {
-  _event_source->attach(i, eh);
+  _event_source->attach(p, i, eh);
 }
 
 void

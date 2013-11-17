@@ -19,7 +19,7 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
 
   update_rectangle(rect);
 
-  _c.attach(_c.damage_event_id(), this);
+  _c.attach(0, _c.damage_event_id(), this);
   uint32_t mask = XCB_CW_BACK_PIXEL | XCB_CW_OVERRIDE_REDIRECT;
   uint32_t values[] = { 0, true };
   _thumbnail_window = xcb_generate_id(_c());

@@ -6,18 +6,23 @@ x_event_source::x_event_source(x_connection & c) : _c(c)
 }
 
 void
-x_event_source::attach(event_id_t i, x_event_handler_t * eh)
+x_event_source::attach(priority_t p, event_id_t i, x_event_handler_t * eh)
 {
-  _handler[i].push_back(eh);
+  _handler[i].insert({p, eh});
 }
 
 void
 x_event_source::detach(event_id_t i, x_event_handler_t * eh)
 {
   try {
-    auto & list = _handler.at(i);
-    auto newend = std::remove(list.begin(), list.end(), eh);
-    list.erase(newend, list.end());
+    auto & ps = _handler.at(i);
+      for (auto it = ps.begin(); it != ps.end(); ) {
+        if (it->second == eh) {
+          it = ps.erase(it);
+        } else {
+          ++it;
+        }
+    }
   } catch (...) {}
 }
 
@@ -41,8 +46,8 @@ x_event_source::run_event_loop(void)
       unsigned int response_type = ge->response_type & ~0x80;
 
       try {
-        for (auto * eh : _handler.at(response_type)) {
-          eh->handle(ge);
+        for (auto & item : _handler.at(response_type)) {
+          item.second->handle(ge);
         }
         taken = true;
       } catch (...) {}
