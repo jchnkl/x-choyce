@@ -41,7 +41,6 @@ thumbnail_manager::hide(void)
 
   for (auto & item : _thumbnails) {
     item.second->hide();
-    item.second->highlight(false).update();
   }
 }
 
