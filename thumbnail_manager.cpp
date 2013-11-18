@@ -41,7 +41,7 @@ thumbnail_manager::hide(void)
 
   for (auto & item : _thumbnails) {
     item.second->hide();
-    item.second->highlight(false);
+    item.second->highlight(false).update();
   }
 }
 
@@ -75,8 +75,8 @@ thumbnail_manager::highlight(const unsigned int & window)
   for (auto & item : _thumbnails) {
     if (item.second->id() == window) {
       try {
-        _thumbnails.at(_current_window)->highlight(false);
-        item.second->highlight(true);
+        _thumbnails.at(_current_window)->highlight(false).update();
+        item.second->highlight(true).update();
         while (*_cyclic_iterator != item.first) ++_cyclic_iterator;
         _next_window = *(_cyclic_iterator + 1);
         _current_window = *_cyclic_iterator;
@@ -142,7 +142,7 @@ thumbnail_manager::reset(void)
 {
   for (auto & item : _thumbnails) {
     item.second->show();
-    item.second->highlight(false);
+    item.second->highlight(false).update();
   }
 
   bool found = false;
@@ -175,7 +175,7 @@ thumbnail_manager::reset(void)
   _current_window = *_cyclic_iterator;
 
   try {
-    _thumbnails.at(*_cyclic_iterator)->highlight(true);
+    _thumbnails.at(*_cyclic_iterator)->highlight(true).update();
   } catch (...) {}
 }
 
@@ -209,9 +209,9 @@ void
 thumbnail_manager::next_or_prev(bool next)
 {
   try {
-    _thumbnails.at(*_cyclic_iterator)->highlight(false);
+    _thumbnails.at(*_cyclic_iterator)->highlight(false).update();
     next ? ++_cyclic_iterator : --_cyclic_iterator;
-    _thumbnails.at(*_cyclic_iterator)->highlight(true);
+    _thumbnails.at(*_cyclic_iterator)->highlight(true).update();
   } catch (...) {}
 
   _next_window = *(_cyclic_iterator + 1);

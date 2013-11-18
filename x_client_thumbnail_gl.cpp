@@ -65,6 +65,7 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
   init_gl_shader();
 
   highlight(false);
+  update();
 }
 
 x_client_thumbnail::~x_client_thumbnail(void)
@@ -288,7 +289,6 @@ x_client_thumbnail::highlight(bool want_highlight)
   }
 
   glXMakeCurrent(_c.dpy(), XCB_NONE, NULL);
-  update();
 
   return *this;
 }
