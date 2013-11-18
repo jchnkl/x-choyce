@@ -284,7 +284,7 @@ x_client_thumbnail::handle(xcb_generic_event_t * ge)
 
   } else if (XCB_CONFIGURE_NOTIFY == (ge->response_type & ~0x80)) {
     xcb_configure_notify_event_t * e = (xcb_configure_notify_event_t *)ge;
-    if (e->window == _c.root_window() || e->window == _x_client->window()) {
+    if (e->window == _x_client->window()) {
       if (_visible) {
         purge();
         update();
