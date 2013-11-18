@@ -63,9 +63,7 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
 
   configure_gl();
   init_gl_shader();
-
-  highlight(false);
-  update();
+  with_context([this]() { configure_highlight(true); });
 }
 
 x_client_thumbnail::~x_client_thumbnail(void)
