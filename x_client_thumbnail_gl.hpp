@@ -39,15 +39,15 @@ class x_client_thumbnail : public x_event_handler_t
       return _thumbnail_window == other._thumbnail_window;
     }
 
-    void show(void);
-    void hide(void);
-    void select(void);
-    void update(void);
-    void update(const rectangle &);
+    thumbnail_t & show(void);
+    thumbnail_t & hide(void);
+    thumbnail_t & select(void);
+    thumbnail_t & update(void);
+    thumbnail_t & update(const rectangle &);
     const rectangle & rect(void);
     const xcb_window_t & id(void);
     const xcb_window_t & window(void);
-    void highlight(bool want_highlight);
+    thumbnail_t & highlight(bool want_highlight);
 
     bool handle(xcb_generic_event_t * ge);
     void notify(x_client_name *);

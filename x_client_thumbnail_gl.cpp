@@ -76,10 +76,10 @@ x_client_thumbnail::~x_client_thumbnail(void)
   xcb_destroy_window(_c(), _thumbnail_window);
 }
 
-void
+thumbnail_t &
 x_client_thumbnail::show(void)
 {
-  if (_visible) return;
+  if (_visible) return *this;
 
   _visible = true;
   xcb_damage_create(_c(), _damage, _x_client->window(),
@@ -93,30 +93,35 @@ x_client_thumbnail::show(void)
   }
 
   update();
+
+  return *this;
 }
 
-void
+thumbnail_t &
 x_client_thumbnail::hide(void)
 {
   _visible = false;
   xcb_damage_destroy(_c(), _damage);
   xcb_unmap_window(_c(), _thumbnail_window);
+  return *this;
 }
 
-void
+thumbnail_t &
 x_client_thumbnail::select(void)
 {
   _c.request_change_current_desktop(_x_client->net_wm_desktop());
   _c.request_change_active_window(_x_client->window());
+  return *this;
 }
 
-void
+thumbnail_t &
 x_client_thumbnail::update(void)
 {
   update(0, 0, _rectangle.width(), _rectangle.height());
+  return *this;
 }
 
-void
+thumbnail_t &
 x_client_thumbnail::update(const rectangle & r)
 {
   _scale = std::min((double)r.width() / _x_client->rect().width(),
@@ -142,6 +147,8 @@ x_client_thumbnail::update(const rectangle & r)
     configure_thumbnail_window();
     update();
   }
+
+  return *this;
 }
 
 const rectangle &
@@ -245,7 +252,7 @@ x_client_thumbnail::window(void)
   return _x_client->window();
 }
 
-void
+thumbnail_t &
 x_client_thumbnail::highlight(bool want_highlight)
 {
   _highlight = want_highlight;
@@ -282,6 +289,8 @@ x_client_thumbnail::highlight(bool want_highlight)
 
   glXMakeCurrent(_c.dpy(), XCB_NONE, NULL);
   update();
+
+  return *this;
 }
 
 bool

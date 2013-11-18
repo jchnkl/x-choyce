@@ -10,15 +10,15 @@
 class thumbnail_t {
   public:
     typedef std::shared_ptr<thumbnail_t> ptr;
-    virtual void show(void) = 0;
-    virtual void hide(void) = 0;
-    virtual void update(void) = 0;
-    virtual void update(const rectangle &) = 0;
+    virtual thumbnail_t & show(void) = 0;
+    virtual thumbnail_t & hide(void) = 0;
+    virtual thumbnail_t & update(void) = 0;
+    virtual thumbnail_t & update(const rectangle &) = 0;
     virtual const rectangle & rect(void) = 0;
-    virtual void select(void) = 0;
+    virtual thumbnail_t & select(void) = 0;
     virtual const unsigned int & id(void) = 0;
     virtual const unsigned int & window(void) = 0;
-    virtual void highlight(bool want_highlight) = 0;
+    virtual thumbnail_t & highlight(bool want_highlight) = 0;
 
     class factory {
       public:
