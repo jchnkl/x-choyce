@@ -10,12 +10,14 @@ thumbnail_manager::thumbnail_manager(x_connection & c,
   : _c(c), _layout(layout), _factory(factory)
 {
   _c.attach(0, XCB_PROPERTY_NOTIFY, this);
+  _c.attach(20, XCB_CONFIGURE_NOTIFY, this);
   _c.update_input(_c.root_window(), XCB_EVENT_MASK_PROPERTY_CHANGE);
 }
 
 thumbnail_manager::~thumbnail_manager(void)
 {
   _c.detach(XCB_PROPERTY_NOTIFY, this);
+  _c.detach(XCB_CONFIGURE_NOTIFY, this);
 }
 
 void
@@ -130,6 +132,18 @@ thumbnail_manager::handle(xcb_generic_event_t * ge)
       update();
       reset();
     }
+    return true;
+
+  } else if (XCB_CONFIGURE_NOTIFY == (ge->response_type & ~0x80)) {
+    if (_active) {
+      auto rects = _layout->arrange(query_current_screen(), _windows.size());
+      for (size_t i = 0; i < _windows.size(); ++i) {
+        try {
+          _thumbnails.at(_windows[i])->update(rects[i]).update();
+        } catch (...) {}
+      }
+    }
+
     return true;
   }
 

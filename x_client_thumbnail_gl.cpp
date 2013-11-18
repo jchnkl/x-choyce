@@ -29,7 +29,7 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
   _x_client_name->attach(this);
 
   _c.attach(0, _c.damage_event_id(), this);
-  _c.attach(20, XCB_CONFIGURE_NOTIFY, this);
+  _c.attach(30, XCB_CONFIGURE_NOTIFY, this);
 
   _damage = xcb_generate_id(_c());
 
