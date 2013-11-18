@@ -253,45 +253,12 @@ x_client_thumbnail::window(void)
 thumbnail_t &
 x_client_thumbnail::highlight(bool want_highlight)
 {
+  _configure_highlight = _highlight != want_highlight;
   _highlight = want_highlight;
-
-  auto use_program = [this](const std::string & program)
-  {
-    _c.glUseProgram(_programs[program]);
-    for (auto tid : { 0, 1, 2 }) {
-      GLint location = _c.glGetUniformLocationEXT(
-          _programs[program], ("texture_" + std::to_string(tid)).c_str());
-      _c.glUniform1iEXT(location, tid);
-    }
-  };
-
-  with_context([&, this]()
-  {
-    if (want_highlight) {
-      use_program("normal_shader");
-      with_texture(0, [this](GLuint &)
-      {
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
-        _c.glGenerateMipmapEXT(GL_TEXTURE_2D);
-      });
-
-    } else {
-      use_program("grayscale_shader");
-      with_texture(0, [this](GLuint &)
-      {
-        _c.glXBindTexImageEXT(_c.dpy(), _gl_pixmap[0], GLX_FRONT_EXT, NULL);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-      });
-    }
-  });
-
   return *this;
 }
 
-  bool
+bool
 x_client_thumbnail::handle(xcb_generic_event_t * ge)
 {
   bool result = false;
@@ -337,6 +304,46 @@ x_client_thumbnail::notify(x_client_name * c)
 {
   with_context([this](){ load_texture(1, _x_client_name->title(), true); });
   update();
+}
+
+void
+x_client_thumbnail::configure_highlight(bool now)
+{
+  if (now || _configure_highlight) {
+    _configure_highlight = false;
+  } else {
+    return;
+  }
+
+  auto use_program = [this](const std::string & program)
+  {
+    _c.glUseProgram(_programs[program]);
+    for (auto tid : { 0, 1, 2 }) {
+      GLint location = _c.glGetUniformLocationEXT(
+          _programs[program], ("texture_" + std::to_string(tid)).c_str());
+      _c.glUniform1iEXT(location, tid);
+    }
+  };
+
+  if (_highlight) {
+    use_program("normal_shader");
+    with_texture(0, [this](GLuint &)
+    {
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1);
+      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+      _c.glGenerateMipmapEXT(GL_TEXTURE_2D);
+    });
+
+  } else {
+    use_program("grayscale_shader");
+    with_texture(0, [this](GLuint &)
+    {
+      _c.glXBindTexImageEXT(_c.dpy(), _gl_pixmap[0], GLX_FRONT_EXT, NULL);
+      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    });
+  }
 }
 
 void
