@@ -118,6 +118,7 @@ x_client_thumbnail::update(void)
 
   with_context([this]()
   {
+    configure_highlight();
     update(0, 0, _rectangle.width(), _rectangle.height());
   });
 
@@ -148,7 +149,6 @@ x_client_thumbnail::update(const rectangle & r)
   _title_scale_x = (double)_rectangle.width() / (double)_rectangle.width();
   _title_scale_y = (_icon_size + _border_width) / (double)_rectangle.height();
 
-
   return *this;
 }
 
@@ -165,6 +165,7 @@ x_client_thumbnail::purge(void)
   release_gl();
   configure_gl();
   init_gl_shader();
+  with_context([this]() { configure_highlight(true); });
 }
 
 void
