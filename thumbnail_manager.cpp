@@ -140,8 +140,7 @@ inline void
 thumbnail_manager::reset(void)
 {
   for (auto & item : _thumbnails) {
-    item.second->show();
-    item.second->highlight(false).update();
+    item.second->highlight(false).show().update();
   }
 
   bool found = false;
