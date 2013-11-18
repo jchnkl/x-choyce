@@ -30,7 +30,6 @@ HPPSRCS=chooser_t.hpp \
 				x_client_icon.hpp \
 				x_client_name.hpp \
 				x_client_thumbnail_gl.hpp \
-				x_client_thumbnail.hpp \
 				x_xft.hpp \
 				x_connection.hpp \
 				x_event_handler_t.hpp \
