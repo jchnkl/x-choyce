@@ -84,14 +84,12 @@ x_client_thumbnail::show(void)
   xcb_damage_create(_c(), _damage, _x_client->window(),
                     XCB_DAMAGE_REPORT_LEVEL_NON_EMPTY);
 
-  configure_thumbnail_window();
+  configure_thumbnail_window(true);
 
   if (_purge) {
     _purge = false;
     purge();
   }
-
-  update();
 
   return *this;
 }
@@ -116,16 +114,21 @@ x_client_thumbnail::select(void)
 thumbnail_t &
 x_client_thumbnail::update(void)
 {
+  configure_thumbnail_window();
+
   with_context([this]()
   {
     update(0, 0, _rectangle.width(), _rectangle.height());
   });
+
   return *this;
 }
 
 thumbnail_t &
 x_client_thumbnail::update(const rectangle & r)
 {
+  _configure_thumbnail = true;
+
   _scale = std::min((double)r.width() / _x_client->rect().width(),
                     (double)r.height() / _x_client->rect().height());
   _scale = std::min(1.0, _scale);
@@ -145,10 +148,6 @@ x_client_thumbnail::update(const rectangle & r)
   _title_scale_x = (double)_rectangle.width() / (double)_rectangle.width();
   _title_scale_y = (_icon_size + _border_width) / (double)_rectangle.height();
 
-  if (_visible) {
-    configure_thumbnail_window();
-    update();
-  }
 
   return *this;
 }
