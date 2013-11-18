@@ -22,7 +22,7 @@ int main(int argc, char ** argv)
   xcb_keysym_t south_key = XK_j;
   xcb_keysym_t quit_key = XK_Escape;
   xcb_keysym_t action_key = XK_Tab;
-  xcb_mod_mask_t mod = XCB_MOD_MASK_1;
+  xcb_mod_mask_t mod = XCB_MOD_MASK_4;
 
   x_connection c;
   g_event_source = &c;
