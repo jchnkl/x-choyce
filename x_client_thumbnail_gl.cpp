@@ -347,8 +347,14 @@ x_client_thumbnail::configure_highlight(bool now)
 }
 
 void
-x_client_thumbnail::configure_thumbnail_window(void)
+x_client_thumbnail::configure_thumbnail_window(bool now)
 {
+  if (now || _configure_thumbnail) {
+    _configure_thumbnail = false;
+  } else {
+    return;
+  }
+
   xcb_xfixes_region_t region = xcb_generate_id(_c());
   xcb_xfixes_create_region_from_window(_c(), region, _x_client->window(),
                                        XCB_SHAPE_SK_BOUNDING);

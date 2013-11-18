@@ -84,6 +84,7 @@ class x_client_thumbnail : public x_event_handler_t
     bool _purge = false;
     bool _visible = false;
     bool _highlight = false;
+    bool _configure_thumbnail = true;
     bool _configure_highlight = true;
 
     rectangle _rectangle;
@@ -102,8 +103,8 @@ class x_client_thumbnail : public x_event_handler_t
 
     void purge(void);
     void update(int x, int y, unsigned int width, unsigned int height);
-    void configure_thumbnail_window(void);
     void configure_highlight(bool now = false);
+    void configure_thumbnail_window(bool now = false);
     void load_texture(GLuint id, const xcb_pixmap_t & p, bool rgba = true);
     void configure_gl(XVisualInfo * vi = NULL);
     void init_gl_shader(void);
