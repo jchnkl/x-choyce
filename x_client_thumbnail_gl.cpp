@@ -348,7 +348,7 @@ x_client_thumbnail::configure_thumbnail_window(void)
   delete fetch_region_reply;
   xcb_xfixes_destroy_region(_c(), region);
 
-  double ar = (double)_x_client->rect().width() / _x_client->rect().height();
+  double ar = (double)_rectangle.width() / _rectangle.height();
   unsigned int width_cutoff = std::ceil(10.0 * ar * _scale) ;
   unsigned int height_cutoff = std::ceil(10.0 * (1.0/ar) * _scale);
   for (int i = 0; i < nrects; ++i) {
