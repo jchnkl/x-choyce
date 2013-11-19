@@ -1,12 +1,14 @@
 #include "x_client_thumbnail_gl.hpp"
 
+#include <sstream>
 #include <xcb/composite.h>
 
 x_client_thumbnail::x_client_thumbnail(x_connection & c,
+                                       x::xrm & xrm,
                                        const rectangle & rect,
                                        const xcb_window_t & window,
                                        std::shared_ptr<x_client> xclient)
-      : _c(c)
+      : _c(c), _xrm(xrm)
 {
   if (window == XCB_NONE && xclient == NULL) {
     throw std::invalid_argument(
@@ -21,7 +23,31 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
       new x_client_icon(_c, _x_client.get()));
 
   _x_client_name = std::shared_ptr<x_client_name>(
-      new x_client_name(_c, _x_client.get()));
+      new x_client_name(_c, _xrm, _x_client.get()));
+
+  auto split = [](const std::string & s, char delim)
+  {
+    std::stringstream ss(s);
+    std::string item;
+    std::vector<std::string> elems;
+    while (std::getline(ss, item, delim)) {
+      elems.push_back(item);
+    }
+    return elems;
+  };
+
+  try {
+    auto fc = split(std::string(_xrm["focuscolor"].value.string), '/');
+    if (fc.size() == 4) {
+      _focused_border_color = std::make_tuple(
+        std::stod(fc[1]), std::stod(fc[2]), std::stod(fc[3]), std::stod(fc[0]));
+    }
+    auto nc = split(std::string(_xrm["normalcolor"].value.string), '/');
+    if (nc.size() == 4) {
+      _unfocused_border_color = std::make_tuple(
+        std::stod(nc[1]), std::stod(nc[2]), std::stod(nc[3]), std::stod(nc[0]));
+    }
+  } catch (...) {}
 
   update(rect);
 
@@ -573,9 +599,13 @@ bool operator==(const xcb_window_t & window, const x_client_thumbnail & thumbnai
   return thumbnail == window;
 }
 
+x_client_thumbnail::factory::factory(x_connection & c, x::xrm & xrm)
+  : _c(c), _xrm(xrm)
+{}
+
 thumbnail_t::ptr
 x_client_thumbnail::factory::
-make(x_connection & c, const xcb_window_t & w, const rectangle & r) const
+make(const xcb_window_t & w, const rectangle & r) const
 {
-  return thumbnail_t::ptr(new x_client_thumbnail(c, r, w));
+  return thumbnail_t::ptr(new x_client_thumbnail(_c, _xrm, r, w));
 }

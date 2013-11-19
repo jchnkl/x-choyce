@@ -210,7 +210,7 @@ thumbnail_manager::update(void)
     auto result = _thumbnails.find(_windows[i]);
 
     if (result == _thumbnails.end()) {
-      _thumbnails[_windows[i]] = _factory->make(_c, _windows[i], rects[i]);
+      _thumbnails[_windows[i]] = _factory->make(_windows[i], rects[i]);
     } else {
       result->second->update(rects[i]);
     }

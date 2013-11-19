@@ -1,6 +1,7 @@
 #include <signal.h>
 #include <X11/keysym.h>
 
+#include "x_xrm.hpp"
 #include "grid.hpp"
 #include "thumbnail_manager.hpp"
 #include "x_connection.hpp"
@@ -30,9 +31,23 @@ int main(int argc, char ** argv)
   signal(SIGINT,  sig_handler);
   signal(SIGTERM, sig_handler);
 
+  x::xrm::option options[] =
+    { { .type = x::xrm::string,
+                                    // a  / r   / g   / b
+        .value = { .string = (char *)"0.75/0.855/0.648/0.125" } }
+    , { .type = x::xrm::string,
+        .value = { .string = (char *)"0.5/0.25/0.25/0.25"     } }
+    };
+
+  int o = 0;
+  x::xrm xrm(c.dpy(), "xchoyce", "XChoyce",
+      { { "focuscolor",  options[o++] }
+      , { "normalcolor", options[o++] }
+      });
+
   grid_t grid;
 
-  x_client_thumbnail::factory factory;
+  x_client_thumbnail::factory factory(c, xrm);
 
   thumbnail_manager tm(c, &grid, &factory);
   x_client_chooser cp(c, &tm,

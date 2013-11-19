@@ -2,6 +2,7 @@
 #define X_CLIENT_NAME_HPP
 
 #include "observer.hpp"
+#include "x_xrm.hpp"
 #include "x_xft.hpp"
 #include "x_client.hpp"
 #include "x_connection.hpp"
@@ -10,7 +11,7 @@ class x_client_name : public x_event_handler_t
                     , public observable<x_client_name>
 {
   public:
-    x_client_name(x_connection & c, x_client * const x_client);
+    x_client_name(x_connection & c, x::xrm & xrm, x_client * const x_client);
     ~x_client_name(void);
 
     const std::string & net_wm_name(void) const;
@@ -30,6 +31,7 @@ class x_client_name : public x_event_handler_t
 
   private:
     x_connection & _c;
+    x::xrm & _xrm;
     x_client * const _x_client;
     std::shared_ptr<x::xft> _x_xft;
 

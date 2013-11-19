@@ -8,6 +8,7 @@
 #include <xcb/xcb.h>
 #include <xcb/damage.h>
 
+#include "x_xrm.hpp"
 #include "observer.hpp"
 #include "thumbnail_t.hpp"
 #include "x_event_handler_t.hpp"
@@ -28,6 +29,7 @@ class x_client_thumbnail : public x_event_handler_t
     friend bool operator==(const xcb_window_t &, const x_client_thumbnail &);
 
     x_client_thumbnail(x_connection & c,
+                       x::xrm & xrm,
                        const rectangle & rect,
                        const xcb_window_t & window = XCB_NONE,
                        std::shared_ptr<x_client> xclient = NULL);
@@ -54,14 +56,20 @@ class x_client_thumbnail : public x_event_handler_t
 
     class factory : public thumbnail_t::factory {
       public:
+        factory(x_connection & c, x::xrm & xrm);
         thumbnail_t::ptr
-          make(x_connection &, const xcb_window_t &, const rectangle &) const;
+          make(const xcb_window_t &, const rectangle &) const;
+
+      private:
+        x_connection & _c;
+        x::xrm & _xrm;
     };
 
   private:
     typedef std::shared_ptr<x_client> x_client_ptr;
 
     x_connection & _c;
+    x::xrm & _xrm;
     x_client_ptr _x_client;
     std::shared_ptr<x_client_icon> _x_client_icon;
     std::shared_ptr<x_client_name> _x_client_name;

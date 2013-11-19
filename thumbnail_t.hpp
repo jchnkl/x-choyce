@@ -23,7 +23,7 @@ class thumbnail_t {
     class factory {
       public:
         virtual ptr
-          make(x_connection &, const xcb_window_t &, const rectangle &) const = 0;
+          make(const xcb_window_t &, const rectangle &) const = 0;
     };
 };
 
