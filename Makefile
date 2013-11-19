@@ -8,6 +8,7 @@ CPPSRCS=main.cpp \
 				cyclic_iterator.cpp \
 				thumbnail_manager.cpp \
 				x_xft.cpp \
+				x_xrm.cpp \
 				x_connection.cpp \
 				x_event_source.cpp \
 				x_ewmh.cpp \
@@ -31,6 +32,7 @@ HPPSRCS=chooser_t.hpp \
 				x_client_name.hpp \
 				x_client_thumbnail_gl.hpp \
 				x_xft.hpp \
+				x_xrm.hpp \
 				x_connection.hpp \
 				x_event_handler_t.hpp \
 				x_event_source.hpp \
