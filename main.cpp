@@ -32,17 +32,22 @@ int main(int argc, char ** argv)
   signal(SIGTERM, sig_handler);
 
   x::xrm::option options[] =
-    { { .type = x::xrm::string,
-                                    // a  / r   / g   / b
-        .v = { .string = (char *)"0.75/0.855/0.648/0.125" } }
-    , { .type = x::xrm::string,
-        .v = { .string = (char *)"0.5/0.25/0.25/0.25"     } }
+    // focusedalpha
+    { { .type = x::xrm::dbl, .v = { .dbl = 0.75                              } }
+    // focusedcolor: goldenrod
+    , { .type = x::xrm::str, .v = { .str = new std::string("#daa520")        } }
+    // unfocusedalpha
+    , { .type = x::xrm::dbl, .v = { .dbl = 0.5                               } }
+    // unfocusedcolor
+    , { .type = x::xrm::str, .v = { .str = new std::string("#404040")        } }
     };
 
   int o = 0;
   x::xrm xrm(c.dpy(), "xchoyce", "XChoyce",
-      { { "focuscolor",  options[o++] }
-      , { "normalcolor", options[o++] }
+      { { "focusedalpha",   options[o++] }
+      , { "focusedcolor",   options[o++] }
+      , { "unfocusedalpha", options[o++] }
+      , { "unfocusedcolor", options[o++] }
       });
 
   grid_t grid;

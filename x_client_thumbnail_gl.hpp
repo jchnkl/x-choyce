@@ -78,10 +78,8 @@ class x_client_thumbnail : public x_event_handler_t
     const unsigned int _icon_size = 64;
 
     // red, green, blue, alpha
-    std::tuple<double, double, double, double> _focused_border_color =
-      std::make_tuple(0.855, 0.648, 0.125, 0.75); // goldenrod
-    std::tuple<double, double, double, double> _unfocused_border_color =
-      std::make_tuple(0.25, 0.25, 0.25, 0.5);
+    std::tuple<double, double, double, double> _focused_border_color;
+    std::tuple<double, double, double, double> _unfocused_border_color;
 
     double _scale;
     double _icon_scale_x;

@@ -25,28 +25,21 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
   _x_client_name = std::shared_ptr<x_client_name>(
       new x_client_name(_c, _xrm, _x_client.get()));
 
-  auto split = [](const std::string & s, char delim)
-  {
-    std::stringstream ss(s);
-    std::string item;
-    std::vector<std::string> elems;
-    while (std::getline(ss, item, delim)) {
-      elems.push_back(item);
-    }
-    return elems;
-  };
-
   try {
-    auto fc = split(std::string(_xrm["focuscolor"].v.string), '/');
-    if (fc.size() == 4) {
-      _focused_border_color = std::make_tuple(
-        std::stod(fc[1]), std::stod(fc[2]), std::stod(fc[3]), std::stod(fc[0]));
-    }
-    auto nc = split(std::string(_xrm["normalcolor"].v.string), '/');
-    if (nc.size() == 4) {
-      _unfocused_border_color = std::make_tuple(
-        std::stod(nc[1]), std::stod(nc[2]), std::stod(nc[3]), std::stod(nc[0]));
-    }
+    // #xxxxxx: r: [1,2]; g: [3,4], b: [5,6]
+    // 0123456
+    auto fa = _xrm["focusedalpha"].v.dbl;
+    auto fr = std::stod(_xrm["focusedcolor"].v.str->substr(1,2));
+    auto fg = std::stod(_xrm["focusedcolor"].v.str->substr(3,4));
+    auto fb = std::stod(_xrm["focusedcolor"].v.str->substr(5,6));
+
+    auto ua = _xrm["unfocusedalpha"].v.dbl;
+    auto ur = std::stod(_xrm["unfocusedcolor"].v.str->substr(1,2));
+    auto ug = std::stod(_xrm["unfocusedcolor"].v.str->substr(3,4));
+    auto ub = std::stod(_xrm["unfocusedcolor"].v.str->substr(5,6));
+
+    _focused_border_color   = std::make_tuple(fr, fg, fb, fa);
+    _unfocused_border_color = std::make_tuple(ur, ug, ub, ua);
   } catch (...) {}
 
   update(rect);
