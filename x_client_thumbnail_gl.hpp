@@ -120,6 +120,7 @@ class x_client_thumbnail : public x_event_handler_t
     void init_gl_shader(void);
     void load_gl_shader(const std::string & filename, const std::string & name);
     void release_gl(void);
+    void load_config(void);
     void with_context(std::function<void(void)> f);
     void with_texture(GLuint tid, std::function<void(GLuint &)> f);
 };

@@ -1,6 +1,5 @@
 #include "x_client_thumbnail_gl.hpp"
 
-#include <sstream>
 #include <xcb/composite.h>
 
 x_client_thumbnail::x_client_thumbnail(x_connection & c,
@@ -25,27 +24,7 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
   _x_client_name = std::shared_ptr<x_client_name>(
       new x_client_name(_c, _xrm, _x_client.get()));
 
-  try {
-    _icon_size    = _xrm["iconsize"].v.num;
-    _border_width = _xrm["borderwidth"].v.num;
-
-    // #xxxxxx: r: [1,2]; g: [3,4], b: [5,6]
-    // 0123456
-    auto fa = _xrm["focusedalpha"].v.dbl;
-    auto fc = _xrm["focusedcolor"].v.str;
-    auto fr = std::strtol(fc->substr(1,2).c_str(), NULL, 16) / (double)0xff;
-    auto fg = std::strtol(fc->substr(3,2).c_str(), NULL, 16) / (double)0xff;
-    auto fb = std::strtol(fc->substr(5,2).c_str(), NULL, 16) / (double)0xff;
-
-    auto ua = _xrm["unfocusedalpha"].v.dbl;
-    auto uc = _xrm["unfocusedcolor"].v.str;
-    auto ur = std::strtol(uc->substr(1,2).c_str(), NULL, 16) / (double)0xff;
-    auto ug = std::strtol(uc->substr(3,2).c_str(), NULL, 16) / (double)0xff;
-    auto ub = std::strtol(uc->substr(5,2).c_str(), NULL, 16) / (double)0xff;
-
-    _focused_border_color   = std::make_tuple(fr, fg, fb, fa);
-    _unfocused_border_color = std::make_tuple(ur, ug, ub, ua);
-  } catch (...) {}
+  load_config();
 
   update(rect);
 
@@ -585,6 +564,30 @@ x_client_thumbnail::with_texture(GLuint tid, std::function<void(GLuint &)> f)
   glBindTexture(GL_TEXTURE_2D, 0);
   glDisable(GL_TEXTURE_2D);
   glActiveTexture(GL_TEXTURE0);
+}
+
+void
+x_client_thumbnail::load_config(void)
+{
+  _icon_size    = _xrm["iconsize"].v.num;
+  _border_width = _xrm["borderwidth"].v.num;
+
+  // #xxxxxx: r: [1,2]; g: [3,4], b: [5,6]
+  // 0123456
+  auto fa = _xrm["focusedalpha"].v.dbl;
+  auto fc = _xrm["focusedcolor"].v.str;
+  auto fr = std::strtol(fc->substr(1,2).c_str(), NULL, 16) / (double)0xff;
+  auto fg = std::strtol(fc->substr(3,2).c_str(), NULL, 16) / (double)0xff;
+  auto fb = std::strtol(fc->substr(5,2).c_str(), NULL, 16) / (double)0xff;
+
+  auto ua = _xrm["unfocusedalpha"].v.dbl;
+  auto uc = _xrm["unfocusedcolor"].v.str;
+  auto ur = std::strtol(uc->substr(1,2).c_str(), NULL, 16) / (double)0xff;
+  auto ug = std::strtol(uc->substr(3,2).c_str(), NULL, 16) / (double)0xff;
+  auto ub = std::strtol(uc->substr(5,2).c_str(), NULL, 16) / (double)0xff;
+
+  _focused_border_color   = std::make_tuple(fr, fg, fb, fa);
+  _unfocused_border_color = std::make_tuple(ur, ug, ub, ua);
 }
 
 bool operator==(const x_client_thumbnail & thumbnail, const xcb_window_t & window)
