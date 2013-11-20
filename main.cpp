@@ -40,6 +40,10 @@ int main(int argc, char ** argv)
     , { .type = x::xrm::dbl, .v = { .dbl = 0.5                               } }
     // unfocusedcolor
     , { .type = x::xrm::str, .v = { .str = new std::string("#404040")        } }
+    // borderwidth
+    , { .type = x::xrm::num, .v = { .num =  4                                } }
+    // iconsize
+    , { .type = x::xrm::num, .v = { .num = 64                                } }
     };
 
   int o = 0;
@@ -48,6 +52,8 @@ int main(int argc, char ** argv)
       , { "focusedcolor",   options[o++] }
       , { "unfocusedalpha", options[o++] }
       , { "unfocusedcolor", options[o++] }
+      , { "iconsize",       options[o++] }
+      , { "borderwidth",    options[o++] }
       });
 
   grid_t grid;

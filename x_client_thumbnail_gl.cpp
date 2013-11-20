@@ -26,6 +26,9 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
       new x_client_name(_c, _xrm, _x_client.get()));
 
   try {
+    _icon_size    = _xrm["iconsize"].v.num;
+    _border_width = _xrm["borderwidth"].v.num;
+
     // #xxxxxx: r: [1,2]; g: [3,4], b: [5,6]
     // 0123456
     auto fa = _xrm["focusedalpha"].v.dbl;

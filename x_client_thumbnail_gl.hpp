@@ -74,13 +74,6 @@ class x_client_thumbnail : public x_event_handler_t
     std::shared_ptr<x_client_icon> _x_client_icon;
     std::shared_ptr<x_client_name> _x_client_name;
 
-    const unsigned int _border_width = 4;
-    const unsigned int _icon_size = 64;
-
-    // red, green, blue, alpha
-    std::tuple<double, double, double, double> _focused_border_color;
-    std::tuple<double, double, double, double> _unfocused_border_color;
-
     double _scale;
     double _icon_scale_x;
     double _icon_scale_y;
@@ -106,6 +99,17 @@ class x_client_thumbnail : public x_event_handler_t
     GLXContext _gl_ctx = XCB_NONE;
     GLXPixmap _gl_pixmap[3] = { XCB_NONE, XCB_NONE, XCB_NONE };
     std::unordered_map<std::string, GLuint> _programs;
+
+    // >> config options
+
+    unsigned int _icon_size;
+    unsigned int _border_width;
+
+    // red, green, blue, alpha
+    std::tuple<double, double, double, double> _focused_border_color;
+    std::tuple<double, double, double, double> _unfocused_border_color;
+
+    // << config options
 
     void purge(void);
     void update(int x, int y, unsigned int width, unsigned int height);
