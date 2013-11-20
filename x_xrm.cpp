@@ -23,13 +23,21 @@ xrm::xrm(Display * dpy,
     std::string c = m_class + "." + item.first;
 
     if (XrmGetResource(m_database, n.c_str(), c.c_str(), &type, &value)) {
-      if (item.second.type == string) {
-        std::string result(value.addr, value.size);
-        item.second.value.string = new char[result.length()];
-        result.copy(item.second.value.string, result.length());
-        m_dynamic.insert(item.first);
-      } else if (item.second.type == number) {
-        item.second.value.number = std::stoi(std::string(value.addr, value.size));
+      switch (item.second.type) {
+        case str:
+          item.second.value.str = new std::string(value.addr, value.size);
+          break;
+
+        case num:
+          item.second.value.num = std::stoi(std::string(value.addr, value.size));
+          break;
+
+        case dbl:
+          item.second.value.dbl = std::stod(std::string(value.addr, value.size));
+          break;
+
+        default:
+          break;
       }
     }
 
@@ -39,10 +47,8 @@ xrm::xrm(Display * dpy,
 xrm::~xrm(void)
 {
   for (auto & item : m_options) {
-    if (m_dynamic.find(item.first) != m_dynamic.end()
-        && item.second.type == string
-        && item.second.value.string != NULL) {
-      delete [] item.second.value.string;
+    if (item.second.type == str && item.second.value.str != NULL) {
+      delete item.second.value.str;
     }
   }
 }

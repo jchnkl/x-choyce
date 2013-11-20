@@ -9,20 +9,21 @@ namespace x {
 
 class xrm {
   public:
+    struct option;
+    typedef std::unordered_map<std::string, option> options;
 
-    enum { string, number };
+    enum { str, num, dbl };
 
     union value_t {
-      int number;
-      char * string;
+      int num;
+      double dbl;
+      std::string * str;
     };
 
     struct option {
       int type;
       value_t value;
     };
-
-    typedef std::unordered_map<std::string, option> options;
 
     xrm(Display * dpy, const std::string & name,
                        const std::string & _class,
@@ -41,7 +42,6 @@ class xrm {
     std::string m_name;
     std::string m_class;
     options m_options;
-    std::unordered_set<std::string> m_dynamic;
 };
 
 }; // namespace x
