@@ -34,9 +34,9 @@ int main(int argc, char ** argv)
   x::xrm::option options[] =
     { { .type = x::xrm::string,
                                     // a  / r   / g   / b
-        .value = { .string = (char *)"0.75/0.855/0.648/0.125" } }
+        .v = { .string = (char *)"0.75/0.855/0.648/0.125" } }
     , { .type = x::xrm::string,
-        .value = { .string = (char *)"0.5/0.25/0.25/0.25"     } }
+        .v = { .string = (char *)"0.5/0.25/0.25/0.25"     } }
     };
 
   int o = 0;

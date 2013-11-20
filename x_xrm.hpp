@@ -14,7 +14,7 @@ class xrm {
 
     enum { str, num, dbl };
 
-    union value_t {
+    union value {
       int num;
       double dbl;
       std::string * str;
@@ -22,7 +22,7 @@ class xrm {
 
     struct option {
       int type;
-      value_t value;
+      value v;
     };
 
     xrm(Display * dpy, const std::string & name,

@@ -37,12 +37,12 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
   };
 
   try {
-    auto fc = split(std::string(_xrm["focuscolor"].value.string), '/');
+    auto fc = split(std::string(_xrm["focuscolor"].v.string), '/');
     if (fc.size() == 4) {
       _focused_border_color = std::make_tuple(
         std::stod(fc[1]), std::stod(fc[2]), std::stod(fc[3]), std::stod(fc[0]));
     }
-    auto nc = split(std::string(_xrm["normalcolor"].value.string), '/');
+    auto nc = split(std::string(_xrm["normalcolor"].v.string), '/');
     if (nc.size() == 4) {
       _unfocused_border_color = std::make_tuple(
         std::stod(nc[1]), std::stod(nc[2]), std::stod(nc[3]), std::stod(nc[0]));

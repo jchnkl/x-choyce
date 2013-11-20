@@ -25,15 +25,15 @@ xrm::xrm(Display * dpy,
     if (XrmGetResource(m_database, n.c_str(), c.c_str(), &type, &value)) {
       switch (item.second.type) {
         case str:
-          item.second.value.str = new std::string(value.addr, value.size);
+          item.second.v.str = new std::string(value.addr, value.size);
           break;
 
         case num:
-          item.second.value.num = std::stoi(std::string(value.addr, value.size));
+          item.second.v.num = std::stoi(std::string(value.addr, value.size));
           break;
 
         case dbl:
-          item.second.value.dbl = std::stod(std::string(value.addr, value.size));
+          item.second.v.dbl = std::stod(std::string(value.addr, value.size));
           break;
 
         default:
@@ -47,8 +47,8 @@ xrm::xrm(Display * dpy,
 xrm::~xrm(void)
 {
   for (auto & item : m_options) {
-    if (item.second.type == str && item.second.value.str != NULL) {
-      delete item.second.value.str;
+    if (item.second.type == str && item.second.v.str != NULL) {
+      delete item.second.v.str;
     }
   }
 }
