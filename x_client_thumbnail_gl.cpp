@@ -34,6 +34,8 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
   _c.attach(0, _c.damage_event_id(), this);
   _c.attach(30, XCB_CONFIGURE_NOTIFY, this);
 
+  _xrm.attach(this);
+
   _damage = xcb_generate_id(_c());
 
   _thumbnail_window = xcb_generate_id(_c());
@@ -73,6 +75,7 @@ x_client_thumbnail::~x_client_thumbnail(void)
 {
   _c.detach(_c.damage_event_id(), this);
   _c.detach(XCB_CONFIGURE_NOTIFY, this);
+  _xrm.attach(this);
   release_gl();
   if (_gl_xfb_configs != NULL) delete _gl_xfb_configs;
   xcb_destroy_window(_c(), _thumbnail_window);
@@ -300,6 +303,12 @@ x_client_thumbnail::handle(xcb_generic_event_t * ge)
   }
 
   return result;
+}
+
+void
+x_client_thumbnail::notify(x::xrm *)
+{
+  load_config();
 }
 
 void

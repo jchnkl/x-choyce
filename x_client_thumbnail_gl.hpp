@@ -22,6 +22,7 @@
 
 class x_client_thumbnail : public x_event_handler_t
                          , public thumbnail_t
+                         , public observer<x::xrm>
                          , public observer<x_client_name>
 {
   public:
@@ -52,6 +53,7 @@ class x_client_thumbnail : public x_event_handler_t
     thumbnail_t & highlight(bool want_highlight);
 
     bool handle(xcb_generic_event_t * ge);
+    void notify(x::xrm *);
     void notify(x_client_name *);
 
     class factory : public thumbnail_t::factory {
