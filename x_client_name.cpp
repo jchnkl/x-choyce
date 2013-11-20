@@ -11,18 +11,8 @@ x_client_name::x_client_name(x_connection & c,
   _c.attach(10, XCB_PROPERTY_NOTIFY, this);
   _c.update_input(_x_client->window(), XCB_EVENT_MASK_PROPERTY_CHANGE);
 
-  try {
-    _icon_size    = _xrm["iconsize"].v.num;
-    _border_width = _xrm["borderwidth"].v.num;
-    _pnamefont    = *_xrm["titlefont"].v.str;
-    _titlefont    = *_xrm["subtitlefont"].v.str;
-    _colorname    = *_xrm["titlefgcolor"].v.str;
 
-    _title_bg_color =
-      std::strtol(_xrm["titlebgcolor"].v.str->substr(1,6).c_str(), NULL, 16);
-
-    _title_bg_color |= (int)(0xff * _xrm["titlebgalpha"].v.dbl) << 24;
-  } catch (...) {}
+  load_config();
 
   update_wm_name();
   update_wm_class();
@@ -96,6 +86,21 @@ x_client_name::handle(xcb_generic_event_t * ge)
 }
 
 // private
+
+void
+x_client_name::load_config(void)
+{
+  _icon_size    = _xrm["iconsize"].v.num;
+  _border_width = _xrm["borderwidth"].v.num;
+  _pnamefont    = *_xrm["titlefont"].v.str;
+  _titlefont    = *_xrm["subtitlefont"].v.str;
+  _colorname    = *_xrm["titlefgcolor"].v.str;
+
+  _title_bg_color =
+    std::strtol(_xrm["titlebgcolor"].v.str->substr(1,6).c_str(), NULL, 16);
+
+  _title_bg_color |= (int)(0xff * _xrm["titlebgalpha"].v.dbl) << 24;
+}
 
 void
 x_client_name::update_net_wm_name(void)

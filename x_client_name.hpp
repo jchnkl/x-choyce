@@ -63,6 +63,7 @@ class x_client_name : public x_event_handler_t
 
     // << config options
 
+    void load_config(void);
     void update_wm_name(void);
     void update_wm_class(void);
     void update_net_wm_name(void);
