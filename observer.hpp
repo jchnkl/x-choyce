@@ -24,7 +24,7 @@ class observable {
 
     void detach(observer<T> * o)
     {
-      m_observer.remove(o);
+      m_observer.erase(o);
     }
 
     void notify(void)
