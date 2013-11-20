@@ -59,7 +59,7 @@ int main(int argc, char ** argv)
     };
 
   int o = 0;
-  x::xrm xrm(c.dpy(), "xchoyce", "XChoyce",
+  x::xrm xrm(c, "xchoyce", "XChoyce",
       { { "focusedalpha",   options[o++] }
       , { "focusedcolor",   options[o++] }
       , { "unfocusedalpha", options[o++] }
