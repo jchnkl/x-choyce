@@ -1,5 +1,7 @@
 #include "x_xrm.hpp"
 
+#include <climits>
+
 using namespace x;
 
 xrm::xrm(Display * dpy,
@@ -12,6 +14,11 @@ xrm::xrm(Display * dpy,
   update_db();
 }
 
+xrm::~xrm(void)
+{
+  m_c.detach(XCB_PROPERTY_NOTIFY, this);
+  release_db();
+}
 
 // private
 
@@ -55,8 +62,10 @@ xrm::update_db(void)
   }
 }
 
-xrm::~xrm(void)
+void
+xrm::release_db(void)
 {
+  XrmDestroyDatabase(m_database);
   for (auto & item : m_options) {
     if (item.second.type == str && item.second.v.str != NULL) {
       delete item.second.v.str;

@@ -47,6 +47,7 @@ class xrm : public observable<xrm> {
     options m_options;
 
     void update_db(void);
+    void release_db(void);
     std::string resource_manager_string(void);
 };
 
