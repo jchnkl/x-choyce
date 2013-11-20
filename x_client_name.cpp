@@ -11,6 +11,7 @@ x_client_name::x_client_name(x_connection & c,
   _c.attach(10, XCB_PROPERTY_NOTIFY, this);
   _c.update_input(_x_client->window(), XCB_EVENT_MASK_PROPERTY_CHANGE);
 
+  _xrm.attach(this);
 
   load_config();
 
@@ -22,6 +23,7 @@ x_client_name::x_client_name(x_connection & c,
 x_client_name::~x_client_name(void)
 {
   _c.detach(XCB_PROPERTY_NOTIFY, this);
+  _xrm.detach(this);
   xcb_free_pixmap(_c(), _title);
 }
 
@@ -83,6 +85,14 @@ x_client_name::handle(xcb_generic_event_t * ge)
   }
 
   return false;
+}
+
+void
+x_client_name::notify(x::xrm * xrm)
+{
+  load_config();
+  make_title();
+  observable::notify();
 }
 
 // private
