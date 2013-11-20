@@ -40,10 +40,10 @@ int main(int argc, char ** argv)
     , { .type = x::xrm::dbl, .v = { .dbl = 0.5                               } }
     // unfocusedcolor
     , { .type = x::xrm::str, .v = { .str = new std::string("#404040")        } }
-    // borderwidth
-    , { .type = x::xrm::num, .v = { .num =  4                                } }
     // iconsize
     , { .type = x::xrm::num, .v = { .num = 64                                } }
+    // borderwidth
+    , { .type = x::xrm::num, .v = { .num =  4                                } }
     // titlefont
     , { .type = x::xrm::str,
       .v = { .str = new std::string("Sans:bold:pixelsize=26:antialias=true") } }
