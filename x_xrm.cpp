@@ -10,6 +10,7 @@ xrm::xrm(x_connection & c,
          const options & options)
   : m_c(c), m_name(name), m_class(_class), m_options(options)
 {
+  m_c.attach(0, XCB_PROPERTY_NOTIFY, this);
   XrmInitialize();
   update_db();
 }
@@ -18,6 +19,23 @@ xrm::~xrm(void)
 {
   m_c.detach(XCB_PROPERTY_NOTIFY, this);
   release_db();
+}
+
+bool
+xrm::handle(xcb_generic_event_t * ge)
+{
+  if (XCB_PROPERTY_NOTIFY == (ge->response_type & ~0x80)) {
+    xcb_property_notify_event_t * e = (xcb_property_notify_event_t *)ge;
+
+    if (e->atom == m_c.intern_atom("RESOURCE_MANAGER")) {
+      update_db();
+      observable::notify();
+    }
+
+    return true;
+  }
+
+  return false;
 }
 
 // private

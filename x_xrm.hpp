@@ -10,7 +10,8 @@
 
 namespace x {
 
-class xrm : public observable<xrm> {
+class xrm : public x_event_handler_t
+          , public observable<xrm>
 {
   public:
     struct option;
@@ -40,6 +41,8 @@ class xrm : public observable<xrm> {
     {
       return m_options.at(name);
     }
+
+    bool handle(xcb_generic_event_t *);
 
   private:
     x_connection & m_c;
