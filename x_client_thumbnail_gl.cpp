@@ -32,14 +32,16 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
     // #xxxxxx: r: [1,2]; g: [3,4], b: [5,6]
     // 0123456
     auto fa = _xrm["focusedalpha"].v.dbl;
-    auto fr = std::stod(_xrm["focusedcolor"].v.str->substr(1,2));
-    auto fg = std::stod(_xrm["focusedcolor"].v.str->substr(3,4));
-    auto fb = std::stod(_xrm["focusedcolor"].v.str->substr(5,6));
+    auto fc = _xrm["focusedcolor"].v.str;
+    auto fr = std::strtol(fc->substr(1,2).c_str(), NULL, 16) / (double)0xff;
+    auto fg = std::strtol(fc->substr(3,2).c_str(), NULL, 16) / (double)0xff;
+    auto fb = std::strtol(fc->substr(5,2).c_str(), NULL, 16) / (double)0xff;
 
     auto ua = _xrm["unfocusedalpha"].v.dbl;
-    auto ur = std::stod(_xrm["unfocusedcolor"].v.str->substr(1,2));
-    auto ug = std::stod(_xrm["unfocusedcolor"].v.str->substr(3,4));
-    auto ub = std::stod(_xrm["unfocusedcolor"].v.str->substr(5,6));
+    auto uc = _xrm["unfocusedcolor"].v.str;
+    auto ur = std::strtol(uc->substr(1,2).c_str(), NULL, 16) / (double)0xff;
+    auto ug = std::strtol(uc->substr(3,2).c_str(), NULL, 16) / (double)0xff;
+    auto ub = std::strtol(uc->substr(5,2).c_str(), NULL, 16) / (double)0xff;
 
     _focused_border_color   = std::make_tuple(fr, fg, fb, fa);
     _unfocused_border_color = std::make_tuple(ur, ug, ub, ua);
