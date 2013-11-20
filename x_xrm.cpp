@@ -4,11 +4,11 @@
 
 using namespace x;
 
-xrm::xrm(Display * dpy,
+xrm::xrm(x_connection & c,
          const std::string & name,
          const std::string & _class,
          const options & options)
-  : m_dpy(dpy), m_name(name), m_class(_class), m_options(options)
+  : m_c(c), m_name(name), m_class(_class), m_options(options)
 {
   XrmInitialize();
   update_db();
@@ -70,5 +70,27 @@ xrm::release_db(void)
     if (item.second.type == str && item.second.v.str != NULL) {
       delete item.second.v.str;
     }
+  }
+}
+
+std::string
+xrm::resource_manager_string(void)
+{
+  xcb_atom_t atom = m_c.intern_atom("RESOURCE_MANAGER");
+
+  xcb_get_property_cookie_t c = xcb_get_property(
+      m_c(), false, m_c.root_window(), atom, XCB_ATOM_STRING, 0, UINT_MAX);
+
+  xcb_generic_error_t * error = NULL;
+  xcb_get_property_reply_t * r = xcb_get_property_reply(m_c(), c, &error);
+
+  if (error) {
+    delete error;
+    return "";
+  } else {
+    std::string result((char *)xcb_get_property_value(r),
+                       xcb_get_property_value_length(r));
+    delete r;
+    return result;
   }
 }

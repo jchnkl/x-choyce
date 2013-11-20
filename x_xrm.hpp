@@ -6,6 +6,7 @@
 #include <X11/Xresource.h>
 
 #include "observer.hpp"
+#include "x_connection.hpp"
 
 namespace x {
 
@@ -28,9 +29,10 @@ class xrm : public observable<xrm> {
       value v;
     };
 
-    xrm(Display * dpy, const std::string & name,
-                       const std::string & _class,
-                       const options & options);
+    xrm(x_connection & c,
+        const std::string & name,
+        const std::string & _class,
+        const options & options);
 
     ~xrm(void);
 
@@ -40,7 +42,7 @@ class xrm : public observable<xrm> {
     }
 
   private:
-    Display * m_dpy;
+    x_connection & m_c;
     XrmDatabase m_database;
     std::string m_name;
     std::string m_class;
