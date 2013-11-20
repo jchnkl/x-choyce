@@ -9,11 +9,21 @@ xrm::xrm(Display * dpy,
   : m_dpy(dpy), m_name(name), m_class(_class), m_options(options)
 {
   XrmInitialize();
+  update_db();
+}
 
-  // The returned string is owned by Xlib and should not be freed by the client.
-  char * db = XResourceManagerString(dpy);
-  if (db != NULL) {
-    m_database = XrmGetStringDatabase(db);
+
+// private
+
+void
+xrm::update_db(void)
+{
+  std::string db = resource_manager_string();
+
+  if (! db.empty()) {
+    m_database = XrmGetStringDatabase(db.c_str());
+  } else {
+    return;
   }
 
   for (auto & item : m_options) {
@@ -25,6 +35,7 @@ xrm::xrm(Display * dpy,
     if (XrmGetResource(m_database, n.c_str(), c.c_str(), &type, &value)) {
       switch (item.second.type) {
         case str:
+          if (item.second.v.str != NULL) delete item.second.v.str;
           item.second.v.str = new std::string(value.addr, value.size);
           break;
 

@@ -45,6 +45,9 @@ class xrm : public observable<xrm> {
     std::string m_name;
     std::string m_class;
     options m_options;
+
+    void update_db(void);
+    std::string resource_manager_string(void);
 };
 
 }; // namespace x
