@@ -75,6 +75,7 @@ x_client_thumbnail::~x_client_thumbnail(void)
 {
   _c.detach(_c.damage_event_id(), this);
   _c.detach(XCB_CONFIGURE_NOTIFY, this);
+  _x_client_name->detach(this);
   _xrm.attach(this);
   release_gl();
   if (_gl_xfb_configs != NULL) delete _gl_xfb_configs;
