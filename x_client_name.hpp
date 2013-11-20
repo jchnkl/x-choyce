@@ -46,21 +46,22 @@ class x_client_name : public x_event_handler_t
     xcb_atom_t _a_wm_class = _c.intern_atom("WM_CLASS");
     xcb_atom_t _a_net_wm_name = _c.intern_atom("_NET_WM_NAME");
 
-    const int _border_width = 4;
-    const int _icon_size = 64;
-
     unsigned int _title_width = 0;
     unsigned int _title_height = 0;
 
+    // >> config options
+
+    int _border_width;
+    int _icon_size;
+
     // 0.375 * 0xff; 0.25 * 0xff
-    const uint32_t _title_bg_color = 0x60484848;
+    uint32_t _title_bg_color;
 
-    const x::type::colorname _colorname = std::string("#303030");
+    x::type::fontname _pnamefont;
+    x::type::fontname _titlefont;
+    x::type::colorname _colorname;
 
-    const x::type::fontname _pnamefont =
-      std::string("Sans:bold:pixelsize=26:antialias=true");
-    const x::type::fontname _titlefont =
-      std::string("Sans:bold:pixelsize=16:antialias=true");
+    // << config options
 
     void update_wm_name(void);
     void update_wm_class(void);

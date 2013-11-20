@@ -44,6 +44,18 @@ int main(int argc, char ** argv)
     , { .type = x::xrm::num, .v = { .num =  4                                } }
     // iconsize
     , { .type = x::xrm::num, .v = { .num = 64                                } }
+    // titlefont
+    , { .type = x::xrm::str,
+      .v = { .str = new std::string("Sans:bold:pixelsize=26:antialias=true") } }
+    // subtitlefont
+    , { .type = x::xrm::str,
+      .v = { .str = new std::string("Sans:bold:pixelsize=16:antialias=true") } }
+    // titlefgcolor
+    , { .type = x::xrm::str, .v = { .str = new std::string("#303030")        } }
+    // titlebgalpha
+    , { .type = x::xrm::dbl, .v = { .dbl = 0.375                             } }
+    // titlebgcolor
+    , { .type = x::xrm::str, .v = { .str = new std::string("#484848")        } }
     };
 
   int o = 0;
@@ -54,6 +66,11 @@ int main(int argc, char ** argv)
       , { "unfocusedcolor", options[o++] }
       , { "iconsize",       options[o++] }
       , { "borderwidth",    options[o++] }
+      , { "titlefont",      options[o++] }
+      , { "subtitlefont",   options[o++] }
+      , { "titlefgcolor",   options[o++] }
+      , { "titlebgalpha",   options[o++] }
+      , { "titlebgcolor",   options[o++] }
       });
 
   grid_t grid;
