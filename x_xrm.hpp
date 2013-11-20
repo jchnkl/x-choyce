@@ -5,9 +5,12 @@
 #include <unordered_set>
 #include <X11/Xresource.h>
 
+#include "observer.hpp"
+
 namespace x {
 
-class xrm {
+class xrm : public observable<xrm> {
+{
   public:
     struct option;
     typedef std::unordered_map<std::string, option> options;
