@@ -43,6 +43,7 @@ namespace generic {
 
 class name {
   public:
+    name(void) {}
     name(const std::string & name) : m_name(name) {}
     std::string & operator*(void) { return m_name; }
     const std::string & operator*(void) const { return m_name; }
