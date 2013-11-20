@@ -29,7 +29,7 @@ xrm::xrm(Display * dpy,
         result.copy(item.second.value.string, result.length());
         m_dynamic.insert(item.first);
       } else if (item.second.type == number) {
-        item.second.value.number = std::stoi(std::string(value.addr, value.addr));
+        item.second.value.number = std::stoi(std::string(value.addr, value.size));
       }
     }
 
