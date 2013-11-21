@@ -79,12 +79,16 @@ x_client_chooser::handle(xcb_generic_event_t * ge)
     if (_ignore_release) return result;
 
     xcb_key_release_event_t * e = (xcb_key_release_event_t *)ge;
-    for (auto & keycode : _modifier_map[_action_modmask]) {
-      if (e->detail == keycode) {
-        quit();
-        _chooser->select();
+    for (auto & item : _modifier_map) {
+      if (item.first == XCB_MOD_MASK_SHIFT) continue;
+
+      for (auto & keycode : item.second) {
+        if (e->detail == keycode) {
+          quit();
+          _chooser->select();
+          break;
+        }
       }
-      break;
     }
 
   } else if (XCB_BUTTON_PRESS == (ge->response_type & ~0x80)) {
