@@ -162,7 +162,6 @@ x_client_chooser::load_config(void)
     else if ("mod3"    == m) mask |= XCB_MOD_MASK_3;
     else if ("mod4"    == m) mask |= XCB_MOD_MASK_4;
     else if ("mod5"    == m) mask |= XCB_MOD_MASK_5;
-    else if ("shift"   == m) mask |= XCB_MOD_MASK_SHIFT;
     else if ("control" == m) mask |= XCB_MOD_MASK_CONTROL;
   }
 
