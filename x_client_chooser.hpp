@@ -3,18 +3,21 @@
 
 #include <xcb/xcb.h>
 
+#include "observer.hpp"
 #include "chooser_t.hpp"
 #include "x_event_handler_t.hpp"
 #include "x_connection.hpp"
 #include "x_xrm.hpp"
 
-class x_client_chooser : public x_event_handler_t {
+class x_client_chooser : public x_event_handler_t
+                       , public observer<x::xrm> {
   public:
     x_client_chooser(x_connection & c, x::xrm & xrm, chooser_t * chooser);
 
     ~x_client_chooser(void);
 
     bool handle(xcb_generic_event_t * ge);
+    void notify(x::xrm *);
 
   private:
     bool _active = false;

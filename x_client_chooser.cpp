@@ -13,6 +13,7 @@ x_client_chooser::x_client_chooser(x_connection & c,
   _c.attach(0, XCB_KEY_RELEASE, this);
   _c.attach(0, XCB_BUTTON_PRESS, this);
   _c.attach(0, XCB_MOTION_NOTIFY, this);
+  _xrm.attach(this);
   load_config();
   _modifier_map = _c.modifier_mapping();
 }
@@ -23,6 +24,7 @@ x_client_chooser::~x_client_chooser(void)
   _c.detach(XCB_KEY_RELEASE, this);
   _c.detach(XCB_BUTTON_PRESS, this);
   _c.detach(XCB_MOTION_NOTIFY, this);
+  _xrm.detach(this);
 }
 
 bool
@@ -108,6 +110,12 @@ x_client_chooser::handle(xcb_generic_event_t * ge)
   }
 
   return result;
+}
+
+void
+x_client_chooser::notify(x::xrm *)
+{
+  load_config();
 }
 
 void
