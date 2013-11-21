@@ -17,14 +17,6 @@ void sig_handler(int signum)
 
 int main(int argc, char ** argv)
 {
-  xcb_keysym_t east_key = XK_l;
-  xcb_keysym_t west_key = XK_h;
-  xcb_keysym_t north_key = XK_k;
-  xcb_keysym_t south_key = XK_j;
-  xcb_keysym_t quit_key = XK_Escape;
-  xcb_keysym_t action_key = XK_Tab;
-  xcb_mod_mask_t mod = XCB_MOD_MASK_4;
-
   x_connection c;
   g_event_source = &c;
 
@@ -56,6 +48,20 @@ int main(int argc, char ** argv)
     , { .type = x::xrm::dbl, .v = { .dbl = 0.375                             } }
     // titlebgcolor
     , { .type = x::xrm::str, .v = { .str = new std::string("#484848")        } }
+    // north
+    , { .type = x::xrm::str, .v = { .str = new std::string("k")              } }
+    // south
+    , { .type = x::xrm::str, .v = { .str = new std::string("j")              } }
+    // east
+    , { .type = x::xrm::str, .v = { .str = new std::string("l")              } }
+    // west
+    , { .type = x::xrm::str, .v = { .str = new std::string("h")              } }
+    // action
+    , { .type = x::xrm::str, .v = { .str = new std::string("Tab")            } }
+    // escape
+    , { .type = x::xrm::str, .v = { .str = new std::string("Escape")         } }
+    // mod
+    , { .type = x::xrm::str, .v = { .str = new std::string("mod4")           } }
     };
 
   int o = 0;
@@ -71,6 +77,13 @@ int main(int argc, char ** argv)
       , { "titlefgcolor",   options[o++] }
       , { "titlebgalpha",   options[o++] }
       , { "titlebgcolor",   options[o++] }
+      , { "north",          options[o++] }
+      , { "south",          options[o++] }
+      , { "east",           options[o++] }
+      , { "west",           options[o++] }
+      , { "action",         options[o++] }
+      , { "escape",         options[o++] }
+      , { "mod",            options[o++] }
       });
 
   grid_t grid;
@@ -78,9 +91,7 @@ int main(int argc, char ** argv)
   x_client_thumbnail::factory factory(c, xrm);
 
   thumbnail_manager tm(c, &grid, &factory);
-  x_client_chooser cp(c, &tm,
-                      east_key, west_key, north_key, south_key,
-                      quit_key, action_key, mod);
+  x_client_chooser cp(c, xrm, &tm);
 
   c.run_event_loop();
 

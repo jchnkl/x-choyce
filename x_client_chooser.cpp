@@ -1,31 +1,19 @@
 #include "x_client_chooser.hpp"
 
 #include <algorithm>
+#include <sstream>
 #include <X11/keysym.h>
 
 x_client_chooser::x_client_chooser(x_connection & c,
-                                   chooser_t * chooser,
-                                   xcb_keysym_t east_keysym,
-                                   xcb_keysym_t west_keysym,
-                                   xcb_keysym_t north_keysym,
-                                   xcb_keysym_t south_keysym,
-                                   xcb_keysym_t quit_keysym,
-                                   xcb_keysym_t action_keysym,
-                                   xcb_mod_mask_t action_modmask)
-  : _c(c), _chooser(chooser)
-  , _action_modmask(action_modmask)
+                                   x::xrm & xrm,
+                                   chooser_t * chooser)
+  : _c(c), _xrm(xrm), _chooser(chooser)
 {
   _c.attach(0, XCB_KEY_PRESS, this);
   _c.attach(0, XCB_KEY_RELEASE, this);
   _c.attach(0, XCB_BUTTON_PRESS, this);
   _c.attach(0, XCB_MOTION_NOTIFY, this);
-  _c.grab_key(_action_modmask, action_keysym);
-  _east_keycode = _c.keysym_to_keycode(east_keysym);
-  _west_keycode = _c.keysym_to_keycode(west_keysym);
-  _north_keycode = _c.keysym_to_keycode(north_keysym);
-  _south_keycode = _c.keysym_to_keycode(south_keysym);
-  _quit_keycode = _c.keysym_to_keycode(quit_keysym);
-  _action_keycode = _c.keysym_to_keycode(action_keysym);
+  load_config();
   _modifier_map = _c.modifier_mapping();
 }
 
@@ -129,4 +117,44 @@ x_client_chooser::quit(void)
   _c.ungrab_pointer();
   _c.ungrab_keyboard();
   _chooser->hide();
+}
+
+void
+x_client_chooser::load_config(void)
+{
+  _c.ungrab_key(_action_modmask, _action_keysym);
+
+  _north_keycode =
+    _c.keysym_to_keycode(XStringToKeysym(_xrm["north"].v.str->c_str()));
+  _south_keycode =
+    _c.keysym_to_keycode(XStringToKeysym(_xrm["south"].v.str->c_str()));
+  _east_keycode =
+    _c.keysym_to_keycode(XStringToKeysym(_xrm["east"].v.str->c_str()));
+  _west_keycode =
+    _c.keysym_to_keycode(XStringToKeysym(_xrm["west"].v.str->c_str()));
+  _quit_keycode =
+    _c.keysym_to_keycode(XStringToKeysym(_xrm["escape"].v.str->c_str()));
+
+  _action_keysym = XStringToKeysym(_xrm["action"].v.str->c_str());
+  _action_keycode = _c.keysym_to_keycode(_action_keysym);
+
+  int mask = 0;
+  std::stringstream ss(*_xrm["mod"].v.str);
+  std::string m;
+  while (std::getline(ss, m, '+')) {
+
+    m.erase(std::find_if_not(m.begin(), m.end(), ::isalnum), m.end());
+
+         if ("mod1"    == m) mask |= XCB_MOD_MASK_1;
+    else if ("mod2"    == m) mask |= XCB_MOD_MASK_2;
+    else if ("mod3"    == m) mask |= XCB_MOD_MASK_3;
+    else if ("mod4"    == m) mask |= XCB_MOD_MASK_4;
+    else if ("mod5"    == m) mask |= XCB_MOD_MASK_5;
+    else if ("shift"   == m) mask |= XCB_MOD_MASK_SHIFT;
+    else if ("control" == m) mask |= XCB_MOD_MASK_CONTROL;
+  }
+
+  _action_modmask = (xcb_mod_mask_t)mask;
+
+  _c.grab_key(_action_modmask, _action_keysym);
 }
