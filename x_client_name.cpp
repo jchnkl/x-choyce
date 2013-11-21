@@ -92,7 +92,13 @@ x_client_name::notify(x::xrm * xrm)
 {
   load_config();
   make_title();
+
+  // TODO: cause clang to crash, FILE A BUG REPORT
+#if defined  __GNUC__
   observable::notify();
+#else
+#error "Fix compilation with anything else but GNUC"
+#endif
 }
 
 // private
@@ -145,6 +151,8 @@ x_client_name::update_wm_name(void)
     xcb_icccm_get_wm_name(_c(), _x_client->window());
   xcb_icccm_get_wm_name_reply(_c(), c, &wm_name, &error);
 
+  // TODO: cause clang to crash, FILE A BUG REPORT
+#if defined  __GNUC__
   if (error) {
     delete error;
 
@@ -152,6 +160,9 @@ x_client_name::update_wm_name(void)
     _wm_name = std::string(wm_name.name, wm_name.name_len);
     xcb_icccm_get_text_property_reply_wipe(&wm_name);
   }
+#else
+#error "Fix compilation with anything else but GNUC"
+#endif
 }
 
 void
