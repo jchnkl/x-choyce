@@ -23,13 +23,9 @@ class x_client : public x_event_handler_t {
       return _window == other._window;
     }
 
-          rectangle &  rect(void);
     const rectangle &  rect(void) const;
-          xcb_window_t & window(void);
     const xcb_window_t & window(void) const;
-          xcb_window_t & parent(void);
     const xcb_window_t & parent(void) const;
-          xcb_pixmap_t & name_window_pixmap(void);
     const xcb_pixmap_t & name_window_pixmap(void) const;
           unsigned int   net_wm_desktop(void) const;
 

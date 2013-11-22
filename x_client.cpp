@@ -21,18 +21,9 @@ x_client::~x_client(void)
   xcb_free_pixmap(_c(), _name_window_pixmap);
 }
 
-      rectangle &  x_client::rect(void)       { return _rectangle; }
-const rectangle &  x_client::rect(void) const { return _rectangle; }
-      xcb_window_t & x_client::window(void)          { return _window; }
-const xcb_window_t & x_client::window(void) const    { return _window; }
-      xcb_window_t & x_client::parent(void)          { return _parent; }
-const xcb_window_t & x_client::parent(void) const    { return _parent; }
-
-xcb_window_t &
-x_client::name_window_pixmap(void)
-{
-  return _name_window_pixmap;
-}
+const    rectangle & x_client::rect(void)   const { return _rectangle; }
+const xcb_window_t & x_client::window(void) const { return _window; }
+const xcb_window_t & x_client::parent(void) const { return _parent; }
 
 const xcb_window_t &
 x_client::name_window_pixmap(void) const
