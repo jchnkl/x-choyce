@@ -51,8 +51,8 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
 
   xcb_free_colormap(_c(), colormap);
 
-  _gl_xfb_configs = glXChooseFBConfig(_c.dpy(), _c.screen_number(),
-                                      _gl_pixmap_config, &_gl_xfb_nconfigs);
+  _gl_xfb_configs = glXChooseFBConfig(
+      _c.dpy(), _c.screen_number(), _gl_pixmap_config, &_gl_xfb_nconfigs);
 
   configure_gl();
   init_gl_shader();
