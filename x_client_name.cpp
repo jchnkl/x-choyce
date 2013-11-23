@@ -160,6 +160,7 @@ x_client_name::update_wm_name(void)
     _wm_name = std::string(wm_name.name, wm_name.name_len);
     xcb_icccm_get_text_property_reply_wipe(&wm_name);
   }
+
 #else
 #error "Fix compilation with anything else but GNUC"
 #endif
