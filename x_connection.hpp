@@ -92,6 +92,7 @@ class x_connection : public x_event_handler_t
     PFNGLXRELEASETEXIMAGEEXTPROC  glXReleaseTexImageEXT   = 0;
     PFNGLXGETFBCONFIGSPROC        glXGetFBConfigs         = 0;
     PFNGLCREATESHADERPROC         glCreateShader          = 0;
+    PFNGLDELETESHADERPROC         glDeleteShader          = 0;
     PFNGLSHADERSOURCEPROC         glShaderSource          = 0;
     PFNGLCOMPILESHADERPROC        glCompileShader         = 0;
     PFNGLCREATEPROGRAMPROC        glCreateProgram         = 0;
@@ -101,7 +102,6 @@ class x_connection : public x_event_handler_t
     PFNGLUSEPROGRAMPROC           glUseProgram            = 0;
     PFNGLGETPROGRAMINFOLOGPROC    glGetProgramInfoLog     = 0;
     PFNGLGETSHADERINFOLOGPROC     glGetShaderInfoLog      = 0;
-    PFNGLDELETESHADERPROC         glDeleteShader          = 0;
     PFNGLDELETEPROGRAMPROC        glDeleteProgram         = 0;
     PFNGLGENERATEMIPMAPEXTPROC    glGenerateMipmapEXT     = 0;
     PFNGLACTIVETEXTUREPROC        glActiveTextureEXT      = 0;
