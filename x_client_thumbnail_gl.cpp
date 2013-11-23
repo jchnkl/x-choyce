@@ -67,6 +67,7 @@ x_client_thumbnail::~x_client_thumbnail(void)
   _x_client_name.detach(this);
   release_gl();
   if (_gl_xfb_configs != NULL) delete _gl_xfb_configs;
+  xcb_damage_destroy(_c(), _damage);
   xcb_destroy_window(_c(), _thumbnail_window);
 }
 
