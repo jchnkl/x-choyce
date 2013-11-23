@@ -114,7 +114,7 @@ class x_client_thumbnail : public x_event_handler_t
     void configure_highlight(bool now = false);
     void configure_thumbnail_window(bool now = false);
     void load_texture(GLuint id, const xcb_pixmap_t & p, bool rgba = true);
-    void configure_gl(XVisualInfo * vi = NULL);
+    void configure_gl(void);
     void init_gl_shader(void);
     void load_gl_shader(const std::string & filename, const std::string & name);
     void release_gl(void);

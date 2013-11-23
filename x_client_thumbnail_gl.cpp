@@ -425,21 +425,12 @@ x_client_thumbnail::load_texture(GLuint id, const xcb_pixmap_t & p, bool rgba)
 }
 
 void
-x_client_thumbnail::configure_gl(XVisualInfo * vi)
+x_client_thumbnail::configure_gl(void)
 {
-  auto create_ctx = [this, &vi]()
-  {
-    _gl_ctx = glXCreateContext(_c.dpy(), vi, NULL, GL_TRUE);
-  };
-
-  if (vi == NULL) {
-    GLint gl_vi_attr[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
-    vi = glXChooseVisual(_c.dpy(), _c.screen_number(), gl_vi_attr);
-    create_ctx();
-    delete vi;
-  } else {
-    create_ctx();
-  }
+  GLint gl_vi_attr[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
+  XVisualInfo * vi = glXChooseVisual(_c.dpy(), _c.screen_number(), gl_vi_attr);
+  _gl_ctx = glXCreateContext(_c.dpy(), vi, NULL, GL_TRUE);
+  delete vi;
 
   with_context([&, this]()
   {
