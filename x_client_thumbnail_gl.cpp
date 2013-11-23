@@ -299,10 +299,10 @@ x_client_thumbnail::configure_highlight(bool now)
 
   auto use_program = [this](const std::string & program)
   {
-    _c.glUseProgram(_programs[program]);
+    _c.glUseProgram(_programs[program].first);
     for (auto tid : { 0, 1, 2 }) {
       GLint location = _c.glGetUniformLocationEXT(
-          _programs[program], ("texture_" + std::to_string(tid)).c_str());
+          _programs[program].first, ("texture_" + std::to_string(tid)).c_str());
       _c.glUniform1iEXT(location, tid);
     }
   };
@@ -477,16 +477,18 @@ x_client_thumbnail::load_gl_shader(const std::string & filename,
                 << log_buffer << std::endl;
     }
 
-    _programs[name] = _c.glCreateProgram();
-    _c.glAttachShader(_programs[name], shader);
-    _c.glLinkProgram(_programs[name]);
+    GLuint program = _c.glCreateProgram();
 
-    _c.glGetProgramInfoLog(_programs[name],
-                           max_len, &log_length, log_buffer);
+    _c.glAttachShader(program, shader);
+    _c.glLinkProgram(program);
+
+    _c.glGetProgramInfoLog(program, max_len, &log_length, log_buffer);
     if (log_length > 0) {
       std::cerr << "Program creation for " << name << " failed:" << std::endl
                 << log_buffer << std::endl;
     }
+
+    _programs[name] = { program, shader };
   });
 }
 
@@ -504,9 +506,16 @@ x_client_thumbnail::release_gl(void)
     }
 
     glDeleteTextures(3, _gl_texture_id);
+
+    for (auto & item : _programs) {
+      _c.glDetachShader(item.second.first, item.second.second);
+      _c.glDeleteProgram(item.second.first);
+      _c.glDeleteShader(item.second.second);
+    }
+
+    glXDestroyContext(_c.dpy(), _gl_ctx);
   });
 
-  glXDestroyContext(_c.dpy(), _gl_ctx);
   _gl_ctx = XCB_NONE;
 }
 

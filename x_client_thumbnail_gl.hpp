@@ -97,7 +97,8 @@ class x_client_thumbnail : public x_event_handler_t
     GLuint _gl_texture_id[3];
     GLXContext _gl_ctx = XCB_NONE;
     GLXPixmap _gl_pixmap[3] = { XCB_NONE, XCB_NONE, XCB_NONE };
-    std::unordered_map<std::string, GLuint> _programs;
+    // name, { program, shader }
+    std::unordered_map<std::string, std::pair<GLuint, GLuint>> _programs;
 
     // >> config options
 
