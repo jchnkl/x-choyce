@@ -96,13 +96,13 @@ class x_connection : public x_event_handler_t
     PFNGLSHADERSOURCEPROC         glShaderSource          = 0;
     PFNGLCOMPILESHADERPROC        glCompileShader         = 0;
     PFNGLCREATEPROGRAMPROC        glCreateProgram         = 0;
+    PFNGLDELETEPROGRAMPROC        glDeleteProgram         = 0;
     PFNGLATTACHSHADERPROC         glAttachShader          = 0;
     PFNGLDETACHSHADERPROC         glDetachShader          = 0;
     PFNGLLINKPROGRAMPROC          glLinkProgram           = 0;
     PFNGLUSEPROGRAMPROC           glUseProgram            = 0;
     PFNGLGETPROGRAMINFOLOGPROC    glGetProgramInfoLog     = 0;
     PFNGLGETSHADERINFOLOGPROC     glGetShaderInfoLog      = 0;
-    PFNGLDELETEPROGRAMPROC        glDeleteProgram         = 0;
     PFNGLGENERATEMIPMAPEXTPROC    glGenerateMipmapEXT     = 0;
     PFNGLACTIVETEXTUREPROC        glActiveTextureEXT      = 0;
     PFNGLBLENDFUNCSEPARATEPROC    glBlendFuncSeparate     = 0;

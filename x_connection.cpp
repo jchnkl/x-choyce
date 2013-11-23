@@ -519,6 +519,8 @@ x_connection::init_gl(void)
     glXGetProcAddress((const GLubyte *)"glCompileShader");
   glCreateProgram = (PFNGLCREATEPROGRAMPROC)
     glXGetProcAddress((const GLubyte *)"glCreateProgram");
+  glDeleteProgram = (PFNGLDELETEPROGRAMPROC)
+    glXGetProcAddress((const GLubyte *)"glDeleteProgram");
   glAttachShader = (PFNGLATTACHSHADERPROC)
     glXGetProcAddress((const GLubyte *)"glAttachShader");
   glDetachShader = (PFNGLDETACHSHADERPROC)
@@ -531,8 +533,6 @@ x_connection::init_gl(void)
     glXGetProcAddress((const GLubyte *)"glGetProgramInfoLog");
   glGetShaderInfoLog = (PFNGLGETSHADERINFOLOGPROC)
     glXGetProcAddress((const GLubyte *)"glGetShaderInfoLog");
-  glDeleteProgram = (PFNGLDELETEPROGRAMPROC)
-    glXGetProcAddress((const GLubyte *)"glDeleteProgram");
   glGenerateMipmapEXT = (PFNGLGENERATEMIPMAPEXTPROC)
     glXGetProcAddress((const GLubyte *)"glGenerateMipmapEXT");
   glActiveTextureEXT = (PFNGLACTIVETEXTUREPROC)
