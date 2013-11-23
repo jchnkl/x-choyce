@@ -102,13 +102,16 @@ xrm::resource_manager_string(void)
   xcb_generic_error_t * error = NULL;
   xcb_get_property_reply_t * r = xcb_get_property_reply(m_c(), c, &error);
 
+  std::string result;
+
   if (error) {
     delete error;
-    return "";
+
   } else {
-    std::string result((char *)xcb_get_property_value(r),
-                       xcb_get_property_value_length(r));
-    delete r;
-    return result;
+    result = std::string((char *)xcb_get_property_value(r),
+                         xcb_get_property_value_length(r));
   }
+
+  if (r) delete r;
+  return result;
 }

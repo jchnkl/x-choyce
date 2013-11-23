@@ -274,6 +274,7 @@ x_connection::query_tree(xcb_window_t parent)
 
   if (error) {
     delete error;
+    if (reply) delete reply;
     return std::make_tuple(XCB_NONE, std::vector<xcb_window_t>());
   }
 
@@ -399,6 +400,7 @@ x_connection::query_pointer(const xcb_window_t & window) const
 
   if (error) {
     delete error;
+    if (r) delete r;
     throw "query_pointer failed";
   } else {
     position root = { r->root_x, r->root_y };
@@ -418,6 +420,7 @@ x_connection::get_geometry(const xcb_window_t & window) const
 
   if (error) {
     delete error;
+    if (r) delete r;
     throw "get_geometry failed";
   } else {
     rectangle rect;

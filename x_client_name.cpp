@@ -136,8 +136,11 @@ x_client_name::update_net_wm_name(void)
     if (xcb_ewmh_get_wm_name_from_reply(_c.ewmh(), &net_wm_name, r)) {
       _net_wm_name = std::string(net_wm_name.strings, net_wm_name.strings_len);
       xcb_ewmh_get_utf8_strings_reply_wipe(&net_wm_name);
+      r = NULL;
     }
   }
+
+  if (r) delete r;
 }
 
 void
@@ -186,8 +189,11 @@ x_client_name::update_wm_class(void)
       _class_name = wm_class.class_name;
       _instance_name = wm_class.instance_name;
       xcb_icccm_get_wm_class_reply_wipe(&wm_class);
+      r = NULL;
     }
   }
+
+  if (r) delete r;
 }
 
 void

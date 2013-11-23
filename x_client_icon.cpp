@@ -65,7 +65,6 @@ x_client_icon::update_net_wm_icon(void)
 
   if (error) {
     delete error;
-    return;
 
   } else if (0 < xcb_ewmh_get_wm_icon_length(&wm_icon)) {
 
@@ -103,9 +102,9 @@ x_client_icon::update_net_wm_icon(void)
 
     xcb_image_destroy(image);
     xcb_free_gc(_c(), gc);
-  }
 
-  xcb_ewmh_get_wm_icon_reply_wipe(&wm_icon);
+    xcb_ewmh_get_wm_icon_reply_wipe(&wm_icon);
+  }
 }
 
 void
@@ -122,7 +121,6 @@ x_client_icon::update_wm_hints_icon(void)
 
   if (error) {
     delete error;
-    return;
 
   } else {
     xcb_icccm_wm_hints_t wm_hints;
@@ -193,6 +191,8 @@ x_client_icon::update_wm_hints_icon(void)
       xcb_free_gc(_c(), gc);
     }
   }
+
+  if (r) delete r;
 }
 
 // stolen from openbox: tests/icons.c

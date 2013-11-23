@@ -126,7 +126,7 @@ x_client::update_net_wm_desktop(void)
     _net_wm_desktop = *(unsigned int *)xcb_get_property_value(r);
   }
 
-  delete r;
+  if (r) delete r;
 }
 
 void
