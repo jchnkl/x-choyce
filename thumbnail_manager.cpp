@@ -32,7 +32,7 @@ thumbnail_manager::show(void)
   _current_window = *_cyclic_iterator;
 
   for (auto & item : _thumbnails) {
-    item.second->show();
+    item.second->show().update();
   }
 }
 
