@@ -31,6 +31,6 @@ void main(void)
   vec4 t2 = texture2D(texture_2, gl_TexCoord[0].st);
 
   gl_FragColor = vec4(grey);
-  gl_FragColor.a = sum.a * t1.a * t2.a;
+  gl_FragColor.a = t1.a * t2.a;
   gl_FragColor.rgb += t1.rgb + t2.rgb;
 }

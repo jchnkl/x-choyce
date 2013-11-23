@@ -10,6 +10,6 @@ void main(void)
   vec4 t1 = texture2D(texture_1, gl_TexCoord[0].st);
   vec4 t2 = texture2D(texture_2, gl_TexCoord[0].st);
 
-  gl_FragColor.a = t0.a * t1.a * t2.a;
+  gl_FragColor.a = t1.a * t2.a;
   gl_FragColor.rgb = t0.rgb + t1.rgb + t2.rgb;
 }
