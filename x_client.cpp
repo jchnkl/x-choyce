@@ -23,6 +23,7 @@ x_client::~x_client(void)
   _c.detach(XCB_PROPERTY_NOTIFY, this);
 
   xcb_free_pixmap(_c(), _name_window_pixmap);
+  xcb_free_pixmap(_c(), _name_window_dummy);
 }
 
 const    rectangle & x_client::rect(void)   const { return _rectangle; }
@@ -32,7 +33,9 @@ const xcb_window_t & x_client::parent(void) const { return _parent; }
 const xcb_window_t &
 x_client::name_window_pixmap(void) const
 {
-  return _name_window_pixmap;
+  return _name_window_pixmap == XCB_NONE
+         ? _name_window_dummy
+         : _name_window_pixmap;
 }
 
 unsigned int x_client::net_wm_desktop(void) const { return _net_wm_desktop; }
@@ -150,7 +153,26 @@ x_client::update_name_window_pixmap(void)
   if (error) {
     delete error;
     _name_window_pixmap = XCB_NONE;
+    make_dummy();
   }
+}
+
+void
+x_client::make_dummy(void)
+{
+  xcb_free_pixmap(_c(), _name_window_dummy);
+  _name_window_dummy = xcb_generate_id(_c());
+  xcb_create_pixmap(_c(), 24, _name_window_dummy, _c.root_window(),
+      _rectangle.width(), _rectangle.height());
+
+  xcb_gcontext_t gc = xcb_generate_id(_c());
+  uint32_t fg = 0xff808080;
+
+  xcb_create_gc(_c(), gc, _name_window_dummy, XCB_GC_FOREGROUND, &fg);
+  xcb_rectangle_t r = {
+    0, 0, (uint16_t)_rectangle.width(), (uint16_t)_rectangle.height() };
+  xcb_poly_fill_rectangle(_c(), _name_window_dummy, gc, 1, &r);
+  xcb_free_gc(_c(), gc);
 }
 
 // free functions
