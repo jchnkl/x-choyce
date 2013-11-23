@@ -277,17 +277,8 @@ x_client_thumbnail::notify(x::xrm *)
 void
 x_client_thumbnail::notify(x_client * c)
 {
-  // if (_visible) {
   with_context([this](){ load_texture(0, _x_client.name_window_pixmap(), true); });
   update();
-  // }
-
-  // if (_visible) {
-  //   purge();
-  //   update();
-  // } else {
-  //   _purge = true;
-  // }
 }
 
 void
