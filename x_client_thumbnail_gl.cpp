@@ -29,12 +29,12 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
   update(rect);
 
   _x_client_name->make_title();
-  _x_client_name->attach(this);
 
   _c.attach(0, _c.damage_event_id(), this);
-  _c.attach(30, XCB_CONFIGURE_NOTIFY, this);
 
   _xrm.attach(this);
+  _x_client->attach(this);
+  _x_client_name->attach(this);
 
   _damage = xcb_generate_id(_c());
 
@@ -74,9 +74,9 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
 x_client_thumbnail::~x_client_thumbnail(void)
 {
   _c.detach(_c.damage_event_id(), this);
-  _c.detach(XCB_CONFIGURE_NOTIFY, this);
+  _xrm.detach(this);
+  _x_client->detach(this);
   _x_client_name->detach(this);
-  _xrm.attach(this);
   release_gl();
   if (_gl_xfb_configs != NULL) delete _gl_xfb_configs;
   xcb_destroy_window(_c(), _thumbnail_window);
@@ -289,18 +289,6 @@ x_client_thumbnail::handle(xcb_generic_event_t * ge)
 
     result = true;
 
-  } else if (XCB_CONFIGURE_NOTIFY == (ge->response_type & ~0x80)) {
-    xcb_configure_notify_event_t * e = (xcb_configure_notify_event_t *)ge;
-    if (e->window == _x_client->window()) {
-      if (_visible) {
-        purge();
-        update();
-      } else {
-        _purge = true;
-      }
-    }
-
-    result = true;
   }
 
   return result;
@@ -310,6 +298,13 @@ void
 x_client_thumbnail::notify(x::xrm *)
 {
   load_config();
+}
+
+void
+x_client_thumbnail::notify(x_client * c)
+{
+  with_context([this](){ load_texture(0, _x_client->name_window_pixmap(), true); });
+  update();
 }
 
 void
@@ -458,10 +453,6 @@ x_client_thumbnail::load_texture(GLuint id, const xcb_pixmap_t & p, bool rgba)
 void
 x_client_thumbnail::configure_gl(XVisualInfo * vi)
 {
-  while (_x_client->name_window_pixmap() == XCB_NONE) {
-    _x_client->update_name_window_pixmap();
-  }
-
   auto create_ctx = [this, &vi]()
   {
     _gl_ctx = glXCreateContext(_c.dpy(), vi, NULL, GL_TRUE);
