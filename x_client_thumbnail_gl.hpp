@@ -2,8 +2,6 @@
 #define _X_CLIENT_THUMBNAIL_GL_HPP
 
 #include <fstream>
-#include <memory>
-#include <cmath>
 #include <unordered_map>
 #include <xcb/xcb.h>
 #include <xcb/damage.h>
@@ -15,10 +13,11 @@
 #include "x_client.hpp"
 #include "x_client_icon.hpp"
 #include "x_client_name.hpp"
-#include "x_connection.hpp"
 
 // http://svn.enlightenment.org/svn/e/tags/evas-1.0.2/src/modules/engines/xrender_x11/evas_engine_xcb_render.c
 #define DOUBLE_TO_FIXED(d) ((xcb_render_fixed_t) ((d) * 65536))
+
+class x_connection;
 
 class x_client_thumbnail : public x_event_handler_t
                          , public thumbnail_t
@@ -33,8 +32,7 @@ class x_client_thumbnail : public x_event_handler_t
     x_client_thumbnail(x_connection & c,
                        x::xrm & xrm,
                        const rectangle & rect,
-                       const xcb_window_t & window = XCB_NONE,
-                       std::shared_ptr<x_client> xclient = NULL);
+                       const xcb_window_t & window = XCB_NONE);
 
     ~x_client_thumbnail(void);
 
@@ -70,13 +68,11 @@ class x_client_thumbnail : public x_event_handler_t
     };
 
   private:
-    typedef std::shared_ptr<x_client> x_client_ptr;
-
     x_connection & _c;
     x::xrm & _xrm;
-    x_client_ptr _x_client;
-    std::shared_ptr<x_client_icon> _x_client_icon;
-    std::shared_ptr<x_client_name> _x_client_name;
+    x_client _x_client;
+    x_client_icon _x_client_icon;
+    x_client_name _x_client_name;
 
     double _scale;
     double _icon_scale_x;

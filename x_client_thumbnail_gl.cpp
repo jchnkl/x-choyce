@@ -1,40 +1,28 @@
 #include "x_client_thumbnail_gl.hpp"
 
+#include <cmath>
 #include <xcb/composite.h>
+#include "x_connection.hpp"
 
 x_client_thumbnail::x_client_thumbnail(x_connection & c,
                                        x::xrm & xrm,
                                        const rectangle & rect,
-                                       const xcb_window_t & window,
-                                       std::shared_ptr<x_client> xclient)
-      : _c(c), _xrm(xrm)
+                                       const xcb_window_t & window)
+  : _c(c), _xrm(xrm)
+  , _x_client(_c, window)
+  , _x_client_icon(_c, &_x_client)
+  , _x_client_name(_c, _xrm, &_x_client)
 {
-  if (window == XCB_NONE && xclient == NULL) {
-    throw std::invalid_argument(
-        "x_client_thumbnail requires either window or xclient parameter");
-  } else if (xclient == NULL) {
-    _x_client = x_client_ptr(new x_client(_c, window));
-  } else {
-    _x_client = xclient;
-  }
-
-  _x_client_icon = std::shared_ptr<x_client_icon>(
-      new x_client_icon(_c, _x_client.get()));
-
-  _x_client_name = std::shared_ptr<x_client_name>(
-      new x_client_name(_c, _xrm, _x_client.get()));
-
   load_config();
-
   update(rect);
 
-  _x_client_name->make_title();
+  _x_client_name.make_title();
 
   _c.attach(0, _c.damage_event_id(), this);
 
   _xrm.attach(this);
-  _x_client->attach(this);
-  _x_client_name->attach(this);
+  _x_client.attach(this);
+  _x_client_name.attach(this);
 
   _damage = xcb_generate_id(_c());
 
@@ -57,7 +45,7 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
 
   xcb_create_window(_c(), depth, _thumbnail_window,
                     _c.root_window(), 0, 0,
-                    _x_client->rect().width(), _x_client->rect().height(),
+                    _x_client.rect().width(), _x_client.rect().height(),
                     0, XCB_WINDOW_CLASS_INPUT_OUTPUT, vt->visual_id,
                     valuemask, valuelist);
 
@@ -75,8 +63,8 @@ x_client_thumbnail::~x_client_thumbnail(void)
 {
   _c.detach(_c.damage_event_id(), this);
   _xrm.detach(this);
-  _x_client->detach(this);
-  _x_client_name->detach(this);
+  _x_client.detach(this);
+  _x_client_name.detach(this);
   release_gl();
   if (_gl_xfb_configs != NULL) delete _gl_xfb_configs;
   xcb_destroy_window(_c(), _thumbnail_window);
@@ -88,7 +76,7 @@ x_client_thumbnail::show(void)
   if (_visible) return *this;
 
   _visible = true;
-  xcb_damage_create(_c(), _damage, _x_client->window(),
+  xcb_damage_create(_c(), _damage, _x_client.window(),
                     XCB_DAMAGE_REPORT_LEVEL_NON_EMPTY);
 
   configure_thumbnail_window(true);
@@ -113,8 +101,8 @@ x_client_thumbnail::hide(void)
 thumbnail_t &
 x_client_thumbnail::select(void)
 {
-  _c.request_change_current_desktop(_x_client->net_wm_desktop());
-  _c.request_change_active_window(_x_client->window());
+  _c.request_change_current_desktop(_x_client.net_wm_desktop());
+  _c.request_change_active_window(_x_client.window());
   return *this;
 }
 
@@ -137,12 +125,12 @@ x_client_thumbnail::update(const rectangle & r)
 {
   _configure_thumbnail = true;
 
-  _scale = std::min((double)r.width() / _x_client->rect().width(),
-                    (double)r.height() / _x_client->rect().height());
+  _scale = std::min((double)r.width() / _x_client.rect().width(),
+                    (double)r.height() / _x_client.rect().height());
   _scale = std::min(1.0, _scale);
 
-  _rectangle.width() = _x_client->rect().width() * _scale;
-  _rectangle.height() = _x_client->rect().height() * _scale;
+  _rectangle.width() = _x_client.rect().width() * _scale;
+  _rectangle.height() = _x_client.rect().height() * _scale;
 
   _rectangle.x() = r.x() + (r.width() - _rectangle.width()) / 2;
   _rectangle.y() = r.y() + (r.height() - _rectangle.height()) / 2;
@@ -150,8 +138,8 @@ x_client_thumbnail::update(const rectangle & r)
   _icon_scale_x = _icon_size / (double)_rectangle.width();
   _icon_scale_y = _icon_size / (double)_rectangle.height();
 
-  _x_client_name->title_width(_rectangle.width());
-  _x_client_name->title_height(_icon_size + _border_width);
+  _x_client_name.title_width(_rectangle.width());
+  _x_client_name.title_height(_icon_size + _border_width);
 
   _title_scale_x = (double)_rectangle.width() / (double)_rectangle.width();
   _title_scale_y = (_icon_size + _border_width) / (double)_rectangle.height();
@@ -168,7 +156,7 @@ x_client_thumbnail::rect(void)
 void
 x_client_thumbnail::purge(void)
 {
-  _x_client_name->make_title();
+  _x_client_name.make_title();
   release_gl();
   configure_gl();
   init_gl_shader();
@@ -254,7 +242,7 @@ x_client_thumbnail::id(void)
 const xcb_window_t &
 x_client_thumbnail::window(void)
 {
-  return _x_client->window();
+  return _x_client.window();
 }
 
 thumbnail_t &
@@ -303,14 +291,23 @@ x_client_thumbnail::notify(x::xrm *)
 void
 x_client_thumbnail::notify(x_client * c)
 {
-  with_context([this](){ load_texture(0, _x_client->name_window_pixmap(), true); });
+  // if (_visible) {
+  with_context([this](){ load_texture(0, _x_client.name_window_pixmap(), true); });
   update();
+  // }
+
+  // if (_visible) {
+  //   purge();
+  //   update();
+  // } else {
+  //   _purge = true;
+  // }
 }
 
 void
 x_client_thumbnail::notify(x_client_name * c)
 {
-  with_context([this](){ load_texture(1, _x_client_name->title(), true); });
+  with_context([this](){ load_texture(1, _x_client_name.title(), true); });
   update();
 }
 
@@ -364,7 +361,7 @@ x_client_thumbnail::configure_thumbnail_window(bool now)
   }
 
   xcb_xfixes_region_t region = xcb_generate_id(_c());
-  xcb_xfixes_create_region_from_window(_c(), region, _x_client->window(),
+  xcb_xfixes_create_region_from_window(_c(), region, _x_client.window(),
                                        XCB_SHAPE_SK_BOUNDING);
 
   xcb_xfixes_fetch_region_cookie_t fetch_region_cookie =
@@ -469,9 +466,9 @@ x_client_thumbnail::configure_gl(XVisualInfo * vi)
 
   with_context([&, this]()
   {
-    load_texture(0, _x_client->name_window_pixmap(), false);
-    load_texture(1, _x_client_name->title(), true);
-    load_texture(2, _x_client_icon->icon(), true);
+    load_texture(0, _x_client.name_window_pixmap(), false);
+    load_texture(1, _x_client_name.title(), true);
+    load_texture(2, _x_client_icon.icon(), true);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
@@ -593,7 +590,7 @@ x_client_thumbnail::load_config(void)
 
 bool operator==(const x_client_thumbnail & thumbnail, const xcb_window_t & window)
 {
-  return *(thumbnail._x_client) == window;
+  return thumbnail._x_client == window;
 }
 
 bool operator==(const xcb_window_t & window, const x_client_thumbnail & thumbnail)
