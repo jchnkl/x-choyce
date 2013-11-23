@@ -29,8 +29,7 @@ class x_connection : public x_event_handler_t
   public:
     typedef std::map<xcb_mod_mask_t, std::vector<xcb_keycode_t>> modifier_map;
 
-    x_connection(std::shared_ptr<x_ewmh> ewmh = NULL,
-                 std::shared_ptr<x_event_source> event_source = NULL);
+    x_connection(void);
     ~x_connection(void);
 
     xcb_connection_t * const operator()(void) const;
@@ -68,6 +67,21 @@ class x_connection : public x_event_handler_t
     rectangle get_geometry(const xcb_window_t & window = XCB_NONE) const;
     rectangle current_screen(const position & p) const;
     bool handle(xcb_generic_event_t * ge);
+
+    // ugly :(
+    void set(x_ewmh * const ewmh)
+    {
+      if (_ewmh) return;
+      _ewmh = ewmh;
+    }
+
+    // ugly :(
+    void set(x_event_source_t * const event_source)
+    {
+      if (_event_source) return;
+      _event_source = event_source;
+      _event_source->attach(0, XCB_CONFIGURE_NOTIFY, this);
+    }
 
     void attach(priority_t p, event_id_t i, x_event_handler_t * eh);
     void detach(event_id_t, x_event_handler_t * eh);
@@ -122,8 +136,8 @@ class x_connection : public x_event_handler_t
     std::vector<rectangle> _screens;
     std::unordered_map<std::string, xcb_atom_t> _atoms;
 
-    std::shared_ptr<x_ewmh> _ewmh;
-    std::shared_ptr<x_event_source_t> _event_source;
+    x_ewmh * _ewmh = NULL;
+    x_event_source_t * _event_source = NULL;
 
     void find_default_screen(void);
     void init_gl(void);

@@ -1,17 +1,14 @@
 #ifndef _X_EVENT_SOURCE
 #define _X_EVENT_SOURCE
 
-#include <iostream>
-#include <algorithm>
-#include <list>
 #include <map>
 #include <unordered_map>
-
-#include <X11/Xlibint.h>
 
 #include "x_connection.hpp"
 #include "x_event_source_t.hpp"
 #include "x_event_handler_t.hpp"
+
+class x_connection;
 
 class x_event_source : public x_event_source_t {
   public:

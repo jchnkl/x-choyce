@@ -10,8 +10,7 @@
 #include "x_ewmh.hpp"
 #include "x_event_source.hpp"
 
-x_connection::x_connection(std::shared_ptr<x_ewmh> ewmh,
-                           std::shared_ptr<x_event_source> event_source)
+x_connection::x_connection(void)
 {
   _dpy = XOpenDisplay(NULL);
   XSetEventQueueOwner(_dpy, XCBOwnsEventQueue);
@@ -19,21 +18,6 @@ x_connection::x_connection(std::shared_ptr<x_ewmh> ewmh,
   _c = XGetXCBConnection(_dpy);
   find_default_screen();
   _root_window = _default_screen->root;
-
-  if (event_source == NULL) {
-    _event_source =
-      std::shared_ptr<x_event_source_t>(new x_event_source(*this));
-  } else {
-    _event_source = event_source;
-  }
-
-  _event_source->attach(0, XCB_CONFIGURE_NOTIFY, this);
-
-  if (ewmh == NULL) {
-    _ewmh = std::shared_ptr<x_ewmh>(new x_ewmh(*this));
-  } else {
-    _ewmh = ewmh;
-  }
 
   init_gl();
   init_composite();
@@ -46,11 +30,7 @@ x_connection::x_connection(std::shared_ptr<x_ewmh> ewmh,
 
 x_connection::~x_connection(void)
 {
-  _event_source->detach(XCB_CONFIGURE_NOTIFY, this);
   xcb_disconnect(_c);
-
-  // Force object d'tor here, to prevent calling an invald _event_source
-  _ewmh.reset();
 }
 
 xcb_connection_t * const

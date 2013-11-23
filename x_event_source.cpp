@@ -1,5 +1,8 @@
 #include "x_event_source.hpp"
 
+#include <algorithm>
+#include <X11/Xlibint.h>
+
 x_event_source::x_event_source(x_connection & c) : _c(c)
 {
   _c.update_input(_c.root_window(), XCB_EVENT_MASK_STRUCTURE_NOTIFY);

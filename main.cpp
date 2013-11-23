@@ -5,6 +5,8 @@
 #include "grid.hpp"
 #include "thumbnail_manager.hpp"
 #include "x_connection.hpp"
+#include "x_event_source.hpp"
+#include "x_ewmh.hpp"
 #include "x_client_chooser.hpp"
 #include "x_client_thumbnail_gl.hpp"
 
@@ -18,7 +20,12 @@ void sig_handler(int signum)
 int main(int argc, char ** argv)
 {
   x_connection c;
+  x_event_source event_source(c);
+  c.set(&event_source);
   g_event_source = &c;
+
+  x_ewmh ewmh(c);
+  c.set(&ewmh);
 
   signal(SIGINT,  sig_handler);
   signal(SIGTERM, sig_handler);
