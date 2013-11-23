@@ -3,6 +3,8 @@
 x_client::x_client(x_connection & c, const xcb_window_t & window)
   : _c(c), _window(window)
 {
+  _c.attach(0, XCB_MAP_NOTIFY, this);
+  _c.attach(0, XCB_UNMAP_NOTIFY, this);
   _c.attach(0, XCB_CONFIGURE_NOTIFY, this);
   _c.attach(0, XCB_PROPERTY_NOTIFY, this);
   _c.update_input(_window, XCB_EVENT_MASK_STRUCTURE_NOTIFY
@@ -15,6 +17,8 @@ x_client::x_client(x_connection & c, const xcb_window_t & window)
 
 x_client::~x_client(void)
 {
+  _c.detach(XCB_MAP_NOTIFY, this);
+  _c.detach(XCB_UNMAP_NOTIFY, this);
   _c.detach(XCB_CONFIGURE_NOTIFY, this);
   _c.detach(XCB_PROPERTY_NOTIFY, this);
 
@@ -49,6 +53,13 @@ void x_client::update_geometry(void)
 bool
 x_client::handle(xcb_generic_event_t * ge)
 {
+  auto update = [this](void)
+  {
+    update_parent_window();
+    update_name_window_pixmap();
+    observable::notify();
+  };
+
   if (XCB_CONFIGURE_NOTIFY == (ge->response_type & ~0x80)) {
     xcb_configure_notify_event_t * e = (xcb_configure_notify_event_t *)ge;
     if (e->window == _window) {
@@ -57,8 +68,7 @@ x_client::handle(xcb_generic_event_t * ge)
     }
 
     if (e->window == _c.root_window() || e->window == _window) {
-      update_parent_window();
-      update_name_window_pixmap();
+      update();
     }
 
     return true;
@@ -70,6 +80,24 @@ x_client::handle(xcb_generic_event_t * ge)
 
     if (e->atom == a_net_wm_desktop) {
       update_net_wm_desktop();
+    }
+
+    return true;
+
+  } else if (XCB_MAP_NOTIFY == (ge->response_type & ~0x80)) {
+    xcb_map_notify_event_t * e = (xcb_map_notify_event_t *)ge;
+
+    if (e->window == _window) {
+      update();
+    }
+
+    return true;
+
+  } else if (XCB_UNMAP_NOTIFY == (ge->response_type & ~0x80)) {
+    xcb_unmap_notify_event_t * e = (xcb_unmap_notify_event_t *)ge;
+
+    if (e->window == _window) {
+      update();
     }
 
     return true;
