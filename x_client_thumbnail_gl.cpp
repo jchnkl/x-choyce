@@ -82,11 +82,6 @@ x_client_thumbnail::show(void)
 
   configure_thumbnail_window(true);
 
-  if (_purge) {
-    _purge = false;
-    purge();
-  }
-
   return *this;
 }
 
@@ -152,16 +147,6 @@ const rectangle &
 x_client_thumbnail::rect(void)
 {
   return _rectangle;
-}
-
-void
-x_client_thumbnail::purge(void)
-{
-  _x_client_name.make_title();
-  release_gl();
-  configure_gl();
-  init_gl_shader();
-  with_context([this]() { configure_highlight(true); });
 }
 
 void

@@ -80,7 +80,6 @@ class x_client_thumbnail : public x_event_handler_t
     double _title_scale_x;
     double _title_scale_y;
 
-    bool _purge = false;
     bool _visible = false;
     bool _highlight = false;
     bool _configure_thumbnail = true;
@@ -111,7 +110,6 @@ class x_client_thumbnail : public x_event_handler_t
 
     // << config options
 
-    void purge(void);
     void update(int x, int y, unsigned int width, unsigned int height);
     void configure_highlight(bool now = false);
     void configure_thumbnail_window(bool now = false);
