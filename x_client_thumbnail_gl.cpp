@@ -252,6 +252,7 @@ x_client_thumbnail::handle(xcb_generic_event_t * ge)
       if (_highlight) {
         with_texture(0, [this](GLuint &)
         {
+          _c.glXReleaseTexImageEXT(_c.dpy(), _gl_pixmap[0], GLX_FRONT_EXT);
           _c.glXBindTexImageEXT(_c.dpy(), _gl_pixmap[0], GLX_FRONT_EXT, NULL);
           _c.glGenerateMipmapEXT(GL_TEXTURE_2D);
         });
@@ -321,6 +322,7 @@ x_client_thumbnail::configure_highlight(bool now)
     use_program("grayscale_shader");
     with_texture(0, [this](GLuint &)
     {
+      _c.glXReleaseTexImageEXT(_c.dpy(), _gl_pixmap[0], GLX_FRONT_EXT);
       _c.glXBindTexImageEXT(_c.dpy(), _gl_pixmap[0], GLX_FRONT_EXT, NULL);
       glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
       glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
