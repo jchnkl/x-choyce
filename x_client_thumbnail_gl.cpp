@@ -6,9 +6,11 @@
 
 x_client_thumbnail::x_client_thumbnail(x_connection & c,
                                        x::xrm & xrm,
+                                       const x::gl::api & api,
                                        const rectangle & rect,
                                        const xcb_window_t & window)
-  : _c(c), _xrm(xrm)
+  : _c(c), _xrm(xrm), _gl_api(api)
+  , _gl_ctx(api, _c.dpy(), _c.screen_number())
   , _x_client(_c, window)
   , _x_client_icon(_c, &_x_client)
   , _x_client_name(_c, _xrm, &_x_client)
@@ -51,12 +53,29 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
 
   xcb_free_colormap(_c(), colormap);
 
-  _gl_xfb_configs = glXChooseFBConfig(
-      _c.dpy(), _c.screen_number(), _gl_pixmap_config, &_gl_xfb_nconfigs);
+  _gl_ctx.drawable(_thumbnail_window);
 
-  configure_gl();
-  init_gl_shader();
-  with_context([this]() { configure_highlight(true); });
+  _gl_ctx.load("./normal.frag", "normal_shader");
+  _gl_ctx.load("./grayscale.frag", "grayscale_shader");
+
+  _gl_ctx.load(0, _x_client.name_window_pixmap(), 24);
+  _gl_ctx.load(1, _x_client_name.title(), 32);
+  _gl_ctx.load(2, _x_client_icon.icon(), 32);
+
+  _gl_ctx.run([this](x::gl::context &)
+  {
+    for (auto & t : { 0, 1, 2 }) {
+      _gl_ctx.texture(t, [](const GLuint &)
+      {
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+      });
+    }
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    configure_highlight(true);
+  });
 }
 
 x_client_thumbnail::~x_client_thumbnail(void)
@@ -65,8 +84,6 @@ x_client_thumbnail::~x_client_thumbnail(void)
   _xrm.detach(this);
   _x_client.detach(this);
   _x_client_name.detach(this);
-  release_gl();
-  if (_gl_xfb_configs != NULL) delete _gl_xfb_configs;
   xcb_damage_destroy(_c(), _damage);
   xcb_destroy_window(_c(), _thumbnail_window);
 }
@@ -107,7 +124,7 @@ x_client_thumbnail::update(void)
 {
   configure_thumbnail_window();
 
-  with_context([this]()
+  _gl_ctx.run([this](x::gl::context &)
   {
     configure_highlight();
     update(0, 0, _rectangle.width(), _rectangle.height());
@@ -173,47 +190,46 @@ x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  with_texture(0, [this](GLuint &) {
-      glPushMatrix();
-      glBegin(GL_QUADS);
-      glTexCoord2f(0.0, 0.0); glVertex3f(-1.0,  1.0, 0.0);
-      glTexCoord2f(1.0, 0.0); glVertex3f( 1.0,  1.0, 0.0);
-      glTexCoord2f(1.0, 1.0); glVertex3f( 1.0, -1.0, 0.0);
-      glTexCoord2f(0.0, 1.0); glVertex3f(-1.0, -1.0, 0.0);
-      glEnd();
-      glPopMatrix();
-      });
+  _gl_ctx.texture(0, [](const GLuint &)
+  {
+    glPushMatrix();
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0, 0.0); glVertex3f(-1.0,  1.0, 0.0);
+    glTexCoord2f(1.0, 0.0); glVertex3f( 1.0,  1.0, 0.0);
+    glTexCoord2f(1.0, 1.0); glVertex3f( 1.0, -1.0, 0.0);
+    glTexCoord2f(0.0, 1.0); glVertex3f(-1.0, -1.0, 0.0);
+    glEnd();
+    glPopMatrix();
+  });
 
-  if (_gl_pixmap[1] != XCB_NONE) {
-    with_texture(1, [this](GLuint &) {
-        glPushMatrix();
-        glTranslatef(-1.0 + _title_scale_x, -1.0 + _title_scale_y, 0.0);
-        glBegin(GL_QUADS);
-        glTexCoord2f(0.0, 0.0); glVertex3f(-_title_scale_x,  _title_scale_y, 0.0);
-        glTexCoord2f(1.0, 0.0); glVertex3f( _title_scale_x,  _title_scale_y, 0.0);
-        glTexCoord2f(1.0, 1.0); glVertex3f( _title_scale_x, -_title_scale_y, 0.0);
-        glTexCoord2f(0.0, 1.0); glVertex3f(-_title_scale_x, -_title_scale_y, 0.0);
-        glEnd();
-        glPopMatrix();
-        });
-  }
+  _gl_ctx.texture(1, [&](const GLuint &)
+  {
+    glPushMatrix();
+    glTranslatef(-1.0 + _title_scale_x, -1.0 + _title_scale_y, 0.0);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0, 0.0); glVertex3f(-_title_scale_x,  _title_scale_y, 0.0);
+    glTexCoord2f(1.0, 0.0); glVertex3f( _title_scale_x,  _title_scale_y, 0.0);
+    glTexCoord2f(1.0, 1.0); glVertex3f( _title_scale_x, -_title_scale_y, 0.0);
+    glTexCoord2f(0.0, 1.0); glVertex3f(-_title_scale_x, -_title_scale_y, 0.0);
+    glEnd();
+    glPopMatrix();
+  });
 
-  if (_gl_pixmap[2] != XCB_NONE) {
-    with_texture(2, [this](GLuint &) {
-        glPushMatrix();
-        glTranslatef(
-          -1.0 + _icon_scale_x + (_border_width / (double)_rectangle.width()),
-          -1.0 + _icon_scale_y + (_border_width / (double)_rectangle.height()),
-          0.0);
-        glBegin(GL_QUADS);
-        glTexCoord2f(0.0, 0.0); glVertex3f(-_icon_scale_x,  _icon_scale_y, 0.0);
-        glTexCoord2f(1.0, 0.0); glVertex3f( _icon_scale_x,  _icon_scale_y, 0.0);
-        glTexCoord2f(1.0, 1.0); glVertex3f( _icon_scale_x, -_icon_scale_y, 0.0);
-        glTexCoord2f(0.0, 1.0); glVertex3f(-_icon_scale_x, -_icon_scale_y, 0.0);
-        glEnd();
-        glPopMatrix();
-        });
-  }
+  _gl_ctx.texture(2, [&](const GLuint &)
+  {
+    glPushMatrix();
+    glTranslatef(
+      -1.0 + _icon_scale_x + (_border_width / (double)_rectangle.width()),
+      -1.0 + _icon_scale_y + (_border_width / (double)_rectangle.height()),
+      0.0);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0, 0.0); glVertex3f(-_icon_scale_x,  _icon_scale_y, 0.0);
+    glTexCoord2f(1.0, 0.0); glVertex3f( _icon_scale_x,  _icon_scale_y, 0.0);
+    glTexCoord2f(1.0, 1.0); glVertex3f( _icon_scale_x, -_icon_scale_y, 0.0);
+    glTexCoord2f(0.0, 1.0); glVertex3f(-_icon_scale_x, -_icon_scale_y, 0.0);
+    glEnd();
+    glPopMatrix();
+  });
 
   glXSwapBuffers(_c.dpy(), _thumbnail_window);
   glDisable(GL_SCISSOR_TEST);
@@ -247,14 +263,18 @@ x_client_thumbnail::handle(xcb_generic_event_t * ge)
     xcb_damage_notify_event_t * e = (xcb_damage_notify_event_t *)ge;
     xcb_damage_subtract(_c(), e->damage, XCB_NONE, XCB_NONE);
 
-    with_context([&, this]()
+    _gl_ctx.run([&](x::gl::context &)
     {
       if (_highlight) {
-        with_texture(0, [this](GLuint &)
+        _gl_ctx.texture(0, [&](const GLuint &)
         {
-          _c.glXReleaseTexImageEXT(_c.dpy(), _gl_pixmap[0], GLX_FRONT_EXT);
-          _c.glXBindTexImageEXT(_c.dpy(), _gl_pixmap[0], GLX_FRONT_EXT, NULL);
-          _c.glGenerateMipmapEXT(GL_TEXTURE_2D);
+          _gl_ctx.pixmap(0, [&](const GLXPixmap & p)
+          {
+            _gl_api.glXReleaseTexImageEXT(_c.dpy(), p, GLX_FRONT_EXT);
+            _gl_api.glXBindTexImageEXT(_c.dpy(), p, GLX_FRONT_EXT, NULL);
+          });
+
+          _gl_api.glGenerateMipmapEXT(GL_TEXTURE_2D);
         });
       }
 
@@ -278,14 +298,14 @@ x_client_thumbnail::notify(x::xrm *)
 void
 x_client_thumbnail::notify(x_client * c)
 {
-  with_context([this](){ load_texture(0, _x_client.name_window_pixmap(), true); });
+  _gl_ctx.load(0, _x_client.name_window_pixmap(), 24);
   update();
 }
 
 void
 x_client_thumbnail::notify(x_client_name * c)
 {
-  with_context([this](){ load_texture(1, _x_client_name.title(), true); });
+  _gl_ctx.load(1, _x_client_name.title(), 32);
   update();
 }
 
@@ -298,32 +318,37 @@ x_client_thumbnail::configure_highlight(bool now)
     return;
   }
 
-  auto use_program = [this](const std::string & program)
+  auto use_program = [this](const std::string & name)
   {
-    _c.glUseProgram(_programs[program].first);
+    auto & program = _gl_ctx.program(name);
+    _gl_api.glUseProgram(program);
     for (auto tid : { 0, 1, 2 }) {
-      GLint location = _c.glGetUniformLocationEXT(
-          _programs[program].first, ("texture_" + std::to_string(tid)).c_str());
-      _c.glUniform1iEXT(location, tid);
+      GLint location = _gl_api.glGetUniformLocationEXT(
+          program, ("texture_" + std::to_string(tid)).c_str());
+      _gl_api.glUniform1iEXT(location, tid);
     }
   };
 
   if (_highlight) {
     use_program("normal_shader");
-    with_texture(0, [this](GLuint &)
+    _gl_ctx.texture(0, [this](const GLuint &)
     {
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1);
       glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
       glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
-      _c.glGenerateMipmapEXT(GL_TEXTURE_2D);
+      _gl_api.glGenerateMipmapEXT(GL_TEXTURE_2D);
     });
 
   } else {
     use_program("grayscale_shader");
-    with_texture(0, [this](GLuint &)
+    _gl_ctx.texture(0, [this](const GLuint &)
     {
-      _c.glXReleaseTexImageEXT(_c.dpy(), _gl_pixmap[0], GLX_FRONT_EXT);
-      _c.glXBindTexImageEXT(_c.dpy(), _gl_pixmap[0], GLX_FRONT_EXT, NULL);
+      _gl_ctx.pixmap(0, [this](const GLXPixmap & p)
+      {
+        _gl_api.glXReleaseTexImageEXT(_c.dpy(), p, GLX_FRONT_EXT);
+        _gl_api.glXBindTexImageEXT(_c.dpy(), p, GLX_FRONT_EXT, NULL);
+      });
+
       glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
       glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     });
@@ -391,159 +416,6 @@ x_client_thumbnail::configure_thumbnail_window(bool now)
 }
 
 void
-x_client_thumbnail::load_texture(GLuint id, const xcb_pixmap_t & p, bool rgba)
-{
-  if (_gl_pixmap[id] != XCB_NONE) {
-    _c.glXReleaseTexImageEXT(_c.dpy(), _gl_pixmap[id], GLX_FRONT_EXT);
-    glXDestroyGLXPixmap(_c.dpy(), _gl_pixmap[id]);
-    glDeleteTextures(1, &_gl_texture_id[id]);
-    _gl_pixmap[id] = XCB_NONE;
-  }
-
-  if (p == XCB_NONE || _gl_xfb_nconfigs == 0) {
-    return;
-  }
-
-  const int pixmap_attr[] = {
-    GLX_TEXTURE_TARGET_EXT, GLX_TEXTURE_2D_EXT,
-    GLX_TEXTURE_FORMAT_EXT,
-      rgba ? GLX_TEXTURE_FORMAT_RGBA_EXT : GLX_TEXTURE_FORMAT_RGB_EXT,
-    None
-  };
-
-  glGenTextures(1, &_gl_texture_id[id]);
-
-  _gl_pixmap[id] =
-    glXCreatePixmap(_c.dpy(), _gl_xfb_configs[0], p, pixmap_attr);
-
-  auto make_texture = [&, this](GLuint &)
-  {
-    _c.glXBindTexImageEXT(_c.dpy(), _gl_pixmap[id], GLX_FRONT_EXT, NULL);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  };
-
-  with_texture(id, make_texture);
-}
-
-void
-x_client_thumbnail::configure_gl(void)
-{
-  GLint gl_vi_attr[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
-  XVisualInfo * vi = glXChooseVisual(_c.dpy(), _c.screen_number(), gl_vi_attr);
-  _gl_ctx = glXCreateContext(_c.dpy(), vi, NULL, GL_TRUE);
-  delete vi;
-
-  with_context([&, this]()
-  {
-    load_texture(0, _x_client.name_window_pixmap(), false);
-    load_texture(1, _x_client_name.title(), true);
-    load_texture(2, _x_client_icon.icon(), true);
-
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-  });
-}
-
-void
-x_client_thumbnail::init_gl_shader(void)
-{
-  load_gl_shader("./normal.frag", "normal_shader");
-  load_gl_shader("./grayscale.frag", "grayscale_shader");
-}
-
-void
-x_client_thumbnail::load_gl_shader(const std::string & filename,
-                                   const std::string & name)
-{
-  std::ifstream file(filename);
-  std::string shader_source_str((std::istreambuf_iterator<char>(file)),
-                                 std::istreambuf_iterator<char>());
-  file.close();
-
-  const GLchar * shader_source[]  = { shader_source_str.c_str() };
-  const GLint shader_source_len[] = { (GLint)(shader_source_str.length()) };
-
-  with_context([&, this]()
-  {
-    GLsizei log_length = 0, max_len = 1024;
-    GLchar log_buffer[max_len];
-
-    GLuint shader = _c.glCreateShader(GL_FRAGMENT_SHADER);
-    _c.glShaderSource(shader, 1, shader_source, shader_source_len);
-    _c.glCompileShader(shader);
-
-    _c.glGetShaderInfoLog(shader, max_len, &log_length, log_buffer);
-    if (log_length > 0) {
-      std::cerr << "Shader compilation for " << name << " failed:" << std::endl
-                << log_buffer << std::endl;
-    }
-
-    GLuint program = _c.glCreateProgram();
-
-    _c.glAttachShader(program, shader);
-    _c.glLinkProgram(program);
-
-    _c.glGetProgramInfoLog(program, max_len, &log_length, log_buffer);
-    if (log_length > 0) {
-      std::cerr << "Program creation for " << name << " failed:" << std::endl
-                << log_buffer << std::endl;
-    }
-
-    _programs[name] = { program, shader };
-  });
-}
-
-void
-x_client_thumbnail::release_gl(void)
-{
-  with_context([&, this]()
-  {
-    for (auto id : { 0, 1, 2 }) {
-      if (_gl_pixmap[id] != XCB_NONE) {
-        _c.glXReleaseTexImageEXT(_c.dpy(), _gl_pixmap[id], GLX_FRONT_EXT);
-        glXDestroyGLXPixmap(_c.dpy(), _gl_pixmap[id]);
-        _gl_pixmap[id] = XCB_NONE;
-      }
-    }
-
-    glDeleteTextures(3, _gl_texture_id);
-
-    for (auto & item : _programs) {
-      _c.glDetachShader(item.second.first, item.second.second);
-      _c.glDeleteProgram(item.second.first);
-      _c.glDeleteShader(item.second.second);
-    }
-
-    glXDestroyContext(_c.dpy(), _gl_ctx);
-  });
-
-  _gl_ctx = XCB_NONE;
-}
-
-void
-x_client_thumbnail::with_context(std::function<void(void)> f)
-{
-  if (_gl_ctx != XCB_NONE) {
-    glXMakeCurrent(_c.dpy(), _thumbnail_window, _gl_ctx);
-    f();
-    glXMakeCurrent(_c.dpy(), None, NULL);
-  }
-}
-
-void
-x_client_thumbnail::with_texture(GLuint tid, std::function<void(GLuint &)> f)
-{
-  glActiveTexture(GL_TEXTURE0 + tid);
-  glEnable(GL_TEXTURE_2D);
-  glBindTexture(GL_TEXTURE_2D, _gl_texture_id[tid]);
-  f(_gl_texture_id[tid]);
-  glBindTexture(GL_TEXTURE_2D, 0);
-  glDisable(GL_TEXTURE_2D);
-  glActiveTexture(GL_TEXTURE0);
-}
-
-void
 x_client_thumbnail::load_config(void)
 {
   _icon_size    = _xrm["iconsize"].v.num;
@@ -585,5 +457,5 @@ thumbnail_t::ptr
 x_client_thumbnail::factory::
 make(const xcb_window_t & w, const rectangle & r) const
 {
-  return thumbnail_t::ptr(new x_client_thumbnail(_c, _xrm, r, w));
+  return thumbnail_t::ptr(new x_client_thumbnail(_c, _xrm, _gl_api, r, w));
 }

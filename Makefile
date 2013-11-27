@@ -20,6 +20,7 @@ CPPSRCS=main.cpp \
 				grid.cpp
 
 HPPSRCS=chooser_t.hpp \
+				opengl.hpp \
 				cyclic_iterator.hpp \
 				data_types.hpp \
 				grid.hpp \

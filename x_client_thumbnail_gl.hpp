@@ -6,6 +6,7 @@
 #include <xcb/xcb.h>
 #include <xcb/damage.h>
 
+#include "opengl.hpp"
 #include "x_xrm.hpp"
 #include "observer.hpp"
 #include "thumbnail_t.hpp"
@@ -31,6 +32,7 @@ class x_client_thumbnail : public x_event_handler_t
 
     x_client_thumbnail(x_connection & c,
                        x::xrm & xrm,
+                       const x::gl::api & api,
                        const rectangle & rect,
                        const xcb_window_t & window = XCB_NONE);
 
@@ -65,11 +67,14 @@ class x_client_thumbnail : public x_event_handler_t
       private:
         x_connection & _c;
         x::xrm & _xrm;
+        x::gl::api _gl_api;
     };
 
   private:
     x_connection & _c;
     x::xrm & _xrm;
+    const x::gl::api & _gl_api;
+    x::gl::context _gl_ctx;
     x_client _x_client;
     x_client_icon _x_client_icon;
     x_client_name _x_client_name;
@@ -87,18 +92,8 @@ class x_client_thumbnail : public x_event_handler_t
 
     rectangle _rectangle;
 
-    xcb_window_t _thumbnail_window;
+    xcb_window_t _thumbnail_window = XCB_NONE;
     xcb_damage_damage_t _damage;
-
-    const int _gl_pixmap_config[3] = { GLX_BIND_TO_TEXTURE_RGBA_EXT, True, None };
-
-    int _gl_xfb_nconfigs = 0;
-    GLXFBConfig * _gl_xfb_configs = NULL;
-    GLuint _gl_texture_id[3];
-    GLXContext _gl_ctx = XCB_NONE;
-    GLXPixmap _gl_pixmap[3] = { XCB_NONE, XCB_NONE, XCB_NONE };
-    // name, { program, shader }
-    std::unordered_map<std::string, std::pair<GLuint, GLuint>> _programs;
 
     // >> config options
 
@@ -114,14 +109,7 @@ class x_client_thumbnail : public x_event_handler_t
     void update(int x, int y, unsigned int width, unsigned int height);
     void configure_highlight(bool now = false);
     void configure_thumbnail_window(bool now = false);
-    void load_texture(GLuint id, const xcb_pixmap_t & p, bool rgba = true);
-    void configure_gl(void);
-    void init_gl_shader(void);
-    void load_gl_shader(const std::string & filename, const std::string & name);
-    void release_gl(void);
     void load_config(void);
-    void with_context(std::function<void(void)> f);
-    void with_texture(GLuint tid, std::function<void(GLuint &)> f);
 };
 
 bool

@@ -14,9 +14,6 @@
 #include <X11/Xlib.h>
 #include <X11/Xlib-xcb.h>
 
-#include <GL/gl.h>
-#include <GL/glx.h>
-
 #include "data_types.hpp"
 #include "x_event_handler_t.hpp"
 #include "x_event_source_t.hpp"
@@ -88,43 +85,6 @@ class x_connection : public x_event_handler_t
     void run_event_loop(void);
     void shutdown(void);
 
-    PFNGLXBINDTEXIMAGEEXTPROC     glXBindTexImageEXT      = 0;
-    PFNGLXRELEASETEXIMAGEEXTPROC  glXReleaseTexImageEXT   = 0;
-    PFNGLXGETFBCONFIGSPROC        glXGetFBConfigs         = 0;
-    PFNGLCREATESHADERPROC         glCreateShader          = 0;
-    PFNGLDELETESHADERPROC         glDeleteShader          = 0;
-    PFNGLSHADERSOURCEPROC         glShaderSource          = 0;
-    PFNGLCOMPILESHADERPROC        glCompileShader         = 0;
-    PFNGLCREATEPROGRAMPROC        glCreateProgram         = 0;
-    PFNGLDELETEPROGRAMPROC        glDeleteProgram         = 0;
-    PFNGLATTACHSHADERPROC         glAttachShader          = 0;
-    PFNGLDETACHSHADERPROC         glDetachShader          = 0;
-    PFNGLLINKPROGRAMPROC          glLinkProgram           = 0;
-    PFNGLUSEPROGRAMPROC           glUseProgram            = 0;
-    PFNGLGETPROGRAMINFOLOGPROC    glGetProgramInfoLog     = 0;
-    PFNGLGETSHADERINFOLOGPROC     glGetShaderInfoLog      = 0;
-    PFNGLGENERATEMIPMAPEXTPROC    glGenerateMipmapEXT     = 0;
-    PFNGLACTIVETEXTUREPROC        glActiveTextureEXT      = 0;
-    PFNGLBLENDFUNCSEPARATEPROC    glBlendFuncSeparate     = 0;
-
-    PFNGLGENSAMPLERSPROC          glGenSamplers           = 0;
-    PFNGLDELETESAMPLERSPROC       glDeleteSamplers        = 0;
-    PFNGLBINDSAMPLERPROC          glBindSampler           = 0;
-
-    PFNGLUNIFORM1FPROC            glUniform1fEXT          = 0;
-    PFNGLUNIFORM2FPROC            glUniform2fEXT          = 0;
-    PFNGLUNIFORM3FPROC            glUniform3fEXT          = 0;
-    PFNGLUNIFORM4FPROC            glUniform4fEXT          = 0;
-
-    PFNGLUNIFORM1IPROC            glUniform1iEXT          = 0;
-    PFNGLUNIFORM2IPROC            glUniform2iEXT          = 0;
-    PFNGLUNIFORM3IPROC            glUniform3iEXT          = 0;
-    PFNGLUNIFORM4IPROC            glUniform4iEXT          = 0;
-
-    PFNGLGETUNIFORMLOCATIONPROC   glGetUniformLocationEXT = 0;
-    PFNGLGETUNIFORMBLOCKINDEXPROC glGetUniformBlockIndex  = 0;
-    PFNGLUNIFORMBLOCKBINDINGPROC  glUniformBlockBinding   = 0;
-
   private:
     uint8_t _damage_event_id;
     int _screen_number = 0;
@@ -140,7 +100,6 @@ class x_connection : public x_event_handler_t
     x_event_source_t * _event_source = NULL;
 
     void find_default_screen(void);
-    void init_gl(void);
     void init_composite(void);
     void init_damage(void);
     void init_render(void);
