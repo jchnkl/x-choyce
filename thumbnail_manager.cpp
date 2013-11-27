@@ -158,10 +158,6 @@ thumbnail_manager::handle(xcb_generic_event_t * ge)
 inline void
 thumbnail_manager::reset(void)
 {
-  for (auto & item : _thumbnails) {
-    item.second->highlight(false).show().update();
-  }
-
   bool found = false;
   _cyclic_iterator = window_cyclic_iterator(&_windows);
 
