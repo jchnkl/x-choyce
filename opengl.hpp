@@ -257,7 +257,7 @@ class context {
 
       m_api.glGetProgramInfoLog(p, max_len, &log_length, log_buffer);
       if (log_length > 0) {
-        std::cerr << "p creation for " << name << " failed:" << std::endl
+        std::cerr << "Program creation for " << name << " failed:" << std::endl
                   << log_buffer << std::endl;
       }
 
