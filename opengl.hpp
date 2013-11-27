@@ -195,8 +195,7 @@ class context {
       glEnable(GL_TEXTURE_2D);
       try {
         glBindTexture(GL_TEXTURE_2D, m_textures.at(id));
-        // specialise unfold here or object copies!
-        unfold<const GLuint &, FS ...>(m_textures.at(id), fs ...);
+        unfold(m_textures.at(id), fs ...);
       } catch (...) {}
       glBindTexture(GL_TEXTURE_2D, 0);
       glDisable(GL_TEXTURE_2D);
@@ -208,8 +207,7 @@ class context {
     context & pixmap(unsigned int id, FS ... fs)
     {
       try {
-        // specialise unfold here or object copies!
-        unfold<const GLXPixmap &, FS ...>(m_pixmaps.at(id), fs ...);
+        unfold(m_pixmaps.at(id), fs ...);
       } catch (...) {}
       return *this;
     }
@@ -219,8 +217,7 @@ class context {
     {
       if (m_drawable != None) {
         glXMakeCurrent(m_dpy, m_drawable, m_context);
-        // specialise unfold here or object copies!
-        unfold<context &, FS ...>(*this, fs ...);
+        unfold(*this, fs ...);
         glXMakeCurrent(m_dpy, None, NULL);
       }
       return *this;
@@ -327,18 +324,17 @@ class context {
 
     std::unordered_map<std::string, std::pair<program_t, shader_t>> m_programs;
 
-    // careful! A a can cause object copies!
     template<typename A, typename F, typename ... FS>
-    void unfold(A a, F f, FS ... fs)
+    void unfold(A&& a, F f, FS ... fs)
     {
       f(a);
-      unfold(a, fs ...);
+      unfold(std::forward<A>(a), fs ...);
     }
 
     template<typename A, typename F>
-    void unfold(A a, F f)
+    void unfold(A&& a, F f)
     {
-      f(a);
+      f(std::forward<A>(a));
     }
 
 }; // class context
