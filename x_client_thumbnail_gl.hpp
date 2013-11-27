@@ -87,6 +87,8 @@ class x_client_thumbnail : public x_event_handler_t
 
     bool _visible = false;
     bool _highlight = false;
+    bool _update_title_pixmap = false;
+    bool _update_name_window_pixmap = false;
     bool _configure_thumbnail = true;
     bool _configure_highlight = true;
 
@@ -107,6 +109,8 @@ class x_client_thumbnail : public x_event_handler_t
     // << config options
 
     void update(int x, int y, unsigned int width, unsigned int height);
+    void update_title_pixmap(void);
+    void update_name_window_pixmap(void);
     void configure_highlight(bool now = false);
     void configure_thumbnail_window(bool now = false);
     void load_config(void);

@@ -99,6 +99,16 @@ x_client_thumbnail::show(void)
 
   configure_thumbnail_window(true);
 
+  if (_update_name_window_pixmap) {
+    update_name_window_pixmap();
+    _update_name_window_pixmap = false;
+  }
+
+  if (_update_title_pixmap) {
+    update_title_pixmap();
+    _update_title_pixmap = false;
+  }
+
   return *this;
 }
 
@@ -235,6 +245,37 @@ x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height
   glDisable(GL_SCISSOR_TEST);
 }
 
+void
+x_client_thumbnail::update_title_pixmap(void)
+{
+  _x_client_name.make_title();
+  _gl_ctx.load(1, _x_client_name.title(), 32);
+  _gl_ctx.run([](x::gl::context & ctx)
+  {
+    ctx.texture(1, [](const GLuint &)
+    {
+      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    });
+  });
+}
+
+void
+x_client_thumbnail::update_name_window_pixmap(void)
+{
+  _x_client.update_parent_window();
+  _x_client.update_name_window_pixmap();
+  _gl_ctx.load(0, _x_client.name_window_pixmap(), 24);
+  _gl_ctx.run([](x::gl::context & ctx)
+  {
+    ctx.texture(0, [](const GLuint &)
+    {
+      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    });
+  });
+}
+
 const xcb_window_t &
 x_client_thumbnail::id(void)
 {
@@ -298,15 +339,23 @@ x_client_thumbnail::notify(x::xrm *)
 void
 x_client_thumbnail::notify(x_client * c)
 {
-  _gl_ctx.load(0, _x_client.name_window_pixmap(), 24);
-  update();
+  if (_visible) {
+    update_name_window_pixmap();
+    update();
+  } else {
+    _update_name_window_pixmap = true;
+  }
 }
 
 void
 x_client_thumbnail::notify(x_client_name * c)
 {
-  _gl_ctx.load(1, _x_client_name.title(), 32);
-  update();
+  if (_visible) {
+    update_title_pixmap();
+    update();
+  } else {
+    _update_title_pixmap = true;
+  }
 }
 
 void
