@@ -131,7 +131,12 @@ thumbnail_manager::handle(xcb_generic_event_t * ge)
     {
       update();
       reset();
+
+      try {
+        _thumbnails.at(*_cyclic_iterator)->highlight(true).update();
+      } catch (...) {}
     }
+
     return true;
 
   } else if (XCB_CONFIGURE_NOTIFY == (ge->response_type & ~0x80)) {
@@ -185,10 +190,6 @@ thumbnail_manager::reset(void)
 
   _next_window = *(_cyclic_iterator + 1);
   _current_window = *_cyclic_iterator;
-
-  try {
-    _thumbnails.at(*_cyclic_iterator)->highlight(true).update();
-  } catch (...) {}
 }
 
 inline void
