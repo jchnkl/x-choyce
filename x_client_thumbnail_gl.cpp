@@ -12,8 +12,8 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
   : _c(c), _xrm(xrm), _gl_api(api)
   , _gl_ctx(api, _c.dpy(), _c.screen_number())
   , _x_client(_c, window)
-  , _x_client_icon(_c, &_x_client)
-  , _x_client_name(_c, _xrm, &_x_client)
+  , _x_client_icon(_c, _x_client)
+  , _x_client_name(_c, _xrm, _x_client)
 {
   load_config();
   update(rect);

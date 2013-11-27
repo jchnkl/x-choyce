@@ -6,7 +6,7 @@
 
 class x_client_icon : public x_event_handler_t {
   public:
-    x_client_icon(x_connection & c, x_client * const x_client);
+    x_client_icon(x_connection & c, x_client & x_client);
     ~x_client_icon(void);
 
     const xcb_pixmap_t & icon(void) const;
@@ -17,7 +17,7 @@ class x_client_icon : public x_event_handler_t {
 
   private:
     x_connection & _c;
-    x_client * const _x_client;
+    x_client & _x_client;
 
     xcb_pixmap_t _net_wm_icon = XCB_NONE;
     xcb_pixmap_t _wm_hints_icon = XCB_NONE;

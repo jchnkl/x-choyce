@@ -13,7 +13,7 @@ class x_client_name : public x_event_handler_t
                     , public observable<x_client_name>
 {
   public:
-    x_client_name(x_connection & c, x::xrm & xrm, x_client * const x_client);
+    x_client_name(x_connection & c, x::xrm & xrm, x_client & x_client);
     ~x_client_name(void);
 
     const std::string & net_wm_name(void) const;
@@ -36,7 +36,7 @@ class x_client_name : public x_event_handler_t
   private:
     x_connection & _c;
     x::xrm & _xrm;
-    x_client * const _x_client;
+    x_client & _x_client;
     std::shared_ptr<x::xft> _x_xft;
 
     std::string _net_wm_name;

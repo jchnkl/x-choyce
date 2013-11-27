@@ -5,11 +5,11 @@
 #include <xcb/xcb_icccm.h>
 #include <xcb/xcb_image.h>
 
-x_client_icon::x_client_icon(x_connection & c, x_client * const x_client)
+x_client_icon::x_client_icon(x_connection & c, x_client & x_client)
   : _c(c), _x_client(x_client)
 {
   _c.attach(10, XCB_PROPERTY_NOTIFY, this);
-  _c.update_input(_x_client->window(), XCB_EVENT_MASK_PROPERTY_CHANGE);
+  _c.update_input(_x_client.window(), XCB_EVENT_MASK_PROPERTY_CHANGE);
 
   update_net_wm_icon();
   if (_net_wm_icon == XCB_NONE) {
@@ -30,7 +30,7 @@ x_client_icon::handle(xcb_generic_event_t * ge)
   if (XCB_PROPERTY_NOTIFY == (ge->response_type & ~0x80)) {
     xcb_property_notify_event_t * e = (xcb_property_notify_event_t *)ge;
 
-    if (e->window != _x_client->window()) {
+    if (e->window != _x_client.window()) {
       return true;
 
     } else if (e->atom == _a_wm_hints) {
@@ -57,7 +57,7 @@ x_client_icon::update_net_wm_icon(void)
 
   xcb_generic_error_t * error;
   xcb_get_property_cookie_t c =
-    xcb_ewmh_get_wm_icon(_c.ewmh(), _x_client->window());
+    xcb_ewmh_get_wm_icon(_c.ewmh(), _x_client.window());
 
   xcb_ewmh_get_wm_icon_reply_t wm_icon;
   std::memset(&wm_icon, 0, sizeof(xcb_ewmh_get_wm_icon_reply_t));
@@ -116,7 +116,7 @@ x_client_icon::update_wm_hints_icon(void)
   xcb_generic_error_t * error;
 
   xcb_get_property_cookie_t c =
-    xcb_icccm_get_wm_hints(_c(), _x_client->window());
+    xcb_icccm_get_wm_hints(_c(), _x_client.window());
   xcb_get_property_reply_t * r = xcb_get_property_reply(_c(), c, &error);
 
   if (error) {
