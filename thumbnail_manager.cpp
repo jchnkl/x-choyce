@@ -208,8 +208,11 @@ thumbnail_manager::update(void)
 
     if (result == _thumbnails.end()) {
       _thumbnails[_windows[i]] = _factory->make(_windows[i], rects[i]);
+      if (_active) {
+        _thumbnails[_windows[i]]->show();
+      }
     } else {
-      result->second->update(rects[i]);
+      result->second->highlight(false).update(rects[i]);
     }
   }
 }
