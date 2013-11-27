@@ -167,6 +167,14 @@ x_client_thumbnail::update(const rectangle & r)
   _title_scale_x = (double)_rectangle.width() / (double)_rectangle.width();
   _title_scale_y = (_icon_size + _border_width) / (double)_rectangle.height();
 
+  if (_visible) {
+    update_title_pixmap();
+    configure_thumbnail_window(true);
+  } else {
+    _update_title_pixmap = true;
+    _configure_thumbnail = true;
+  }
+
   return *this;
 }
 
