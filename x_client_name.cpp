@@ -12,6 +12,7 @@ x_client_name::x_client_name(x_connection & c,
   _c.update_input(_x_client->window(), XCB_EVENT_MASK_PROPERTY_CHANGE);
 
   _xrm.attach(this);
+  _x_client->attach(this);
 
   load_config();
 
@@ -24,6 +25,7 @@ x_client_name::~x_client_name(void)
 {
   _c.detach(XCB_PROPERTY_NOTIFY, this);
   _xrm.detach(this);
+  _x_client->detach(this);
   xcb_free_pixmap(_c(), _title);
 }
 
@@ -56,12 +58,14 @@ x_client_name::title(void) const
 bool
 x_client_name::handle(xcb_generic_event_t * ge)
 {
+  bool result = false;
+  bool update_title = false;
+
   if (XCB_PROPERTY_NOTIFY == (ge->response_type & ~0x80)) {
     xcb_property_notify_event_t * e = (xcb_property_notify_event_t *)ge;
 
-    if (e->window != _x_client->window()) return true;
+    if (e->window != _x_client->window()) result = true;
 
-    bool update_title = false;
     if (e->atom == _a_wm_name) {
       update_title = true;
       update_wm_name();
@@ -76,23 +80,36 @@ x_client_name::handle(xcb_generic_event_t * ge)
 
     }
 
-    if (update_title) {
-      make_title();
-      observable::notify();
-    }
-
-    return true;
+    result = true;
   }
 
-  return false;
+  // TODO: cause clang to crash, FILE A BUG REPORT
+#if defined  __GNUC__
+  if (update_title) {
+    observable::notify();
+  }
+#else
+#error "Fix compilation with anything else but GNUC"
+#endif
+
+  return result;
 }
 
 void
-x_client_name::notify(x::xrm * xrm)
+x_client_name::notify(x::xrm *)
 {
   load_config();
-  make_title();
+  // TODO: cause clang to crash, FILE A BUG REPORT
+#if defined  __GNUC__
+  observable::notify();
+#else
+#error "Fix compilation with anything else but GNUC"
+#endif
+}
 
+void
+x_client_name::notify(x_client *)
+{
   // TODO: cause clang to crash, FILE A BUG REPORT
 #if defined  __GNUC__
   observable::notify();

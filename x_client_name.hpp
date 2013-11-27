@@ -9,6 +9,7 @@
 
 class x_client_name : public x_event_handler_t
                     , public observer<x::xrm>
+                    , public observer<x_client>
                     , public observable<x_client_name>
 {
   public:
@@ -30,6 +31,7 @@ class x_client_name : public x_event_handler_t
     void make_title(void);
     bool handle(xcb_generic_event_t *);
     void notify(x::xrm *);
+    void notify(x_client *);
 
   private:
     x_connection & _c;
