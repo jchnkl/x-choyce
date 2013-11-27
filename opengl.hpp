@@ -149,6 +149,10 @@ class context {
       }
     }
 
+    context(const context & ctx) = delete;
+
+    context & operator=(const context &) = delete;
+
     const Drawable & drawable(void)
     {
       return m_drawable;
@@ -322,10 +326,6 @@ class context {
     std::unordered_map<unsigned int, GLXPixmap> m_pixmaps;
 
     std::unordered_map<std::string, std::pair<program_t, shader_t>> m_programs;
-
-    // private, to disallow copies
-    context(const context & ctx) : m_api(ctx.m_api) {}
-    context & operator=(const context &) { return *this; }
 
     // careful! A a can cause object copies!
     template<typename A, typename F, typename ... FS>
