@@ -58,8 +58,6 @@ x_client::handle(xcb_generic_event_t * ge)
 {
   auto update = [this](void)
   {
-    update_parent_window();
-    update_name_window_pixmap();
     observable::notify();
   };
 

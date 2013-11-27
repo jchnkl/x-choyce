@@ -35,6 +35,7 @@ class x_client : public x_event_handler_t
     bool handle(xcb_generic_event_t * ge);
     void update_geometry(void);
 
+    void update_parent_window(void);
     void update_name_window_pixmap(void);
 
   private:
@@ -51,7 +52,6 @@ class x_client : public x_event_handler_t
 
     void make_dummy(void);
     void update_net_wm_desktop(void);
-    void update_parent_window(void);
 };
 
 std::list<x_client>
