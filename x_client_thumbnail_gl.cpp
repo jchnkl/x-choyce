@@ -55,15 +55,15 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
 
   _gl_ctx.drawable(_thumbnail_window);
 
-  _gl_ctx.load("./normal.frag", "normal_shader");
-  _gl_ctx.load("./grayscale.frag", "grayscale_shader");
-
-  _gl_ctx.load(0, _x_client.name_window_pixmap(), 24);
-  _gl_ctx.load(1, _x_client_name.title(), 32);
-  _gl_ctx.load(2, _x_client_icon.icon(), 32);
-
   _gl_ctx.run([this](x::gl::context &)
   {
+    _gl_ctx.load("./normal.frag", "normal_shader");
+    _gl_ctx.load("./grayscale.frag", "grayscale_shader");
+
+    _gl_ctx.load(0, _x_client.name_window_pixmap(), 24);
+    _gl_ctx.load(1, _x_client_name.title(), 32);
+    _gl_ctx.load(2, _x_client_icon.icon(), 32);
+
     for (auto & t : { 0, 1, 2 }) {
       _gl_ctx.texture(t, [](const GLuint &)
       {
@@ -249,9 +249,9 @@ void
 x_client_thumbnail::update_title_pixmap(void)
 {
   _x_client_name.make_title();
-  _gl_ctx.load(1, _x_client_name.title(), 32);
-  _gl_ctx.run([](x::gl::context & ctx)
+  _gl_ctx.run([this](x::gl::context & ctx)
   {
+    ctx.load(1, _x_client_name.title(), 32);
     ctx.texture(1, [](const GLuint &)
     {
       glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -265,9 +265,9 @@ x_client_thumbnail::update_name_window_pixmap(void)
 {
   _x_client.update_parent_window();
   _x_client.update_name_window_pixmap();
-  _gl_ctx.load(0, _x_client.name_window_pixmap(), 24);
-  _gl_ctx.run([](x::gl::context & ctx)
+  _gl_ctx.run([this](x::gl::context & ctx)
   {
+    ctx.load(0, _x_client.name_window_pixmap(), 24);
     ctx.texture(0, [](const GLuint &)
     {
       glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
