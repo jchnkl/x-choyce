@@ -47,6 +47,8 @@ class api {
         glXGetProcAddress((const GLubyte *)"glGetProgramInfoLog");
       glGetShaderInfoLog = (PFNGLGETSHADERINFOLOGPROC)
         glXGetProcAddress((const GLubyte *)"glGetShaderInfoLog");
+      glGenerateMipmap = (PFNGLGENERATEMIPMAPPROC)
+        glXGetProcAddress((const GLubyte *)"glGenerateMipmap");
       glGenerateMipmapEXT = (PFNGLGENERATEMIPMAPEXTPROC)
         glXGetProcAddress((const GLubyte *)"glGenerateMipmapEXT");
       glActiveTextureEXT = (PFNGLACTIVETEXTUREPROC)
@@ -102,6 +104,7 @@ class api {
     PFNGLUSEPROGRAMPROC           glUseProgram            = 0;
     PFNGLGETPROGRAMINFOLOGPROC    glGetProgramInfoLog     = 0;
     PFNGLGETSHADERINFOLOGPROC     glGetShaderInfoLog      = 0;
+    PFNGLGENERATEMIPMAPPROC       glGenerateMipmap        = 0;
     PFNGLGENERATEMIPMAPEXTPROC    glGenerateMipmapEXT     = 0;
     PFNGLACTIVETEXTUREPROC        glActiveTextureEXT      = 0;
     PFNGLBLENDFUNCSEPARATEPROC    glBlendFuncSeparate     = 0;

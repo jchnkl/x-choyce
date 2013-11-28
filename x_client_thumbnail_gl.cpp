@@ -323,7 +323,7 @@ x_client_thumbnail::handle(xcb_generic_event_t * ge)
             _gl_api.glXBindTexImageEXT(_c.dpy(), p, GLX_FRONT_EXT, NULL);
           });
 
-          _gl_api.glGenerateMipmapEXT(GL_TEXTURE_2D);
+          _gl_api.glGenerateMipmap(GL_TEXTURE_2D);
         });
       }
 
@@ -393,7 +393,7 @@ x_client_thumbnail::configure_highlight(bool now)
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1);
       glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
       glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
-      _gl_api.glGenerateMipmapEXT(GL_TEXTURE_2D);
+      _gl_api.glGenerateMipmap(GL_TEXTURE_2D);
     });
 
   } else {
