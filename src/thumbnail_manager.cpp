@@ -23,7 +23,7 @@ thumbnail_manager::~thumbnail_manager(void)
 void
 thumbnail_manager::show(void)
 {
-  _active = true;
+  m_active = true;
 
   update();
 
@@ -39,7 +39,7 @@ thumbnail_manager::show(void)
 void
 thumbnail_manager::hide(void)
 {
-  _active = false;
+  m_active = false;
 
   for (auto & item : m_thumbnails) {
     item.second->hide();
@@ -125,7 +125,7 @@ thumbnail_manager::handle(xcb_generic_event_t * ge)
 {
   if (XCB_PROPERTY_NOTIFY == (ge->response_type & ~0x80)) {
     xcb_property_notify_event_t * e = (xcb_property_notify_event_t *)ge;
-    if (_active
+    if (m_active
         && e->window == m_c.root_window()
         && e->atom == m_c.intern_atom("_NET_CLIENT_LIST_STACKING"))
     {
@@ -140,7 +140,7 @@ thumbnail_manager::handle(xcb_generic_event_t * ge)
     return true;
 
   } else if (XCB_CONFIGURE_NOTIFY == (ge->response_type & ~0x80)) {
-    if (_active) {
+    if (m_active) {
       auto rects = m_layout->arrange(query_current_screen(), m_windows.size());
       for (size_t i = 0; i < m_windows.size(); ++i) {
         try {
@@ -208,7 +208,7 @@ thumbnail_manager::update(void)
 
     if (result == m_thumbnails.end()) {
       m_thumbnails[m_windows[i]] = m_factory->make(m_windows[i], rects[i]);
-      if (_active) {
+      if (m_active) {
         m_thumbnails[m_windows[i]]->show();
       }
     } else {

@@ -40,7 +40,7 @@ x_client_chooser::handle(xcb_generic_event_t * ge)
     if (e->detail == _action_keycode
         && (e->state == _action_modmask
           || e->state == (_action_modmask | XCB_MOD_MASK_SHIFT))) {
-      if (_active) {
+      if (m_active) {
         if (e->state == _action_modmask) {
           _chooser->next();
         } else {
@@ -48,7 +48,7 @@ x_client_chooser::handle(xcb_generic_event_t * ge)
         }
 
       } else {
-        _active = true;
+        m_active = true;
         _last_motion = XCB_NONE;
         m_c.grab_keyboard();
         m_c.grab_pointer(m_c.root_window(),
@@ -125,7 +125,7 @@ x_client_chooser::notify(x::xrm *)
 void
 x_client_chooser::quit(void)
 {
-  _active = false;
+  m_active = false;
   m_c.ungrab_pointer();
   m_c.ungrab_keyboard();
   _chooser->hide();
