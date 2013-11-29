@@ -12,7 +12,7 @@ x_client_icon::x_client_icon(x_connection & c, x_client & x_client)
   m_c.update_input(m_x_client.window(), XCB_EVENT_MASK_PROPERTY_CHANGE);
 
   update_net_wm_icon();
-  if (_net_wm_icon == XCB_NONE) {
+  if (m_net_wm_icon == XCB_NONE) {
     update_wm_hints_icon();
   }
 }
@@ -20,8 +20,8 @@ x_client_icon::x_client_icon(x_connection & c, x_client & x_client)
 x_client_icon::~x_client_icon(void)
 {
   m_c.detach(XCB_PROPERTY_NOTIFY, this);
-  xcb_free_pixmap(m_c(), _net_wm_icon);
-  xcb_free_pixmap(m_c(), _wm_hints_icon);
+  xcb_free_pixmap(m_c(), m_net_wm_icon);
+  xcb_free_pixmap(m_c(), m_wm_hints_icon);
 }
 
 bool
@@ -33,10 +33,10 @@ x_client_icon::handle(xcb_generic_event_t * ge)
     if (e->window != m_x_client.window()) {
       return true;
 
-    } else if (e->atom == _a_wm_hints) {
+    } else if (e->atom == m_a_wm_hints) {
       update_wm_hints_icon();
 
-    } else if (e->atom == _a_net_wm_icon) {
+    } else if (e->atom == m_a_net_wm_icon) {
       update_net_wm_icon();
 
     }
@@ -52,8 +52,8 @@ x_client_icon::handle(xcb_generic_event_t * ge)
 void
 x_client_icon::update_net_wm_icon(void)
 {
-  xcb_free_pixmap(m_c(), _net_wm_icon);
-  _net_wm_icon = XCB_NONE;
+  xcb_free_pixmap(m_c(), m_net_wm_icon);
+  m_net_wm_icon = XCB_NONE;
 
   xcb_generic_error_t * error;
   xcb_get_property_cookie_t c =
@@ -84,9 +84,9 @@ x_client_icon::update_net_wm_icon(void)
     _icon_geometry.first = width;
     _icon_geometry.second = height;
 
-    _net_wm_icon = xcb_generate_id(m_c());
+    m_net_wm_icon = xcb_generate_id(m_c());
     xcb_create_pixmap(
-        m_c(), 32, _net_wm_icon, m_c.root_window(), width, height);
+        m_c(), 32, m_net_wm_icon, m_c.root_window(), width, height);
 
     xcb_image_t * image = xcb_image_create_native(
         m_c(), width, height, XCB_IMAGE_FORMAT_Z_PIXMAP, 32, NULL, 0, NULL);
@@ -96,9 +96,9 @@ x_client_icon::update_net_wm_icon(void)
     alpha_transform(image->data, width, height);
 
     xcb_gcontext_t gc = xcb_generate_id(m_c());
-    xcb_create_gc(m_c(), gc, _net_wm_icon, 0, NULL);
+    xcb_create_gc(m_c(), gc, m_net_wm_icon, 0, NULL);
 
-    xcb_image_put(m_c(), _net_wm_icon, gc, image, 0, 0, 0);
+    xcb_image_put(m_c(), m_net_wm_icon, gc, image, 0, 0, 0);
 
     xcb_image_destroy(image);
     xcb_free_gc(m_c(), gc);
@@ -110,8 +110,8 @@ x_client_icon::update_net_wm_icon(void)
 void
 x_client_icon::update_wm_hints_icon(void)
 {
-  xcb_free_pixmap(m_c(), _wm_hints_icon);
-  _wm_hints_icon = XCB_NONE;
+  xcb_free_pixmap(m_c(), m_wm_hints_icon);
+  m_wm_hints_icon = XCB_NONE;
 
   xcb_generic_error_t * error;
 
@@ -176,14 +176,14 @@ x_client_icon::update_wm_hints_icon(void)
         }
       }
 
-      _wm_hints_icon = xcb_generate_id(m_c());
+      m_wm_hints_icon = xcb_generate_id(m_c());
       xcb_create_pixmap(
-          m_c(), 32, _wm_hints_icon, m_c.root_window(), width, height);
+          m_c(), 32, m_wm_hints_icon, m_c.root_window(), width, height);
 
       xcb_gcontext_t gc = xcb_generate_id(m_c());
-      xcb_create_gc(m_c(), gc, _wm_hints_icon, 0, NULL);
+      xcb_create_gc(m_c(), gc, m_wm_hints_icon, 0, NULL);
 
-      xcb_image_put(m_c(), _wm_hints_icon, gc, icon_rgba, 0, 0, 0);
+      xcb_image_put(m_c(), m_wm_hints_icon, gc, icon_rgba, 0, 0, 0);
 
       xcb_image_destroy(icon_rgb);
       xcb_image_destroy(icon_mask);
