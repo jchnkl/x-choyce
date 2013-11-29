@@ -79,7 +79,7 @@ class x_client_thumbnail : public x_event_handler_t
     x_client_icon m_x_client_icon;
     x_client_name m_x_client_name;
 
-    double _scale;
+    double m_scale;
     double _icon_scale_x;
     double _icon_scale_y;
     double _title_scale_x;

@@ -47,7 +47,7 @@ class x_client_thumbnail : public x_event_handler_t
     x_connection & m_c;
     x_client_ptr m_x_client;
 
-    double _scale;
+    double m_scale;
     rectangle m_rectangle;
 
     xcb_window_t _thumbnail_window;

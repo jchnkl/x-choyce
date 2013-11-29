@@ -148,12 +148,12 @@ x_client_thumbnail::update(const rectangle & r)
 {
   _configure_thumbnail = true;
 
-  _scale = std::min((double)r.width() / m_x_client.rect().width(),
+  m_scale = std::min((double)r.width() / m_x_client.rect().width(),
                     (double)r.height() / m_x_client.rect().height());
-  _scale = std::min(1.0, _scale);
+  m_scale = std::min(1.0, m_scale);
 
-  m_rectangle.width() = m_x_client.rect().width() * _scale;
-  m_rectangle.height() = m_x_client.rect().height() * _scale;
+  m_rectangle.width() = m_x_client.rect().width() * m_scale;
+  m_rectangle.height() = m_x_client.rect().height() * m_scale;
 
   m_rectangle.x() = r.x() + (r.width() - m_rectangle.width()) / 2;
   m_rectangle.y() = r.y() + (r.height() - m_rectangle.height()) / 2;
@@ -327,8 +327,8 @@ x_client_thumbnail::handle(xcb_generic_event_t * ge)
         });
       }
 
-      update(e->area.x * _scale, e->area.y * _scale,
-             e->area.width * _scale, e->area.height * _scale);
+      update(e->area.x * m_scale, e->area.y * m_scale,
+             e->area.width * m_scale, e->area.height * m_scale);
     });
 
     result = true;
@@ -438,16 +438,16 @@ x_client_thumbnail::configure_thumbnail_window(bool now)
   xcb_xfixes_destroy_region(m_c(), region);
 
   double ar = (double)m_rectangle.width() / m_rectangle.height();
-  unsigned int width_cutoff = std::ceil(10.0 * ar * _scale) ;
-  unsigned int height_cutoff = std::ceil(10.0 * (1.0/ar) * _scale);
+  unsigned int width_cutoff = std::ceil(10.0 * ar * m_scale) ;
+  unsigned int height_cutoff = std::ceil(10.0 * (1.0/ar) * m_scale);
   for (int i = 0; i < nrects; ++i) {
-    rects[i].x *= _scale;
-    rects[i].y *= _scale;
+    rects[i].x *= m_scale;
+    rects[i].y *= m_scale;
     if (rects[i].width > width_cutoff) {
-      rects[i].width = std::round(_scale * (double)rects[i].width);
+      rects[i].width = std::round(m_scale * (double)rects[i].width);
     }
     if (rects[i].height > height_cutoff) {
-      rects[i].height = std::round(_scale * (double)rects[i].height);
+      rects[i].height = std::round(m_scale * (double)rects[i].height);
     }
   }
 

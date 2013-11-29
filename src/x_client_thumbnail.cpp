@@ -113,8 +113,8 @@ x_client_thumbnail::handle(xcb_generic_event_t * ge)
   if (m_c.damage_event_id() == (ge->response_type & ~0x80)) {
     xcb_damage_notify_event_t * e = (xcb_damage_notify_event_t *)ge;
     xcb_damage_subtract(m_c(), e->damage, XCB_NONE, XCB_NONE);
-    update(e->area.x * _scale, e->area.y * _scale,
-           e->area.width * _scale, e->area.height * _scale);
+    update(e->area.x * m_scale, e->area.y * m_scale,
+           e->area.width * m_scale, e->area.height * m_scale);
     return true;
   }
 
@@ -124,13 +124,13 @@ x_client_thumbnail::handle(xcb_generic_event_t * ge)
 void
 x_client_thumbnail::update_rectangle(const rectangle & rect)
 {
-  _scale = std::min((double)rect.width() / m_x_client->rect().width(),
+  m_scale = std::min((double)rect.width() / m_x_client->rect().width(),
                     (double)rect.height() / m_x_client->rect().height());
 
   m_rectangle.x() = rect.x();
   m_rectangle.y() = rect.y();
-  m_rectangle.width() = m_x_client->rect().width() * _scale;
-  m_rectangle.height() = m_x_client->rect().height() * _scale;
+  m_rectangle.width() = m_x_client->rect().width() * m_scale;
+  m_rectangle.height() = m_x_client->rect().height() * m_scale;
 }
 
 void
@@ -156,7 +156,7 @@ x_client_thumbnail::configure_thumbnail_picture(void)
   xcb_render_transform_t transform_matrix = {
       DOUBLE_TO_FIXED(1), DOUBLE_TO_FIXED(0), DOUBLE_TO_FIXED(    0)
     , DOUBLE_TO_FIXED(0), DOUBLE_TO_FIXED(1), DOUBLE_TO_FIXED(    0)
-    , DOUBLE_TO_FIXED(0), DOUBLE_TO_FIXED(0), DOUBLE_TO_FIXED(_scale)
+    , DOUBLE_TO_FIXED(0), DOUBLE_TO_FIXED(0), DOUBLE_TO_FIXED(m_scale)
     };
 
   xcb_render_set_picture_transform(m_c(), m_window_picture, transform_matrix);
