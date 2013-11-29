@@ -28,7 +28,7 @@ class x_client_chooser : public x_event_handler_t
     x_connection & m_c;
     x::xrm & m_xrm;
     chooser_t * m_chooser;
-    x_connection::modifier_map _modifier_map;
+    x_connection::modifier_map m_modifier_map;
 
     // necessary for {un,}grabbing
     xcb_keysym_t m_action_keysym = XCB_NONE;

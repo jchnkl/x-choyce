@@ -15,7 +15,7 @@ x_client_chooser::x_client_chooser(x_connection & c,
   m_c.attach(0, XCB_MOTION_NOTIFY, this);
   m_xrm.attach(this);
   load_config();
-  _modifier_map = m_c.modifier_mapping();
+  m_modifier_map = m_c.modifier_mapping();
 }
 
 x_client_chooser::~x_client_chooser(void)
@@ -79,7 +79,7 @@ x_client_chooser::handle(xcb_generic_event_t * ge)
     if (m_ignore_release) return result;
 
     xcb_key_release_event_t * e = (xcb_key_release_event_t *)ge;
-    for (auto & item : _modifier_map) {
+    for (auto & item : m_modifier_map) {
       if (item.first == XCB_MOD_MASK_SHIFT) continue;
 
       for (auto & keycode : item.second) {
