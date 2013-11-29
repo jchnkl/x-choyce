@@ -39,7 +39,7 @@ class thumbnail_manager : public chooser_t
     typedef const_cyclic_iterator<window_list_t> window_cyclic_iterator;
 
     x_connection & m_c;
-    const layout_t * _layout;
+    const layout_t * m_layout;
     const thumbnail_t::factory * _factory;
 
     window_cyclic_iterator _cyclic_iterator;

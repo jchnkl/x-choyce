@@ -7,7 +7,7 @@
 thumbnail_manager::thumbnail_manager(x_connection & c,
                                      const layout_t * layout,
                                      const thumbnail_t::factory * factory)
-  : m_c(c), _layout(layout), _factory(factory)
+  : m_c(c), m_layout(layout), _factory(factory)
 {
   m_c.attach(0, XCB_PROPERTY_NOTIFY, this);
   m_c.attach(20, XCB_CONFIGURE_NOTIFY, this);
@@ -141,7 +141,7 @@ thumbnail_manager::handle(xcb_generic_event_t * ge)
 
   } else if (XCB_CONFIGURE_NOTIFY == (ge->response_type & ~0x80)) {
     if (_active) {
-      auto rects = _layout->arrange(query_current_screen(), _windows.size());
+      auto rects = m_layout->arrange(query_current_screen(), _windows.size());
       for (size_t i = 0; i < _windows.size(); ++i) {
         try {
           _thumbnails.at(_windows[i])->update(rects[i]).update();
@@ -192,7 +192,7 @@ inline void
 thumbnail_manager::update(void)
 {
   _windows = m_c.net_client_list_stacking();
-  auto rects = _layout->arrange(query_current_screen(), _windows.size());
+  auto rects = m_layout->arrange(query_current_screen(), _windows.size());
 
   for (auto item = _thumbnails.begin(); item != _thumbnails.end(); ) {
     auto result = std::find(_windows.begin(), _windows.end(), item->first);
