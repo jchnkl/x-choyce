@@ -27,9 +27,9 @@ class cyclic_iterator {
     bool operator!=(const self_type & rhs);
     bool is_valid(void);
   private:
-    bool _valid;
-    T * _container;
-    typename T::iterator _iterator;
+    bool m_valid;
+    T * m_container;
+    typename T::iterator m_iterator;
 };
 
 template<typename T>
@@ -57,9 +57,9 @@ class const_cyclic_iterator {
     bool operator!=(const self_type & rhs);
     bool is_valid(void);
   private:
-    bool _valid;
-    const T * _container;
-    typename T::const_iterator _iterator;
+    bool m_valid;
+    const T * m_container;
+    typename T::const_iterator m_iterator;
 };
 
 #include "cyclic_iterator.cpp"

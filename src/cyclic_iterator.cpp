@@ -4,38 +4,38 @@
 #include "cyclic_iterator.hpp"
 
 template<typename T>
-cyclic_iterator<T>::cyclic_iterator(void) : _valid(false) {}
+cyclic_iterator<T>::cyclic_iterator(void) : m_valid(false) {}
 
 template<typename T>
 cyclic_iterator<T>::cyclic_iterator(T * container)
-  : _valid(true), _container(container)
+  : m_valid(true), m_container(container)
 {
-  _iterator = _container->begin();
+  m_iterator = m_container->begin();
 }
 
 template<typename T>
 cyclic_iterator<T>::cyclic_iterator(const self_type & rhs)
-  : _valid(rhs._valid), _container(rhs._container), _iterator(rhs._iterator) {}
+  : m_valid(rhs.m_valid), m_container(rhs.m_container), m_iterator(rhs.m_iterator) {}
 
   template<typename T> typename cyclic_iterator<T>::self_type
 cyclic_iterator<T>::operator=(const self_type & rhs)
 {
-  _valid = rhs._valid;
-  _container = rhs._container;
-  _iterator = rhs._iterator;
+  m_valid = rhs.m_valid;
+  m_container = rhs.m_container;
+  m_iterator = rhs.m_iterator;
   return *this;
 }
 
   template<typename T> typename cyclic_iterator<T>::reference
 cyclic_iterator<T>::operator*(void)
 {
-  return *_iterator;
+  return *m_iterator;
 }
 
   template<typename T> typename cyclic_iterator<T>::pointer
 cyclic_iterator<T>::operator->(void)
 {
-  return &(*_iterator);
+  return &(*m_iterator);
 }
 
   template<typename T> typename cyclic_iterator<T>::self_type
@@ -59,13 +59,13 @@ cyclic_iterator<T>::operator+=(int n)
 {
   if (n != 0) {
 
-    int distance = (_container->end() - _iterator) - 1;
-    n %= _container->size();
+    int distance = (m_container->end() - m_iterator) - 1;
+    n %= m_container->size();
 
     if (n <= distance) {
-      _iterator += n;
+      m_iterator += n;
     } else {
-      _iterator = _container->begin() + (n - 1 - distance);
+      m_iterator = m_container->begin() + (n - 1 - distance);
     }
 
   }
@@ -78,13 +78,13 @@ cyclic_iterator<T>::operator-=(int n)
 {
   if (n != 0) {
 
-    int distance = _iterator - _container->begin();
-    n %= (_container->size() + 0);
+    int distance = m_iterator - m_container->begin();
+    n %= (m_container->size() + 0);
 
     if (n <= distance) {
-      _iterator -= n;
+      m_iterator -= n;
     } else {
-      _iterator = _container->end() - (n - distance);
+      m_iterator = m_container->end() - (n - distance);
     }
 
   }
@@ -96,10 +96,10 @@ cyclic_iterator<T>::operator-=(int n)
   template<typename T> typename cyclic_iterator<T>::self_type &
 cyclic_iterator<T>::operator++(void)
 {
-  if (_valid) {
-    ++_iterator;
-    if (_iterator == _container->end()) {
-      _iterator = _container->begin();
+  if (m_valid) {
+    ++m_iterator;
+    if (m_iterator == m_container->end()) {
+      m_iterator = m_container->begin();
     }
   }
   return *this;
@@ -118,11 +118,11 @@ cyclic_iterator<T>::operator++(int)
   template<typename T> typename cyclic_iterator<T>::self_type &
 cyclic_iterator<T>::operator--(void)
 {
-  if (_valid) {
-    if (_iterator == _container->begin()) {
-      _iterator = _container->end();
+  if (m_valid) {
+    if (m_iterator == m_container->begin()) {
+      m_iterator = m_container->end();
     }
-    --_iterator;
+    --m_iterator;
   }
   return *this;
 }
@@ -139,7 +139,7 @@ cyclic_iterator<T>::operator--(int)
   template<typename T> bool
 cyclic_iterator<T>::operator==(const self_type & rhs)
 {
-  return _iterator == rhs._iterator;
+  return m_iterator == rhs.m_iterator;
 }
 
   template<typename T> bool
@@ -151,44 +151,44 @@ cyclic_iterator<T>::operator!=(const self_type & rhs)
   template<typename T> bool
 cyclic_iterator<T>::is_valid(void)
 {
-  return _valid;
+  return m_valid;
 }
 
 // const_cyclic_iterator
 
 template<typename T>
-const_cyclic_iterator<T>::const_cyclic_iterator(void) : _valid(false) {}
+const_cyclic_iterator<T>::const_cyclic_iterator(void) : m_valid(false) {}
 
 template<typename T>
 const_cyclic_iterator<T>::const_cyclic_iterator(const T * container)
-  : _valid(true), _container(container)
+  : m_valid(true), m_container(container)
 {
-  _iterator = _container->begin();
+  m_iterator = m_container->begin();
 }
 
 template<typename T>
 const_cyclic_iterator<T>::const_cyclic_iterator(const self_type & rhs)
-  : _valid(rhs._valid), _container(rhs._container), _iterator(rhs._iterator) {}
+  : m_valid(rhs.m_valid), m_container(rhs.m_container), m_iterator(rhs.m_iterator) {}
 
   template<typename T> typename const_cyclic_iterator<T>::self_type
 const_cyclic_iterator<T>::operator=(const self_type & rhs)
 {
-  _valid = rhs._valid;
-  _container = rhs._container;
-  _iterator = rhs._iterator;
+  m_valid = rhs.m_valid;
+  m_container = rhs.m_container;
+  m_iterator = rhs.m_iterator;
   return *this;
 }
 
   template<typename T> typename const_cyclic_iterator<T>::reference
 const_cyclic_iterator<T>::operator*(void)
 {
-  return *_iterator;
+  return *m_iterator;
 }
 
   template<typename T> typename const_cyclic_iterator<T>::pointer
 const_cyclic_iterator<T>::operator->(void)
 {
-  return &(*_iterator);
+  return &(*m_iterator);
 }
 
   template<typename T> typename const_cyclic_iterator<T>::self_type
@@ -212,13 +212,13 @@ const_cyclic_iterator<T>::operator+=(int n)
 {
   if (n != 0) {
 
-    int distance = (_container->end() - _iterator) - 1;
-    n %= _container->size();
+    int distance = (m_container->end() - m_iterator) - 1;
+    n %= m_container->size();
 
     if (n <= distance) {
-      _iterator += n;
+      m_iterator += n;
     } else {
-      _iterator = _container->begin() + (n - 1 - distance);
+      m_iterator = m_container->begin() + (n - 1 - distance);
     }
 
   }
@@ -231,13 +231,13 @@ const_cyclic_iterator<T>::operator-=(int n)
 {
   if (n != 0) {
 
-    int distance = _iterator - _container->begin();
-    n %= (_container->size() + 0);
+    int distance = m_iterator - m_container->begin();
+    n %= (m_container->size() + 0);
 
     if (n <= distance) {
-      _iterator -= n;
+      m_iterator -= n;
     } else {
-      _iterator = _container->end() - (n - distance);
+      m_iterator = m_container->end() - (n - distance);
     }
 
   }
@@ -249,10 +249,10 @@ const_cyclic_iterator<T>::operator-=(int n)
   template<typename T> typename const_cyclic_iterator<T>::self_type &
 const_cyclic_iterator<T>::operator++(void)
 {
-  if (_valid) {
-    ++_iterator;
-    if (_iterator == _container->end()) {
-      _iterator = _container->begin();
+  if (m_valid) {
+    ++m_iterator;
+    if (m_iterator == m_container->end()) {
+      m_iterator = m_container->begin();
     }
   }
   return *this;
@@ -271,11 +271,11 @@ const_cyclic_iterator<T>::operator++(int)
   template<typename T> typename const_cyclic_iterator<T>::self_type &
 const_cyclic_iterator<T>::operator--(void)
 {
-  if (_valid) {
-    if (_iterator == _container->begin()) {
-      _iterator = _container->end();
+  if (m_valid) {
+    if (m_iterator == m_container->begin()) {
+      m_iterator = m_container->end();
     }
-    --_iterator;
+    --m_iterator;
   }
   return *this;
 }
@@ -292,7 +292,7 @@ const_cyclic_iterator<T>::operator--(int)
   template<typename T> bool
 const_cyclic_iterator<T>::operator==(const self_type & rhs)
 {
-  return _iterator == rhs._iterator;
+  return m_iterator == rhs.m_iterator;
 }
 
   template<typename T> bool
@@ -304,7 +304,7 @@ const_cyclic_iterator<T>::operator!=(const self_type & rhs)
   template<typename T> bool
 const_cyclic_iterator<T>::is_valid(void)
 {
-  return _valid;
+  return m_valid;
 }
 
 #endif
