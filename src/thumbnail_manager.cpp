@@ -27,7 +27,7 @@ thumbnail_manager::show(void)
 
   update();
 
-  m_cyclic_iterator = window_cyclic_iterator(&_windows);
+  m_cyclic_iterator = window_cyclic_iterator(&m_windows);
   _next_window = *(m_cyclic_iterator + 1);
   _current_window = *m_cyclic_iterator;
 
@@ -141,10 +141,10 @@ thumbnail_manager::handle(xcb_generic_event_t * ge)
 
   } else if (XCB_CONFIGURE_NOTIFY == (ge->response_type & ~0x80)) {
     if (_active) {
-      auto rects = m_layout->arrange(query_current_screen(), _windows.size());
-      for (size_t i = 0; i < _windows.size(); ++i) {
+      auto rects = m_layout->arrange(query_current_screen(), m_windows.size());
+      for (size_t i = 0; i < m_windows.size(); ++i) {
         try {
-          _thumbnails.at(_windows[i])->update(rects[i]).update();
+          _thumbnails.at(m_windows[i])->update(rects[i]).update();
         } catch (...) {}
       }
     }
@@ -159,10 +159,10 @@ inline void
 thumbnail_manager::reset(void)
 {
   bool found = false;
-  m_cyclic_iterator = window_cyclic_iterator(&_windows);
+  m_cyclic_iterator = window_cyclic_iterator(&m_windows);
 
   // search for current thumbnail
-  for (std::size_t i = 0; i < _windows.size(); ++i) {
+  for (std::size_t i = 0; i < m_windows.size(); ++i) {
     if (*m_cyclic_iterator == _current_window) {
       found = true;
       break;
@@ -173,9 +173,9 @@ thumbnail_manager::reset(void)
 
   // search for next thumbnail if current was not found
   if (! found) {
-    m_cyclic_iterator = window_cyclic_iterator(&_windows);
+    m_cyclic_iterator = window_cyclic_iterator(&m_windows);
 
-    for (std::size_t i = 0; i < _windows.size(); ++i) {
+    for (std::size_t i = 0; i < m_windows.size(); ++i) {
       if (*m_cyclic_iterator == _next_window) {
         break;
       } else {
@@ -191,25 +191,25 @@ thumbnail_manager::reset(void)
 inline void
 thumbnail_manager::update(void)
 {
-  _windows = m_c.net_client_list_stacking();
-  auto rects = m_layout->arrange(query_current_screen(), _windows.size());
+  m_windows = m_c.net_client_list_stacking();
+  auto rects = m_layout->arrange(query_current_screen(), m_windows.size());
 
   for (auto item = _thumbnails.begin(); item != _thumbnails.end(); ) {
-    auto result = std::find(_windows.begin(), _windows.end(), item->first);
-    if (result == _windows.end()) {
+    auto result = std::find(m_windows.begin(), m_windows.end(), item->first);
+    if (result == m_windows.end()) {
       item = _thumbnails.erase(item);
     } else {
       ++item;
     }
   }
 
-  for (size_t i = 0; i < _windows.size(); ++i) {
-    auto result = _thumbnails.find(_windows[i]);
+  for (size_t i = 0; i < m_windows.size(); ++i) {
+    auto result = _thumbnails.find(m_windows[i]);
 
-    if (result == _thumbnails.end()) {
-      _thumbnails[_windows[i]] = m_factory->make(_windows[i], rects[i]);
+    if (result == m_thumbnails.end()) {
+      m_thumbnails[m_windows[i]] = m_factory->make(m_windows[i], rects[i]);
       if (_active) {
-        _thumbnails[_windows[i]]->show();
+        m_thumbnails[m_windows[i]]->show();
       }
     } else {
       result->second->highlight(false).update(rects[i]);
