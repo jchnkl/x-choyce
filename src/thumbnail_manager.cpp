@@ -28,7 +28,7 @@ thumbnail_manager::show(void)
   update();
 
   m_cyclic_iterator = window_cyclic_iterator(&m_windows);
-  _next_window = *(m_cyclic_iterator + 1);
+  m_next_window = *(m_cyclic_iterator + 1);
   _current_window = *m_cyclic_iterator;
 
   for (auto & item : m_thumbnails) {
@@ -79,7 +79,7 @@ thumbnail_manager::highlight(const unsigned int & window)
         m_thumbnails.at(_current_window)->highlight(false).update();
         item.second->highlight(true).update();
         while (*m_cyclic_iterator != item.first) ++m_cyclic_iterator;
-        _next_window = *(m_cyclic_iterator + 1);
+        m_next_window = *(m_cyclic_iterator + 1);
         _current_window = *m_cyclic_iterator;
       } catch (...) {}
 
@@ -176,7 +176,7 @@ thumbnail_manager::reset(void)
     m_cyclic_iterator = window_cyclic_iterator(&m_windows);
 
     for (std::size_t i = 0; i < m_windows.size(); ++i) {
-      if (*m_cyclic_iterator == _next_window) {
+      if (*m_cyclic_iterator == m_next_window) {
         break;
       } else {
         ++m_cyclic_iterator;
@@ -184,7 +184,7 @@ thumbnail_manager::reset(void)
     }
   }
 
-  _next_window = *(m_cyclic_iterator + 1);
+  m_next_window = *(m_cyclic_iterator + 1);
   _current_window = *m_cyclic_iterator;
 }
 
@@ -226,7 +226,7 @@ thumbnail_manager::next_or_prev(bool next)
     m_thumbnails.at(*m_cyclic_iterator)->highlight(true).update();
   } catch (...) {}
 
-  _next_window = *(m_cyclic_iterator + 1);
+  m_next_window = *(m_cyclic_iterator + 1);
   _current_window = *m_cyclic_iterator;
 }
 
