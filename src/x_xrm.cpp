@@ -6,9 +6,9 @@ using namespace x;
 
 xrm::xrm(x_connection & c,
          const std::string & name,
-         const std::string & _class,
+         const std::string & m_class,
          const options & options)
-  : m_c(c), m_name(name), m_class(_class), m_options(options)
+  : m_c(c), m_name(name), m_class(m_class), m_options(options)
 {
   m_c.attach(0, XCB_PROPERTY_NOTIFY, this);
   XrmInitialize();

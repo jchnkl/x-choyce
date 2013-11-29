@@ -32,7 +32,7 @@ class xrm : public x_event_handler_t
 
     xrm(x_connection & c,
         const std::string & name,
-        const std::string & _class,
+        const std::string & m_class,
         const options & options);
 
     ~xrm(void);
