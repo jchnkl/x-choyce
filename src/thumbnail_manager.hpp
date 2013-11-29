@@ -40,7 +40,7 @@ class thumbnail_manager : public chooser_t
 
     x_connection & m_c;
     const layout_t * m_layout;
-    const thumbnail_t::factory * _factory;
+    const thumbnail_t::factory * m_factory;
 
     window_cyclic_iterator _cyclic_iterator;
 

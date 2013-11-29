@@ -7,7 +7,7 @@
 thumbnail_manager::thumbnail_manager(x_connection & c,
                                      const layout_t * layout,
                                      const thumbnail_t::factory * factory)
-  : m_c(c), m_layout(layout), _factory(factory)
+  : m_c(c), m_layout(layout), m_factory(factory)
 {
   m_c.attach(0, XCB_PROPERTY_NOTIFY, this);
   m_c.attach(20, XCB_CONFIGURE_NOTIFY, this);
@@ -207,7 +207,7 @@ thumbnail_manager::update(void)
     auto result = _thumbnails.find(_windows[i]);
 
     if (result == _thumbnails.end()) {
-      _thumbnails[_windows[i]] = _factory->make(_windows[i], rects[i]);
+      _thumbnails[_windows[i]] = m_factory->make(_windows[i], rects[i]);
       if (_active) {
         _thumbnails[_windows[i]]->show();
       }
