@@ -9,11 +9,11 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
                                        const x::gl::api & api,
                                        const rectangle & rect,
                                        const xcb_window_t & window)
-  : m_c(c), _xrm(xrm), _gl_api(api)
+  : m_c(c), m_xrm(xrm), _gl_api(api)
   , _gl_ctx(api, m_c.dpy(), m_c.screen_number())
   , _x_client(m_c, window)
   , _x_client_icon(m_c, _x_client)
-  , _x_client_name(m_c, _xrm, _x_client)
+  , _x_client_name(m_c, m_xrm, _x_client)
 {
   load_config();
   update(rect);
@@ -22,7 +22,7 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
 
   m_c.attach(0, m_c.damage_event_id(), this);
 
-  _xrm.attach(this);
+  m_xrm.attach(this);
   _x_client.attach(this);
   _x_client_name.attach(this);
 
@@ -81,7 +81,7 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
 x_client_thumbnail::~x_client_thumbnail(void)
 {
   m_c.detach(m_c.damage_event_id(), this);
-  _xrm.detach(this);
+  m_xrm.detach(this);
   _x_client.detach(this);
   _x_client_name.detach(this);
   xcb_damage_destroy(m_c(), _damage);
@@ -475,19 +475,19 @@ x_client_thumbnail::configure_thumbnail_window(bool now)
 void
 x_client_thumbnail::load_config(void)
 {
-  _icon_size    = _xrm["iconsize"].v.num;
-  _border_width = _xrm["borderwidth"].v.num;
+  _icon_size    = m_xrm["iconsize"].v.num;
+  _border_width = m_xrm["borderwidth"].v.num;
 
   // #xxxxxx: r: [1,2]; g: [3,4], b: [5,6]
   // 0123456
-  auto fa = _xrm["focusedalpha"].v.dbl;
-  auto fc = _xrm["focusedcolor"].v.str;
+  auto fa = m_xrm["focusedalpha"].v.dbl;
+  auto fc = m_xrm["focusedcolor"].v.str;
   auto fr = std::strtol(fc->substr(1,2).c_str(), NULL, 16) / (double)0xff;
   auto fg = std::strtol(fc->substr(3,2).c_str(), NULL, 16) / (double)0xff;
   auto fb = std::strtol(fc->substr(5,2).c_str(), NULL, 16) / (double)0xff;
 
-  auto ua = _xrm["unfocusedalpha"].v.dbl;
-  auto uc = _xrm["unfocusedcolor"].v.str;
+  auto ua = m_xrm["unfocusedalpha"].v.dbl;
+  auto uc = m_xrm["unfocusedcolor"].v.str;
   auto ur = std::strtol(uc->substr(1,2).c_str(), NULL, 16) / (double)0xff;
   auto ug = std::strtol(uc->substr(3,2).c_str(), NULL, 16) / (double)0xff;
   auto ub = std::strtol(uc->substr(5,2).c_str(), NULL, 16) / (double)0xff;
@@ -507,12 +507,12 @@ bool operator==(const xcb_window_t & window, const x_client_thumbnail & thumbnai
 }
 
 x_client_thumbnail::factory::factory(x_connection & c, x::xrm & xrm)
-  : m_c(c), _xrm(xrm)
+  : m_c(c), m_xrm(xrm)
 {}
 
 thumbnail_t::ptr
 x_client_thumbnail::factory::
 make(const xcb_window_t & w, const rectangle & r) const
 {
-  return thumbnail_t::ptr(new x_client_thumbnail(m_c, _xrm, _gl_api, r, w));
+  return thumbnail_t::ptr(new x_client_thumbnail(m_c, m_xrm, _gl_api, r, w));
 }

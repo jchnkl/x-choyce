@@ -7,13 +7,13 @@
 x_client_chooser::x_client_chooser(x_connection & c,
                                    x::xrm & xrm,
                                    chooser_t * chooser)
-  : m_c(c), _xrm(xrm), _chooser(chooser)
+  : m_c(c), m_xrm(xrm), _chooser(chooser)
 {
   m_c.attach(0, XCB_KEY_PRESS, this);
   m_c.attach(0, XCB_KEY_RELEASE, this);
   m_c.attach(0, XCB_BUTTON_PRESS, this);
   m_c.attach(0, XCB_MOTION_NOTIFY, this);
-  _xrm.attach(this);
+  m_xrm.attach(this);
   load_config();
   _modifier_map = m_c.modifier_mapping();
 }
@@ -24,7 +24,7 @@ x_client_chooser::~x_client_chooser(void)
   m_c.detach(XCB_KEY_RELEASE, this);
   m_c.detach(XCB_BUTTON_PRESS, this);
   m_c.detach(XCB_MOTION_NOTIFY, this);
-  _xrm.detach(this);
+  m_xrm.detach(this);
 }
 
 bool
@@ -137,21 +137,21 @@ x_client_chooser::load_config(void)
   m_c.ungrab_key(_action_modmask, _action_keysym);
 
   _north_keycode =
-    m_c.keysym_to_keycode(XStringToKeysym(_xrm["north"].v.str->c_str()));
+    m_c.keysym_to_keycode(XStringToKeysym(m_xrm["north"].v.str->c_str()));
   _south_keycode =
-    m_c.keysym_to_keycode(XStringToKeysym(_xrm["south"].v.str->c_str()));
+    m_c.keysym_to_keycode(XStringToKeysym(m_xrm["south"].v.str->c_str()));
   _east_keycode =
-    m_c.keysym_to_keycode(XStringToKeysym(_xrm["east"].v.str->c_str()));
+    m_c.keysym_to_keycode(XStringToKeysym(m_xrm["east"].v.str->c_str()));
   _west_keycode =
-    m_c.keysym_to_keycode(XStringToKeysym(_xrm["west"].v.str->c_str()));
+    m_c.keysym_to_keycode(XStringToKeysym(m_xrm["west"].v.str->c_str()));
   _quit_keycode =
-    m_c.keysym_to_keycode(XStringToKeysym(_xrm["escape"].v.str->c_str()));
+    m_c.keysym_to_keycode(XStringToKeysym(m_xrm["escape"].v.str->c_str()));
 
-  _action_keysym = XStringToKeysym(_xrm["action"].v.str->c_str());
+  _action_keysym = XStringToKeysym(m_xrm["action"].v.str->c_str());
   _action_keycode = m_c.keysym_to_keycode(_action_keysym);
 
   int mask = 0;
-  std::stringstream ss(*_xrm["mod"].v.str);
+  std::stringstream ss(*m_xrm["mod"].v.str);
   std::string m;
   while (std::getline(ss, m, '+')) {
 

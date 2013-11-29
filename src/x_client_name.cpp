@@ -6,12 +6,12 @@
 x_client_name::x_client_name(x_connection & c,
                              x::xrm & xrm,
                              x_client & x_client)
-  : m_c(c), _xrm(xrm), _x_client(x_client)
+  : m_c(c), m_xrm(xrm), _x_client(x_client)
 {
   m_c.attach(10, XCB_PROPERTY_NOTIFY, this);
   m_c.update_input(_x_client.window(), XCB_EVENT_MASK_PROPERTY_CHANGE);
 
-  _xrm.attach(this);
+  m_xrm.attach(this);
   _x_client.attach(this);
 
   load_config();
@@ -24,7 +24,7 @@ x_client_name::x_client_name(x_connection & c,
 x_client_name::~x_client_name(void)
 {
   m_c.detach(XCB_PROPERTY_NOTIFY, this);
-  _xrm.detach(this);
+  m_xrm.detach(this);
   _x_client.detach(this);
   xcb_free_pixmap(m_c(), _title);
 }
@@ -123,16 +123,16 @@ x_client_name::notify(x_client *)
 void
 x_client_name::load_config(void)
 {
-  _icon_size    = _xrm["iconsize"].v.num;
-  _border_width = _xrm["borderwidth"].v.num;
-  _pnamefont    = *_xrm["titlefont"].v.str;
-  _titlefont    = *_xrm["subtitlefont"].v.str;
-  _colorname    = *_xrm["titlefgcolor"].v.str;
+  _icon_size    = m_xrm["iconsize"].v.num;
+  _border_width = m_xrm["borderwidth"].v.num;
+  _pnamefont    = *m_xrm["titlefont"].v.str;
+  _titlefont    = *m_xrm["subtitlefont"].v.str;
+  _colorname    = *m_xrm["titlefgcolor"].v.str;
 
   _title_bg_color =
-    std::strtol(_xrm["titlebgcolor"].v.str->substr(1,6).c_str(), NULL, 16);
+    std::strtol(m_xrm["titlebgcolor"].v.str->substr(1,6).c_str(), NULL, 16);
 
-  _title_bg_color |= (int)(0xff * _xrm["titlebgalpha"].v.dbl) << 24;
+  _title_bg_color |= (int)(0xff * m_xrm["titlebgalpha"].v.dbl) << 24;
 }
 
 void

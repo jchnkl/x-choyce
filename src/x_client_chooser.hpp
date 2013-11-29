@@ -26,7 +26,7 @@ class x_client_chooser : public x_event_handler_t
     xcb_window_t m_last_motion = XCB_NONE;
 
     x_connection & m_c;
-    x::xrm & _xrm;
+    x::xrm & m_xrm;
     chooser_t * _chooser;
     x_connection::modifier_map _modifier_map;
 

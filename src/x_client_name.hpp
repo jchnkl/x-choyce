@@ -35,7 +35,7 @@ class x_client_name : public x_event_handler_t
 
   private:
     x_connection & m_c;
-    x::xrm & _xrm;
+    x::xrm & m_xrm;
     x_client & _x_client;
     std::shared_ptr<x::xft> _x_xft;
 
