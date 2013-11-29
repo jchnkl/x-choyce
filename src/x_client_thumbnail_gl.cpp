@@ -9,7 +9,7 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
                                        const x::gl::api & api,
                                        const rectangle & rect,
                                        const xcb_window_t & window)
-  : m_c(c), m_xrm(xrm), _gl_api(api)
+  : m_c(c), m_xrm(xrm), m_gl_api(api)
   , _gl_ctx(api, m_c.dpy(), m_c.screen_number())
   , m_x_client(m_c, window)
   , m_x_client_icon(m_c, m_x_client)
@@ -319,11 +319,11 @@ x_client_thumbnail::handle(xcb_generic_event_t * ge)
         {
           _gl_ctx.pixmap(0, [&](const GLXPixmap & p)
           {
-            _gl_api.glXReleaseTexImageEXT(m_c.dpy(), p, GLX_FRONT_EXT);
-            _gl_api.glXBindTexImageEXT(m_c.dpy(), p, GLX_FRONT_EXT, NULL);
+            m_gl_api.glXReleaseTexImageEXT(m_c.dpy(), p, GLX_FRONT_EXT);
+            m_gl_api.glXBindTexImageEXT(m_c.dpy(), p, GLX_FRONT_EXT, NULL);
           });
 
-          _gl_api.glGenerateMipmap(GL_TEXTURE_2D);
+          m_gl_api.glGenerateMipmap(GL_TEXTURE_2D);
         });
       }
 
@@ -378,11 +378,11 @@ x_client_thumbnail::configure_highlight(bool now)
   auto use_program = [this](const std::string & name)
   {
     auto & program = _gl_ctx.program(name);
-    _gl_api.glUseProgram(program);
+    m_gl_api.glUseProgram(program);
     for (auto tid : { 0, 1, 2 }) {
-      GLint location = _gl_api.glGetUniformLocation(
+      GLint location = m_gl_api.glGetUniformLocation(
           program, ("texture_" + std::to_string(tid)).c_str());
-      _gl_api.glUniform1i(location, tid);
+      m_gl_api.glUniform1i(location, tid);
     }
   };
 
@@ -393,7 +393,7 @@ x_client_thumbnail::configure_highlight(bool now)
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1);
       glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
       glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
-      _gl_api.glGenerateMipmap(GL_TEXTURE_2D);
+      m_gl_api.glGenerateMipmap(GL_TEXTURE_2D);
     });
 
   } else {
@@ -402,8 +402,8 @@ x_client_thumbnail::configure_highlight(bool now)
     {
       _gl_ctx.pixmap(0, [this](const GLXPixmap & p)
       {
-        _gl_api.glXReleaseTexImageEXT(m_c.dpy(), p, GLX_FRONT_EXT);
-        _gl_api.glXBindTexImageEXT(m_c.dpy(), p, GLX_FRONT_EXT, NULL);
+        m_gl_api.glXReleaseTexImageEXT(m_c.dpy(), p, GLX_FRONT_EXT);
+        m_gl_api.glXBindTexImageEXT(m_c.dpy(), p, GLX_FRONT_EXT, NULL);
       });
 
       glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -514,5 +514,5 @@ thumbnail_t::ptr
 x_client_thumbnail::factory::
 make(const xcb_window_t & w, const rectangle & r) const
 {
-  return thumbnail_t::ptr(new x_client_thumbnail(m_c, m_xrm, _gl_api, r, w));
+  return thumbnail_t::ptr(new x_client_thumbnail(m_c, m_xrm, m_gl_api, r, w));
 }

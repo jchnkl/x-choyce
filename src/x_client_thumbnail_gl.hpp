@@ -67,13 +67,13 @@ class x_client_thumbnail : public x_event_handler_t
       private:
         x_connection & m_c;
         x::xrm & m_xrm;
-        x::gl::api _gl_api;
+        x::gl::api m_gl_api;
     };
 
   private:
     x_connection & m_c;
     x::xrm & m_xrm;
-    const x::gl::api & _gl_api;
+    const x::gl::api & m_gl_api;
     x::gl::context _gl_ctx;
     x_client m_x_client;
     x_client_icon m_x_client_icon;
