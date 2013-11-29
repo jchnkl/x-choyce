@@ -34,7 +34,7 @@ x_client_chooser::handle(xcb_generic_event_t * ge)
 
   if (XCB_KEY_PRESS == (ge->response_type & ~0x80)) {
     result = true;
-    _ignore_release = false;
+    m_ignore_release = false;
     xcb_key_press_event_t * e = (xcb_key_press_event_t *)ge;
 
     if (e->detail == _action_keycode
@@ -76,7 +76,7 @@ x_client_chooser::handle(xcb_generic_event_t * ge)
 
   } else if (XCB_KEY_RELEASE == (ge->response_type & ~0x80)) {
     result = true;
-    if (_ignore_release) return result;
+    if (m_ignore_release) return result;
 
     xcb_key_release_event_t * e = (xcb_key_release_event_t *)ge;
     for (auto & item : _modifier_map) {
@@ -102,12 +102,12 @@ x_client_chooser::handle(xcb_generic_event_t * ge)
     xcb_motion_notify_event_t *e = (xcb_motion_notify_event_t *)ge;
 
     if (e->event == m_c.root_window()) {
-      _ignore_release = true;
+      m_ignore_release = true;
     }
 
     if (_last_motion != e->child) {
       _last_motion = e->child;
-      _ignore_release = true;
+      m_ignore_release = true;
       _chooser->highlight(e->child);
     }
 

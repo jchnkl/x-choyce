@@ -21,7 +21,7 @@ class x_client_chooser : public x_event_handler_t
 
   private:
     bool m_active = false;
-    bool _ignore_release = false;
+    bool m_ignore_release = false;
 
     xcb_window_t _last_motion = XCB_NONE;
 
