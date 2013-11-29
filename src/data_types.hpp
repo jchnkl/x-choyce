@@ -29,7 +29,7 @@ struct rectangle {
   unsigned int & height(void);
   unsigned int const & height(void) const;
 
-  position _position;
+  position m_position;
   dimension _dimension;
 };
 

@@ -10,22 +10,22 @@ position::position(int x, int y) : x(x), y(y) {}
 rectangle::rectangle(void) {}
 
 rectangle::rectangle(position pos, dimension dim)
-  : _position(pos), _dimension(dim) {}
+  : m_position(pos), _dimension(dim) {}
 
 rectangle::rectangle(int x, int y, unsigned int width, unsigned int height)
-  : _position(x, y), _dimension(width, height) {}
+  : m_position(x, y), _dimension(width, height) {}
 
 int &
-rectangle::x(void) { return _position.x; }
+rectangle::x(void) { return m_position.x; }
 
 int const &
-rectangle::x(void) const { return _position.x; }
+rectangle::x(void) const { return m_position.x; }
 
 int &
-rectangle::y(void) { return _position.y; }
+rectangle::y(void) { return m_position.y; }
 
 int const &
-rectangle::y(void) const { return _position.y; }
+rectangle::y(void) const { return m_position.y; }
 
 unsigned int &
 rectangle::width(void) { return _dimension.width; }

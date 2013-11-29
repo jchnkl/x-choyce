@@ -26,7 +26,7 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
   xcb_create_window(_c(), XCB_COPY_FROM_PARENT, _thumbnail_window,
                     _c.default_screen()->root,
                     0, 0, 1, 1, 0,
-                    // _position.x, _position.y, _size.width, _size.height, 0,
+                    // m_position.x, m_position.y, _size.width, _size.height, 0,
                     XCB_WINDOW_CLASS_INPUT_OUTPUT,
                     _c.default_screen()->root_visual, mask, values);
 

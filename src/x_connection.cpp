@@ -423,7 +423,7 @@ x_connection::get_geometry(const xcb_window_t & window) const
     throw "get_geometry failed";
   } else {
     rectangle rect;
-    rect._position = { r->x, r->y };
+    rect.m_position = { r->x, r->y };
     rect._dimension = { r->width, r->height };
     delete r;
     return rect;
