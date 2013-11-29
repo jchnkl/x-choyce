@@ -54,13 +54,13 @@ all: ${HPPOBJS} ${CPPOBJS}
 %.hpp.gch: %.hpp
 	${CXX} ${CXXFLAGS} -c $<
 
-version:
-	@for LIB in ${LIBS}; do \
-		printf "%-20s" "$${LIB}:"; \
-		pkg-config --modversion $${LIB}; \
-	done
+version: ${LIBS}
+
+${LIBS}:
+	@printf "%-20s" "$@:"
+	@pkg-config --modversion $@
 
 clean:
 	rm -f ${EXE} ${CPPOBJS} ${HPPOBJS}
 
-.PHONY: clean
+.PHONY: clean version
