@@ -30,7 +30,7 @@ struct rectangle {
   unsigned int const & height(void) const;
 
   position m_position;
-  dimension _dimension;
+  dimension m_dimension;
 };
 
 std::ostream & operator<<(std::ostream & os, const rectangle & rect);

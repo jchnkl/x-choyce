@@ -424,7 +424,7 @@ x_connection::get_geometry(const xcb_window_t & window) const
   } else {
     rectangle rect;
     rect.m_position = { r->x, r->y };
-    rect._dimension = { r->width, r->height };
+    rect.m_dimension = { r->width, r->height };
     delete r;
     return rect;
   }

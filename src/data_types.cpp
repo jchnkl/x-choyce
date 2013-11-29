@@ -10,10 +10,10 @@ position::position(int x, int y) : x(x), y(y) {}
 rectangle::rectangle(void) {}
 
 rectangle::rectangle(position pos, dimension dim)
-  : m_position(pos), _dimension(dim) {}
+  : m_position(pos), m_dimension(dim) {}
 
 rectangle::rectangle(int x, int y, unsigned int width, unsigned int height)
-  : m_position(x, y), _dimension(width, height) {}
+  : m_position(x, y), m_dimension(width, height) {}
 
 int &
 rectangle::x(void) { return m_position.x; }
@@ -28,16 +28,16 @@ int const &
 rectangle::y(void) const { return m_position.y; }
 
 unsigned int &
-rectangle::width(void) { return _dimension.width; }
+rectangle::width(void) { return m_dimension.width; }
 
 unsigned int const &
-rectangle::width(void) const { return _dimension.width; }
+rectangle::width(void) const { return m_dimension.width; }
 
 unsigned int &
-rectangle::height(void) { return _dimension.height; }
+rectangle::height(void) { return m_dimension.height; }
 
 unsigned int const &
-rectangle::height(void) const { return _dimension.height; }
+rectangle::height(void) const { return m_dimension.height; }
 
 std::ostream & operator<<(std::ostream & os, const rectangle & rect)
 {
