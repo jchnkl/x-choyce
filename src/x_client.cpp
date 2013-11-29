@@ -22,7 +22,7 @@ x_client::~x_client(void)
   m_c.detach(XCB_CONFIGURE_NOTIFY, this);
   m_c.detach(XCB_PROPERTY_NOTIFY, this);
 
-  xcb_free_pixmap(m_c(), _name_window_pixmap);
+  xcb_free_pixmap(m_c(), m_name_window_pixmap);
   xcb_free_pixmap(m_c(), _name_window_dummy);
 }
 
@@ -33,9 +33,9 @@ const xcb_window_t & x_client::parent(void) const { return m_parent; }
 const xcb_window_t &
 x_client::name_window_pixmap(void) const
 {
-  return _name_window_pixmap == XCB_NONE
+  return m_name_window_pixmap == XCB_NONE
          ? _name_window_dummy
-         : _name_window_pixmap;
+         : m_name_window_pixmap;
 }
 
 unsigned int x_client::net_wm_desktop(void) const { return m_net_wm_desktop; }
@@ -141,16 +141,16 @@ x_client::update_parent_window(void)
 void
 x_client::update_name_window_pixmap(void)
 {
-  xcb_free_pixmap(m_c(), _name_window_pixmap);
-  _name_window_pixmap = xcb_generate_id(m_c());
+  xcb_free_pixmap(m_c(), m_name_window_pixmap);
+  m_name_window_pixmap = xcb_generate_id(m_c());
   xcb_void_cookie_t c = xcb_composite_name_window_pixmap_checked(
-      m_c(), m_parent, _name_window_pixmap);
+      m_c(), m_parent, m_name_window_pixmap);
 
   xcb_generic_error_t * error = xcb_request_check(m_c(), c);
 
   if (error) {
     delete error;
-    _name_window_pixmap = XCB_NONE;
+    m_name_window_pixmap = XCB_NONE;
     make_dummy();
   }
 }

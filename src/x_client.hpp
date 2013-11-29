@@ -45,7 +45,7 @@ class x_client : public x_event_handler_t
     unsigned int m_net_wm_desktop;
     xcb_window_t m_window;
     xcb_window_t m_parent;
-    xcb_pixmap_t _name_window_pixmap = XCB_NONE;
+    xcb_pixmap_t m_name_window_pixmap = XCB_NONE;
     xcb_pixmap_t _name_window_dummy = XCB_NONE;
 
     xcb_atom_t a_net_wm_desktop = m_c.intern_atom("_NET_WM_DESKTOP");
