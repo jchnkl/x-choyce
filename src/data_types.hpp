@@ -1,5 +1,5 @@
-#ifndef _DATA_TYPES
-#define _DATA_TYPES
+#ifndef DATA_TYPES
+#define DATA_TYPES
 
 #include <iostream>
 

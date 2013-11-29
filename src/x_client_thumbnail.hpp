@@ -1,5 +1,5 @@
-#ifndef _X_CLIENT_THUMBNAIL_HPP
-#define _X_CLIENT_THUMBNAIL_HPP
+#ifndef X_CLIENT_THUMBNAIL_HPP
+#define X_CLIENT_THUMBNAIL_HPP
 
 #include <memory>
 #include <xcb/xcb.h>

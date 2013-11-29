@@ -1,5 +1,5 @@
-#ifndef _CHOOSER_T_HPP
-#define _CHOOSER_T_HPP
+#ifndef CHOOSER_T_HPP
+#define CHOOSER_T_HPP
 
 class chooser_t {
   public:

@@ -1,5 +1,5 @@
-#ifndef _CYCLIC_ITERATOR_HPP
-#define _CYCLIC_ITERATOR_HPP
+#ifndef CYCLIC_ITERATOR_HPP
+#define CYCLIC_ITERATOR_HPP
 
 #include <iostream>
 template<typename T>

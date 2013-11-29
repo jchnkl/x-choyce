@@ -1,5 +1,5 @@
-#ifndef _X_EVENT_SOURCE
-#define _X_EVENT_SOURCE
+#ifndef X_EVENT_SOURCE
+#define X_EVENT_SOURCE
 
 #include <map>
 #include <unordered_map>

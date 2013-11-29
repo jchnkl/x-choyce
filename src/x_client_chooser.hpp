@@ -1,5 +1,5 @@
-#ifndef _X_CLIENT_CHOOSER
-#define _X_CLIENT_CHOOSER
+#ifndef X_CLIENT_CHOOSER
+#define X_CLIENT_CHOOSER
 
 #include <xcb/xcb.h>
 

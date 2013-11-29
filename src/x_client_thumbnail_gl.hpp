@@ -1,5 +1,5 @@
-#ifndef _X_CLIENT_THUMBNAIL_GL_HPP
-#define _X_CLIENT_THUMBNAIL_GL_HPP
+#ifndef X_CLIENT_THUMBNAIL_GL_HPP
+#define X_CLIENT_THUMBNAIL_GL_HPP
 
 #include <fstream>
 #include <unordered_map>

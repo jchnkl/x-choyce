@@ -1,5 +1,5 @@
-#ifndef _CYCLIC_ITERATOR_CPP
-#define _CYCLIC_ITERATOR_CPP
+#ifndef CYCLIC_ITERATOR_CPP
+#define CYCLIC_ITERATOR_CPP
 
 #include "cyclic_iterator.hpp"
 

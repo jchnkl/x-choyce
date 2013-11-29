@@ -1,5 +1,5 @@
-#ifndef _X_EVENT_SOURCE_HPP
-#define _X_EVENT_SOURCE_HPP
+#ifndef X_EVENT_SOURCE_HPP
+#define X_EVENT_SOURCE_HPP
 
 #include "x_event_handler_t.hpp"
 

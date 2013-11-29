@@ -1,5 +1,5 @@
-#ifndef _X_EVENT_HANDLER
-#define _X_EVENT_HANDLER
+#ifndef X_EVENT_HANDLER
+#define X_EVENT_HANDLER
 
 #include <xcb/xcb.h>
 

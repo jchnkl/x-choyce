@@ -1,5 +1,5 @@
-#ifndef _LAYOUT_T
-#define _LAYOUT_T
+#ifndef LAYOUT_T
+#define LAYOUT_T
 
 #include <deque>
 

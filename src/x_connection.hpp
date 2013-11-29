@@ -1,5 +1,5 @@
-#ifndef _X_CONNECTION
-#define _X_CONNECTION
+#ifndef X_CONNECTION
+#define X_CONNECTION
 
 #include <memory>
 #include <string>

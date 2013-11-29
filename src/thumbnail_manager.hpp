@@ -1,5 +1,5 @@
-#ifndef _THUMBNAIL_MANAGER_HPP
-#define _THUMBNAIL_MANAGER_HPP
+#ifndef THUMBNAIL_MANAGER_HPP
+#define THUMBNAIL_MANAGER_HPP
 
 #include <vector>
 #include <unordered_map>

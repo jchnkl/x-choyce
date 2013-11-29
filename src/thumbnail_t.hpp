@@ -1,5 +1,5 @@
-#ifndef _THUMBNAIL_T_HPP
-#define _THUMBNAIL_T_HPP
+#ifndef THUMBNAIL_T_HPP
+#define THUMBNAIL_T_HPP
 
 #include <memory>
 #include <iterator>

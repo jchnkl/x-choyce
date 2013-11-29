@@ -1,5 +1,5 @@
-#ifndef _GRID
-#define _GRID
+#ifndef GRID
+#define GRID
 
 #include <deque>
 
