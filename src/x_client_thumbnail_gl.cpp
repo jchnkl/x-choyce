@@ -28,7 +28,7 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
 
   _damage = xcb_generate_id(m_c());
 
-  _thumbnail_window = xcb_generate_id(m_c());
+  m_thumbnail_window = xcb_generate_id(m_c());
   xcb_colormap_t colormap = xcb_generate_id(m_c());
 
   unsigned int depth = 32;
@@ -45,7 +45,7 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
 
   uint32_t valuelist[] = { 0, 0, 1, colormap };
 
-  xcb_create_window(m_c(), depth, _thumbnail_window,
+  xcb_create_window(m_c(), depth, m_thumbnail_window,
                     m_c.root_window(), 0, 0,
                     m_x_client.rect().width(), m_x_client.rect().height(),
                     0, XCB_WINDOW_CLASS_INPUT_OUTPUT, vt->visual_id,
@@ -53,7 +53,7 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
 
   xcb_free_colormap(m_c(), colormap);
 
-  _gl_ctx.drawable(_thumbnail_window);
+  _gl_ctx.drawable(m_thumbnail_window);
 
   _gl_ctx.run([this](x::gl::context &)
   {
@@ -85,7 +85,7 @@ x_client_thumbnail::~x_client_thumbnail(void)
   m_x_client.detach(this);
   m_x_client_name.detach(this);
   xcb_damage_destroy(m_c(), _damage);
-  xcb_destroy_window(m_c(), _thumbnail_window);
+  xcb_destroy_window(m_c(), m_thumbnail_window);
 }
 
 thumbnail_t &
@@ -117,7 +117,7 @@ x_client_thumbnail::hide(void)
 {
   _visible = false;
   xcb_damage_destroy(m_c(), _damage);
-  xcb_unmap_window(m_c(), _thumbnail_window);
+  xcb_unmap_window(m_c(), m_thumbnail_window);
   return *this;
 }
 
@@ -249,7 +249,7 @@ x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height
     glPopMatrix();
   });
 
-  glXSwapBuffers(m_c.dpy(), _thumbnail_window);
+  glXSwapBuffers(m_c.dpy(), m_thumbnail_window);
   glDisable(GL_SCISSOR_TEST);
 }
 
@@ -287,7 +287,7 @@ x_client_thumbnail::update_name_window_pixmap(void)
 const xcb_window_t &
 x_client_thumbnail::id(void)
 {
-  return _thumbnail_window;
+  return m_thumbnail_window;
 }
 
 const xcb_window_t &
@@ -454,7 +454,7 @@ x_client_thumbnail::configure_thumbnail_window(bool now)
   region = xcb_generate_id(m_c());
   xcb_xfixes_create_region(m_c(), region, nrects, rects);
 
-  xcb_xfixes_set_window_shape_region(m_c(), _thumbnail_window,
+  xcb_xfixes_set_window_shape_region(m_c(), m_thumbnail_window,
                                      XCB_SHAPE_SK_BOUNDING, 0, 0, region);
   xcb_xfixes_destroy_region(m_c(), region);
 
@@ -468,8 +468,8 @@ x_client_thumbnail::configure_thumbnail_window(bool now)
                         (uint32_t)m_rectangle.height(),
                         XCB_STACK_MODE_ABOVE };
 
-  xcb_configure_window(m_c(), _thumbnail_window, mask, values);
-  xcb_map_window(m_c(), _thumbnail_window);
+  xcb_configure_window(m_c(), m_thumbnail_window, mask, values);
+  xcb_map_window(m_c(), m_thumbnail_window);
 }
 
 void

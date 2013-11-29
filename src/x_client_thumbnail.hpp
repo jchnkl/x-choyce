@@ -28,7 +28,7 @@ class x_client_thumbnail : public x_event_handler_t
 
     bool operator==(const x_client_thumbnail & other)
     {
-      return _thumbnail_window == other._thumbnail_window;
+      return m_thumbnail_window == other.m_thumbnail_window;
     }
 
     void show(void);
@@ -50,7 +50,7 @@ class x_client_thumbnail : public x_event_handler_t
     double m_scale;
     rectangle m_rectangle;
 
-    xcb_window_t _thumbnail_window;
+    xcb_window_t m_thumbnail_window;
     xcb_damage_damage_t _damage;
     xcb_render_picture_t _alpha_picture;
     xcb_render_picture_t m_window_picture;

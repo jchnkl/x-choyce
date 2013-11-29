@@ -22,8 +22,8 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
   m_c.attach(0, m_c.damage_event_id(), this);
   uint32_t mask = XCB_CW_BACK_PIXEL | XCB_CW_OVERRIDE_REDIRECT;
   uint32_t values[] = { 0, true };
-  _thumbnail_window = xcb_generate_id(m_c());
-  xcb_create_window(m_c(), XCB_COPY_FROM_PARENT, _thumbnail_window,
+  m_thumbnail_window = xcb_generate_id(m_c());
+  xcb_create_window(m_c(), XCB_COPY_FROM_PARENT, m_thumbnail_window,
                     m_c.default_screen()->root,
                     0, 0, 1, 1, 0,
                     // m_position.x, m_position.y, _size.width, _size.height, 0,
@@ -36,13 +36,13 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
   configure_alpha_picture(_alpha_value);
 
   m_window_picture = make_picture(m_c, m_x_client->window());
-  _thumbnail_picture = make_picture(m_c, _thumbnail_window);
+  _thumbnail_picture = make_picture(m_c, m_thumbnail_window);
 }
 
 x_client_thumbnail::~x_client_thumbnail(void)
 {
   m_c.detach(m_c.damage_event_id(), this);
-  xcb_destroy_window(m_c(), _thumbnail_window);
+  xcb_destroy_window(m_c(), m_thumbnail_window);
   xcb_render_free_picture(m_c(), _alpha_picture);
   xcb_render_free_picture(m_c(), m_window_picture);
   xcb_render_free_picture(m_c(), _thumbnail_picture);
@@ -62,7 +62,7 @@ void
 x_client_thumbnail::hide(void)
 {
   xcb_damage_destroy(m_c(), _damage);
-  xcb_unmap_window(m_c(), _thumbnail_window);
+  xcb_unmap_window(m_c(), m_thumbnail_window);
 }
 
 void
@@ -146,8 +146,8 @@ x_client_thumbnail::configure_thumbnail_window(void)
                         (uint32_t)m_rectangle.height(),
                         XCB_STACK_MODE_ABOVE };
 
-  xcb_configure_window(m_c(), _thumbnail_window, mask, values);
-  xcb_map_window(m_c(), _thumbnail_window);
+  xcb_configure_window(m_c(), m_thumbnail_window, mask, values);
+  xcb_map_window(m_c(), m_thumbnail_window);
 }
 
 void
