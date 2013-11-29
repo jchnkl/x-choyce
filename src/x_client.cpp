@@ -38,7 +38,7 @@ x_client::name_window_pixmap(void) const
          : _name_window_pixmap;
 }
 
-unsigned int x_client::net_wm_desktop(void) const { return _net_wm_desktop; }
+unsigned int x_client::net_wm_desktop(void) const { return m_net_wm_desktop; }
 
 void x_client::update_geometry(void)
 {
@@ -119,9 +119,9 @@ x_client::update_net_wm_desktop(void)
 
   if (error || r->value_len == 0) {
     delete error;
-    _net_wm_desktop = 0;
+    m_net_wm_desktop = 0;
   } else {
-    _net_wm_desktop = *(unsigned int *)xcb_get_property_value(r);
+    m_net_wm_desktop = *(unsigned int *)xcb_get_property_value(r);
   }
 
   if (r) delete r;
