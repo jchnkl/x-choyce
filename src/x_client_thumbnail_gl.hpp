@@ -80,22 +80,22 @@ class x_client_thumbnail : public x_event_handler_t
     x_client_name m_x_client_name;
 
     double m_scale;
-    double _icon_scale_x;
-    double _icon_scale_y;
+    double m_icon_scale_x;
+    double m_icon_scale_y;
     double m_title_scale_x;
     double m_title_scale_y;
 
-    bool _visible = false;
-    bool _highlight = false;
-    bool _update_title_pixmap = false;
-    bool _update_name_window_pixmap = false;
-    bool _configure_thumbnail = true;
-    bool _configure_highlight = true;
+    bool m_visible = false;
+    bool m_highlight = false;
+    bool m_update_title_pixmap = false;
+    bool m_update_name_window_pixmap = false;
+    bool m_configure_thumbnail = true;
+    bool m_configure_highlight = true;
 
     rectangle m_rectangle;
 
     xcb_window_t m_thumbnail_window = XCB_NONE;
-    xcb_damage_damage_t _damage;
+    xcb_damage_damage_t m_damage;
 
     // >> config options
 
@@ -103,8 +103,8 @@ class x_client_thumbnail : public x_event_handler_t
     unsigned int m_border_width;
 
     // red, green, blue, alpha
-    std::tuple<double, double, double, double> _focused_border_color;
-    std::tuple<double, double, double, double> _unfocused_border_color;
+    std::tuple<double, double, double, double> m_focused_border_color;
+    std::tuple<double, double, double, double> m_unfocused_border_color;
 
     // << config options
 

@@ -133,7 +133,7 @@ x_connection::root_window(void) const
 }
 
 uint8_t
-x_connection::damage_event_id(void) const { return _damage_event_id; }
+x_connection::damage_event_id(void) const { return m_damage_event_id; }
 
 void
 x_connection::grab_key(uint16_t modifiers, xcb_keysym_t keysym) const
@@ -519,7 +519,7 @@ x_connection::init_damage(void)
   const xcb_query_extension_reply_t * extension_reply =
     xcb_get_extension_data(m_c, &xcb_damage_id);
 
-  _damage_event_id = extension_reply->first_event + XCB_DAMAGE_NOTIFY;
+  m_damage_event_id = extension_reply->first_event + XCB_DAMAGE_NOTIFY;
 
   // necessary to get xdamage of the ground
   xcb_damage_query_version(m_c, XCB_DAMAGE_MAJOR_VERSION,

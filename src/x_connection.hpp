@@ -86,7 +86,7 @@ class x_connection : public x_event_handler_t
     void shutdown(void);
 
   private:
-    uint8_t _damage_event_id;
+    uint8_t m_damage_event_id;
     int _screen_number = 0;
     xcb_window_t _root_window = 0;
     Display * _dpy = NULL;

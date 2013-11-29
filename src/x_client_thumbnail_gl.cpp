@@ -26,7 +26,7 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
   m_x_client.attach(this);
   m_x_client_name.attach(this);
 
-  _damage = xcb_generate_id(m_c());
+  m_damage = xcb_generate_id(m_c());
 
   m_thumbnail_window = xcb_generate_id(m_c());
   xcb_colormap_t colormap = xcb_generate_id(m_c());
@@ -84,29 +84,29 @@ x_client_thumbnail::~x_client_thumbnail(void)
   m_xrm.detach(this);
   m_x_client.detach(this);
   m_x_client_name.detach(this);
-  xcb_damage_destroy(m_c(), _damage);
+  xcb_damage_destroy(m_c(), m_damage);
   xcb_destroy_window(m_c(), m_thumbnail_window);
 }
 
 thumbnail_t &
 x_client_thumbnail::show(void)
 {
-  if (_visible) return *this;
+  if (m_visible) return *this;
 
-  _visible = true;
-  xcb_damage_create(m_c(), _damage, m_x_client.window(),
+  m_visible = true;
+  xcb_damage_create(m_c(), m_damage, m_x_client.window(),
                     XCB_DAMAGE_REPORT_LEVEL_NON_EMPTY);
 
   configure_thumbnail_window(true);
 
-  if (_update_name_window_pixmap) {
+  if (m_update_name_window_pixmap) {
     update_name_window_pixmap();
-    _update_name_window_pixmap = false;
+    m_update_name_window_pixmap = false;
   }
 
-  if (_update_title_pixmap) {
+  if (m_update_title_pixmap) {
     update_title_pixmap();
-    _update_title_pixmap = false;
+    m_update_title_pixmap = false;
   }
 
   return *this;
@@ -115,8 +115,8 @@ x_client_thumbnail::show(void)
 thumbnail_t &
 x_client_thumbnail::hide(void)
 {
-  _visible = false;
-  xcb_damage_destroy(m_c(), _damage);
+  m_visible = false;
+  xcb_damage_destroy(m_c(), m_damage);
   xcb_unmap_window(m_c(), m_thumbnail_window);
   return *this;
 }
@@ -146,7 +146,7 @@ x_client_thumbnail::update(void)
 thumbnail_t &
 x_client_thumbnail::update(const rectangle & r)
 {
-  _configure_thumbnail = true;
+  m_configure_thumbnail = true;
 
   m_scale = std::min((double)r.width() / m_x_client.rect().width(),
                     (double)r.height() / m_x_client.rect().height());
@@ -158,8 +158,8 @@ x_client_thumbnail::update(const rectangle & r)
   m_rectangle.x() = r.x() + (r.width() - m_rectangle.width()) / 2;
   m_rectangle.y() = r.y() + (r.height() - m_rectangle.height()) / 2;
 
-  _icon_scale_x = m_icon_size / (double)m_rectangle.width();
-  _icon_scale_y = m_icon_size / (double)m_rectangle.height();
+  m_icon_scale_x = m_icon_size / (double)m_rectangle.width();
+  m_icon_scale_y = m_icon_size / (double)m_rectangle.height();
 
   m_x_client_name.title_width(m_rectangle.width());
   m_x_client_name.title_height(m_icon_size + m_border_width);
@@ -167,12 +167,12 @@ x_client_thumbnail::update(const rectangle & r)
   m_title_scale_x = (double)m_rectangle.width() / (double)m_rectangle.width();
   m_title_scale_y = (m_icon_size + m_border_width) / (double)m_rectangle.height();
 
-  if (_visible) {
+  if (m_visible) {
     update_title_pixmap();
     configure_thumbnail_window(true);
   } else {
-    _update_title_pixmap = true;
-    _configure_thumbnail = true;
+    m_update_title_pixmap = true;
+    m_configure_thumbnail = true;
   }
 
   return *this;
@@ -194,7 +194,7 @@ x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height
              m_rectangle.width() - 2 * m_border_width,
              m_rectangle.height() - 2 * m_border_width);
 
-  auto * bc = _highlight ? &_focused_border_color : &_unfocused_border_color;
+  auto * bc = m_highlight ? &m_focused_border_color : &m_unfocused_border_color;
 
   // r, g, b, a
   glClearColor(std::get<0>(*bc), std::get<1>(*bc),
@@ -237,14 +237,14 @@ x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height
   {
     glPushMatrix();
     glTranslatef(
-      -1.0 + _icon_scale_x + (m_border_width / (double)m_rectangle.width()),
-      -1.0 + _icon_scale_y + (m_border_width / (double)m_rectangle.height()),
+      -1.0 + m_icon_scale_x + (m_border_width / (double)m_rectangle.width()),
+      -1.0 + m_icon_scale_y + (m_border_width / (double)m_rectangle.height()),
       0.0);
     glBegin(GL_QUADS);
-    glTexCoord2f(0.0, 0.0); glVertex3f(-_icon_scale_x,  _icon_scale_y, 0.0);
-    glTexCoord2f(1.0, 0.0); glVertex3f( _icon_scale_x,  _icon_scale_y, 0.0);
-    glTexCoord2f(1.0, 1.0); glVertex3f( _icon_scale_x, -_icon_scale_y, 0.0);
-    glTexCoord2f(0.0, 1.0); glVertex3f(-_icon_scale_x, -_icon_scale_y, 0.0);
+    glTexCoord2f(0.0, 0.0); glVertex3f(-m_icon_scale_x,  m_icon_scale_y, 0.0);
+    glTexCoord2f(1.0, 0.0); glVertex3f( m_icon_scale_x,  m_icon_scale_y, 0.0);
+    glTexCoord2f(1.0, 1.0); glVertex3f( m_icon_scale_x, -m_icon_scale_y, 0.0);
+    glTexCoord2f(0.0, 1.0); glVertex3f(-m_icon_scale_x, -m_icon_scale_y, 0.0);
     glEnd();
     glPopMatrix();
   });
@@ -299,8 +299,8 @@ x_client_thumbnail::window(void)
 thumbnail_t &
 x_client_thumbnail::highlight(bool want_highlight)
 {
-  _configure_highlight = _highlight != want_highlight;
-  _highlight = want_highlight;
+  m_configure_highlight = m_highlight != want_highlight;
+  m_highlight = want_highlight;
   return *this;
 }
 
@@ -314,7 +314,7 @@ x_client_thumbnail::handle(xcb_generic_event_t * ge)
 
     m_gl_ctx.run([&](x::gl::context &)
     {
-      if (_highlight) {
+      if (m_highlight) {
         m_gl_ctx.texture(0, [&](const GLuint &)
         {
           m_gl_ctx.pixmap(0, [&](const GLXPixmap & p)
@@ -347,30 +347,30 @@ x_client_thumbnail::notify(x::xrm *)
 void
 x_client_thumbnail::notify(x_client * c)
 {
-  if (_visible) {
+  if (m_visible) {
     update_name_window_pixmap();
     update();
   } else {
-    _update_name_window_pixmap = true;
+    m_update_name_window_pixmap = true;
   }
 }
 
 void
 x_client_thumbnail::notify(x_client_name * c)
 {
-  if (_visible) {
+  if (m_visible) {
     update_title_pixmap();
     update();
   } else {
-    _update_title_pixmap = true;
+    m_update_title_pixmap = true;
   }
 }
 
 void
 x_client_thumbnail::configure_highlight(bool now)
 {
-  if (now || _configure_highlight) {
-    _configure_highlight = false;
+  if (now || m_configure_highlight) {
+    m_configure_highlight = false;
   } else {
     return;
   }
@@ -386,7 +386,7 @@ x_client_thumbnail::configure_highlight(bool now)
     }
   };
 
-  if (_highlight) {
+  if (m_highlight) {
     use_program("normal_shader");
     m_gl_ctx.texture(0, [this](const GLuint &)
     {
@@ -415,8 +415,8 @@ x_client_thumbnail::configure_highlight(bool now)
 void
 x_client_thumbnail::configure_thumbnail_window(bool now)
 {
-  if (now || _configure_thumbnail) {
-    _configure_thumbnail = false;
+  if (now || m_configure_thumbnail) {
+    m_configure_thumbnail = false;
   } else {
     return;
   }
@@ -492,8 +492,8 @@ x_client_thumbnail::load_config(void)
   auto ug = std::strtol(uc->substr(3,2).c_str(), NULL, 16) / (double)0xff;
   auto ub = std::strtol(uc->substr(5,2).c_str(), NULL, 16) / (double)0xff;
 
-  _focused_border_color   = std::make_tuple(fr, fg, fb, fa);
-  _unfocused_border_color = std::make_tuple(ur, ug, ub, ua);
+  m_focused_border_color   = std::make_tuple(fr, fg, fb, fa);
+  m_unfocused_border_color = std::make_tuple(ur, ug, ub, ua);
 }
 
 bool operator==(const x_client_thumbnail & thumbnail, const xcb_window_t & window)
