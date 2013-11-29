@@ -11,14 +11,14 @@ x_event_source::x_event_source(x_connection & c) : m_c(c)
 void
 x_event_source::attach(priority_t p, event_id_t i, x_event_handler_t * eh)
 {
-  _handler[i].insert({p, eh});
+  m_handler[i].insert({p, eh});
 }
 
 void
 x_event_source::detach(event_id_t i, x_event_handler_t * eh)
 {
   try {
-    auto & ps = _handler.at(i);
+    auto & ps = m_handler.at(i);
       for (auto it = ps.begin(); it != ps.end(); ) {
         if (it->second == eh) {
           it = ps.erase(it);
@@ -33,7 +33,7 @@ void
 x_event_source::run_event_loop(void)
 {
   xcb_generic_event_t * ge = NULL;
-  while (_running) {
+  while (m_running) {
     m_c.flush();
     ge = xcb_wait_for_event(m_c());
 
@@ -49,7 +49,7 @@ x_event_source::run_event_loop(void)
       unsigned int response_type = ge->response_type & ~0x80;
 
       try {
-        for (auto & item : _handler.at(response_type)) {
+        for (auto & item : m_handler.at(response_type)) {
           item.second->handle(ge);
         }
         taken = true;
@@ -79,7 +79,7 @@ x_event_source::run_event_loop(void)
 void
 x_event_source::shutdown(void)
 {
-  _running = false;
+  m_running = false;
 
   xcb_client_message_event_t e;
   memset(&e, 0, sizeof(xcb_client_message_event_t));

@@ -25,8 +25,8 @@ class x_event_source : public x_event_source_t {
     const uint32_t id = 0 | (unsigned long)this;
 
     x_connection & m_c;
-    bool _running = true;
-    event_map_t _handler;
+    bool m_running = true;
+    event_map_t m_handler;
 };
 
 #endif
