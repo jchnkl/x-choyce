@@ -7,7 +7,7 @@
 x_client_chooser::x_client_chooser(x_connection & c,
                                    x::xrm & xrm,
                                    chooser_t * chooser)
-  : m_c(c), m_xrm(xrm), _chooser(chooser)
+  : m_c(c), m_xrm(xrm), m_chooser(chooser)
 {
   m_c.attach(0, XCB_KEY_PRESS, this);
   m_c.attach(0, XCB_KEY_RELEASE, this);
@@ -42,9 +42,9 @@ x_client_chooser::handle(xcb_generic_event_t * ge)
           || e->state == (_action_modmask | XCB_MOD_MASK_SHIFT))) {
       if (m_active) {
         if (e->state == _action_modmask) {
-          _chooser->next();
+          m_chooser->next();
         } else {
-          _chooser->prev();
+          m_chooser->prev();
         }
 
       } else {
@@ -54,21 +54,21 @@ x_client_chooser::handle(xcb_generic_event_t * ge)
         m_c.grab_pointer(m_c.root_window(),
                         XCB_EVENT_MASK_POINTER_MOTION
                         | XCB_EVENT_MASK_BUTTON_PRESS);
-        _chooser->show();
-        _chooser->next();
+        m_chooser->show();
+        m_chooser->next();
       }
 
     } else if (e->detail == _east_keycode) {
-      _chooser->east();
+      m_chooser->east();
 
     } else if (e->detail == _west_keycode) {
-      _chooser->west();
+      m_chooser->west();
 
     } else if (e->detail == _north_keycode) {
-      _chooser->north();
+      m_chooser->north();
 
     } else if (e->detail == _south_keycode) {
-      _chooser->south();
+      m_chooser->south();
 
     } else if (e->detail == _quit_keycode) {
       quit();
@@ -85,7 +85,7 @@ x_client_chooser::handle(xcb_generic_event_t * ge)
       for (auto & keycode : item.second) {
         if (e->detail == keycode) {
           quit();
-          _chooser->select();
+          m_chooser->select();
           break;
         }
       }
@@ -95,7 +95,7 @@ x_client_chooser::handle(xcb_generic_event_t * ge)
     result = true;
     xcb_button_press_event_t * e = (xcb_button_press_event_t *)ge;
     quit();
-    _chooser->select(e->child);
+    m_chooser->select(e->child);
 
   } else if (XCB_MOTION_NOTIFY == (ge->response_type & ~0x80)) {
     result = true;
@@ -108,7 +108,7 @@ x_client_chooser::handle(xcb_generic_event_t * ge)
     if (m_last_motion != e->child) {
       m_last_motion = e->child;
       m_ignore_release = true;
-      _chooser->highlight(e->child);
+      m_chooser->highlight(e->child);
     }
 
   }
@@ -128,7 +128,7 @@ x_client_chooser::quit(void)
   m_active = false;
   m_c.ungrab_pointer();
   m_c.ungrab_keyboard();
-  _chooser->hide();
+  m_chooser->hide();
 }
 
 void

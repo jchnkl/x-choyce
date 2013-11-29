@@ -27,7 +27,7 @@ class x_client_chooser : public x_event_handler_t
 
     x_connection & m_c;
     x::xrm & m_xrm;
-    chooser_t * _chooser;
+    chooser_t * m_chooser;
     x_connection::modifier_map _modifier_map;
 
     // necessary for {un,}grabbing
