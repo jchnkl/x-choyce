@@ -49,7 +49,7 @@ x_client_chooser::handle(xcb_generic_event_t * ge)
 
       } else {
         m_active = true;
-        _last_motion = XCB_NONE;
+        m_last_motion = XCB_NONE;
         m_c.grab_keyboard();
         m_c.grab_pointer(m_c.root_window(),
                         XCB_EVENT_MASK_POINTER_MOTION
@@ -105,8 +105,8 @@ x_client_chooser::handle(xcb_generic_event_t * ge)
       m_ignore_release = true;
     }
 
-    if (_last_motion != e->child) {
-      _last_motion = e->child;
+    if (m_last_motion != e->child) {
+      m_last_motion = e->child;
       m_ignore_release = true;
       _chooser->highlight(e->child);
     }
