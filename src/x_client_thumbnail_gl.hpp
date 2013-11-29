@@ -74,7 +74,7 @@ class x_client_thumbnail : public x_event_handler_t
     x_connection & m_c;
     x::xrm & m_xrm;
     const x::gl::api & m_gl_api;
-    x::gl::context _gl_ctx;
+    x::gl::context m_gl_ctx;
     x_client m_x_client;
     x_client_icon m_x_client_icon;
     x_client_name m_x_client_name;

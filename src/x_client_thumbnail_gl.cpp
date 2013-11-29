@@ -10,7 +10,7 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
                                        const rectangle & rect,
                                        const xcb_window_t & window)
   : m_c(c), m_xrm(xrm), m_gl_api(api)
-  , _gl_ctx(api, m_c.dpy(), m_c.screen_number())
+  , m_gl_ctx(api, m_c.dpy(), m_c.screen_number())
   , m_x_client(m_c, window)
   , m_x_client_icon(m_c, m_x_client)
   , m_x_client_name(m_c, m_xrm, m_x_client)
@@ -53,19 +53,19 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
 
   xcb_free_colormap(m_c(), colormap);
 
-  _gl_ctx.drawable(m_thumbnail_window);
+  m_gl_ctx.drawable(m_thumbnail_window);
 
-  _gl_ctx.run([this](x::gl::context &)
+  m_gl_ctx.run([this](x::gl::context &)
   {
-    _gl_ctx.load("./normal.frag", "normal_shader");
-    _gl_ctx.load("./grayscale.frag", "grayscale_shader");
+    m_gl_ctx.load("./normal.frag", "normal_shader");
+    m_gl_ctx.load("./grayscale.frag", "grayscale_shader");
 
-    _gl_ctx.load(0, m_x_client.name_window_pixmap(), 24);
-    _gl_ctx.load(1, m_x_client_name.title(), 32);
-    _gl_ctx.load(2, m_x_client_icon.icon(), 32);
+    m_gl_ctx.load(0, m_x_client.name_window_pixmap(), 24);
+    m_gl_ctx.load(1, m_x_client_name.title(), 32);
+    m_gl_ctx.load(2, m_x_client_icon.icon(), 32);
 
     for (auto & t : { 0, 1, 2 }) {
-      _gl_ctx.texture(t, [](const GLuint &)
+      m_gl_ctx.texture(t, [](const GLuint &)
       {
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -134,7 +134,7 @@ x_client_thumbnail::update(void)
 {
   configure_thumbnail_window();
 
-  _gl_ctx.run([this](x::gl::context &)
+  m_gl_ctx.run([this](x::gl::context &)
   {
     configure_highlight();
     update(0, 0, m_rectangle.width(), m_rectangle.height());
@@ -208,7 +208,7 @@ x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  _gl_ctx.texture(0, [](const GLuint &)
+  m_gl_ctx.texture(0, [](const GLuint &)
   {
     glPushMatrix();
     glBegin(GL_QUADS);
@@ -220,7 +220,7 @@ x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height
     glPopMatrix();
   });
 
-  _gl_ctx.texture(1, [&](const GLuint &)
+  m_gl_ctx.texture(1, [&](const GLuint &)
   {
     glPushMatrix();
     glTranslatef(-1.0 + m_title_scale_x, -1.0 + m_title_scale_y, 0.0);
@@ -233,7 +233,7 @@ x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height
     glPopMatrix();
   });
 
-  _gl_ctx.texture(2, [&](const GLuint &)
+  m_gl_ctx.texture(2, [&](const GLuint &)
   {
     glPushMatrix();
     glTranslatef(
@@ -257,7 +257,7 @@ void
 x_client_thumbnail::update_title_pixmap(void)
 {
   m_x_client_name.make_title();
-  _gl_ctx.run([this](x::gl::context & ctx)
+  m_gl_ctx.run([this](x::gl::context & ctx)
   {
     ctx.load(1, m_x_client_name.title(), 32);
     ctx.texture(1, [](const GLuint &)
@@ -273,7 +273,7 @@ x_client_thumbnail::update_name_window_pixmap(void)
 {
   m_x_client.update_parent_window();
   m_x_client.update_name_window_pixmap();
-  _gl_ctx.run([this](x::gl::context & ctx)
+  m_gl_ctx.run([this](x::gl::context & ctx)
   {
     ctx.load(0, m_x_client.name_window_pixmap(), 24);
     ctx.texture(0, [](const GLuint &)
@@ -312,12 +312,12 @@ x_client_thumbnail::handle(xcb_generic_event_t * ge)
     xcb_damage_notify_event_t * e = (xcb_damage_notify_event_t *)ge;
     xcb_damage_subtract(m_c(), e->damage, XCB_NONE, XCB_NONE);
 
-    _gl_ctx.run([&](x::gl::context &)
+    m_gl_ctx.run([&](x::gl::context &)
     {
       if (_highlight) {
-        _gl_ctx.texture(0, [&](const GLuint &)
+        m_gl_ctx.texture(0, [&](const GLuint &)
         {
-          _gl_ctx.pixmap(0, [&](const GLXPixmap & p)
+          m_gl_ctx.pixmap(0, [&](const GLXPixmap & p)
           {
             m_gl_api.glXReleaseTexImageEXT(m_c.dpy(), p, GLX_FRONT_EXT);
             m_gl_api.glXBindTexImageEXT(m_c.dpy(), p, GLX_FRONT_EXT, NULL);
@@ -377,7 +377,7 @@ x_client_thumbnail::configure_highlight(bool now)
 
   auto use_program = [this](const std::string & name)
   {
-    auto & program = _gl_ctx.program(name);
+    auto & program = m_gl_ctx.program(name);
     m_gl_api.glUseProgram(program);
     for (auto tid : { 0, 1, 2 }) {
       GLint location = m_gl_api.glGetUniformLocation(
@@ -388,7 +388,7 @@ x_client_thumbnail::configure_highlight(bool now)
 
   if (_highlight) {
     use_program("normal_shader");
-    _gl_ctx.texture(0, [this](const GLuint &)
+    m_gl_ctx.texture(0, [this](const GLuint &)
     {
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1);
       glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -398,9 +398,9 @@ x_client_thumbnail::configure_highlight(bool now)
 
   } else {
     use_program("grayscale_shader");
-    _gl_ctx.texture(0, [this](const GLuint &)
+    m_gl_ctx.texture(0, [this](const GLuint &)
     {
-      _gl_ctx.pixmap(0, [this](const GLXPixmap & p)
+      m_gl_ctx.pixmap(0, [this](const GLXPixmap & p)
       {
         m_gl_api.glXReleaseTexImageEXT(m_c.dpy(), p, GLX_FRONT_EXT);
         m_gl_api.glXBindTexImageEXT(m_c.dpy(), p, GLX_FRONT_EXT, NULL);
