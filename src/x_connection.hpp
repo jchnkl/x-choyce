@@ -90,7 +90,7 @@ class x_connection : public x_event_handler_t
     int _screen_number = 0;
     xcb_window_t _root_window = 0;
     Display * _dpy = NULL;
-    xcb_connection_t * _c = NULL;
+    xcb_connection_t * m_c = NULL;
     xcb_screen_t * _default_screen = NULL;
 
     std::vector<rectangle> _screens;

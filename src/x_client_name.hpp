@@ -34,7 +34,7 @@ class x_client_name : public x_event_handler_t
     void notify(x_client *);
 
   private:
-    x_connection & _c;
+    x_connection & m_c;
     x::xrm & _xrm;
     x_client & _x_client;
     std::shared_ptr<x::xft> _x_xft;
@@ -46,9 +46,9 @@ class x_client_name : public x_event_handler_t
 
     xcb_pixmap_t _title = XCB_NONE;
 
-    xcb_atom_t _a_wm_name = _c.intern_atom("WM_NAME");
-    xcb_atom_t _a_wm_class = _c.intern_atom("WM_CLASS");
-    xcb_atom_t _a_net_wm_name = _c.intern_atom("_NET_WM_NAME");
+    xcb_atom_t _a_wm_name = m_c.intern_atom("WM_NAME");
+    xcb_atom_t _a_wm_class = m_c.intern_atom("WM_CLASS");
+    xcb_atom_t _a_net_wm_name = m_c.intern_atom("_NET_WM_NAME");
 
     unsigned int _title_width = 0;
     unsigned int _title_height = 0;

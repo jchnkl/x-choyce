@@ -15,7 +15,7 @@ x_connection::x_connection(void)
   _dpy = XOpenDisplay(NULL);
   XSetEventQueueOwner(_dpy, XCBOwnsEventQueue);
   _screen_number = DefaultScreen(_dpy);
-  _c = XGetXCBConnection(_dpy);
+  m_c = XGetXCBConnection(_dpy);
   find_default_screen();
   _root_window = _default_screen->root;
 
@@ -29,11 +29,11 @@ x_connection::x_connection(void)
 
 x_connection::~x_connection(void)
 {
-  xcb_disconnect(_c);
+  xcb_disconnect(m_c);
 }
 
 xcb_connection_t * const
-x_connection::operator()(void) const { return _c; }
+x_connection::operator()(void) const { return m_c; }
 
 Display * const
 x_connection::dpy(void) const { return _dpy; }
@@ -49,16 +49,16 @@ x_connection::select_input(xcb_window_t window, uint32_t event_mask) const
 {
   uint32_t mask = XCB_CW_EVENT_MASK;
   uint32_t values[] = { event_mask };
-  xcb_change_window_attributes(_c, window, mask, values);
+  xcb_change_window_attributes(m_c, window, mask, values);
 }
 
 void
 x_connection::update_input(xcb_window_t window, uint32_t event_mask) const
 {
   xcb_get_window_attributes_cookie_t window_attributes_cookie =
-    xcb_get_window_attributes(_c, window);
+    xcb_get_window_attributes(m_c, window);
   xcb_get_window_attributes_reply_t * window_attributes_reply =
-    xcb_get_window_attributes_reply(_c, window_attributes_cookie, NULL);
+    xcb_get_window_attributes_reply(m_c, window_attributes_cookie, NULL);
 
   if (window_attributes_reply) {
     event_mask |= window_attributes_reply->your_event_mask;
@@ -112,7 +112,7 @@ x_connection::find_visual(unsigned int depth)
 }
 
 void
-x_connection::flush(void) const { xcb_flush(_c); }
+x_connection::flush(void) const { xcb_flush(m_c); }
 
 int
 x_connection::screen_number(void) const
@@ -140,7 +140,7 @@ x_connection::grab_key(uint16_t modifiers, xcb_keysym_t keysym) const
 {
   xcb_keycode_t keycode = keysym_to_keycode(keysym);
   if (keycode != 0) {
-    xcb_grab_key(_c, false, _root_window, modifiers, keycode,
+    xcb_grab_key(m_c, false, _root_window, modifiers, keycode,
                  XCB_GRAB_MODE_ASYNC, XCB_GRAB_MODE_ASYNC);
   }
 }
@@ -150,7 +150,7 @@ x_connection::ungrab_key(uint16_t modifiers, xcb_keysym_t keysym) const
 {
   xcb_keycode_t keycode = keysym_to_keycode(keysym);
   if (keycode != 0) {
-    xcb_ungrab_key(_c, keycode, _root_window, modifiers);
+    xcb_ungrab_key(m_c, keycode, _root_window, modifiers);
   }
 }
 
@@ -158,34 +158,34 @@ void
 x_connection::grab_keyboard(void) const
 {
   xcb_grab_keyboard_cookie_t grab_keyboard_cookie =
-    xcb_grab_keyboard(_c, false, root_window(), XCB_TIME_CURRENT_TIME,
+    xcb_grab_keyboard(m_c, false, root_window(), XCB_TIME_CURRENT_TIME,
                       XCB_GRAB_MODE_ASYNC, XCB_GRAB_MODE_ASYNC);
   xcb_grab_keyboard_reply_t * grab_keyboard_reply =
-    xcb_grab_keyboard_reply(_c, grab_keyboard_cookie, NULL);
+    xcb_grab_keyboard_reply(m_c, grab_keyboard_cookie, NULL);
   delete grab_keyboard_reply;
 }
 
 void
 x_connection::ungrab_keyboard(void) const
 {
-  xcb_ungrab_keyboard(_c, XCB_TIME_CURRENT_TIME);
+  xcb_ungrab_keyboard(m_c, XCB_TIME_CURRENT_TIME);
 }
 
 void
 x_connection::grab_pointer(xcb_window_t grab_window, uint16_t event_mask) const
 {
   xcb_grab_pointer_cookie_t c =
-    xcb_grab_pointer(_c, false, grab_window, event_mask,
+    xcb_grab_pointer(m_c, false, grab_window, event_mask,
                      XCB_GRAB_MODE_ASYNC, XCB_GRAB_MODE_ASYNC,
                      XCB_NONE, XCB_NONE, XCB_CURRENT_TIME);
-  xcb_grab_pointer_reply_t * r = xcb_grab_pointer_reply(_c, c, NULL);
+  xcb_grab_pointer_reply_t * r = xcb_grab_pointer_reply(m_c, c, NULL);
   if (r) delete r;
 }
 
 void
 x_connection::ungrab_pointer(void) const
 {
-  xcb_ungrab_pointer(_c, XCB_CURRENT_TIME);
+  xcb_ungrab_pointer(m_c, XCB_CURRENT_TIME);
 }
 
 x_connection::modifier_map
@@ -194,7 +194,7 @@ x_connection::modifier_mapping(void) const
   modifier_map result;
 
   xcb_get_modifier_mapping_reply_t * modifier_mapping_reply =
-    xcb_get_modifier_mapping_reply(_c, xcb_get_modifier_mapping(_c), NULL);
+    xcb_get_modifier_mapping_reply(m_c, xcb_get_modifier_mapping(m_c), NULL);
 
   if (modifier_mapping_reply == NULL) { return result; }
 
@@ -230,7 +230,7 @@ x_connection::keycode_to_keysym(xcb_keycode_t keycode) const
   xcb_key_symbols_t * keysyms;
   xcb_keysym_t keysym;
 
-  if (!(keysyms = xcb_key_symbols_alloc(_c))) { return 0; }
+  if (!(keysyms = xcb_key_symbols_alloc(m_c))) { return 0; }
   keysym = xcb_key_symbols_get_keysym(keysyms, keycode, 0);
   xcb_key_symbols_free(keysyms);
 
@@ -243,7 +243,7 @@ x_connection::keysym_to_keycode(xcb_keysym_t keysym) const
   xcb_key_symbols_t * keysyms;
   xcb_keycode_t keycode, * keycode_reply;
 
-  if (!(keysyms = xcb_key_symbols_alloc(_c))) { return 0; }
+  if (!(keysyms = xcb_key_symbols_alloc(m_c))) { return 0; }
   keycode_reply = xcb_key_symbols_get_keycode(keysyms, keysym);
   xcb_key_symbols_free(keysyms);
 
@@ -268,8 +268,8 @@ std::tuple<xcb_window_t, std::vector<xcb_window_t>>
 x_connection::query_tree(xcb_window_t parent)
 {
   xcb_generic_error_t * error;
-  xcb_query_tree_cookie_t cookie = xcb_query_tree(_c, parent);
-  xcb_query_tree_reply_t * reply = xcb_query_tree_reply(_c, cookie, &error);
+  xcb_query_tree_cookie_t cookie = xcb_query_tree(m_c, parent);
+  xcb_query_tree_reply_t * reply = xcb_query_tree_reply(m_c, cookie, &error);
 
   if (error) {
     delete error;
@@ -295,18 +295,18 @@ x_connection::net_client_list_stacking(void) const
 {
   std::string atom_name = "_NET_CLIENT_LIST_STACKING";
   xcb_intern_atom_cookie_t atom_cookie =
-    xcb_intern_atom(_c, false, atom_name.length(), atom_name.c_str());
+    xcb_intern_atom(m_c, false, atom_name.length(), atom_name.c_str());
   xcb_intern_atom_reply_t * atom_reply =
-    xcb_intern_atom_reply(_c, atom_cookie, NULL);
+    xcb_intern_atom_reply(m_c, atom_cookie, NULL);
 
   xcb_get_property_cookie_t property_cookie =
-    xcb_get_property(_c, false, _root_window,
+    xcb_get_property(m_c, false, _root_window,
                      atom_reply->atom, XCB_ATOM_WINDOW, 0, UINT_MAX);
 
   delete atom_reply;
 
   xcb_get_property_reply_t * property_reply =
-    xcb_get_property_reply(_c, property_cookie, NULL);
+    xcb_get_property_reply(m_c, property_cookie, NULL);
 
   xcb_window_t * windows =
     (xcb_window_t *)xcb_get_property_value(property_reply);
@@ -327,8 +327,8 @@ x_connection::intern_atom(const std::string & name)
     return _atoms.at(name);
   } catch (...) {
     xcb_intern_atom_cookie_t c =
-      xcb_intern_atom(_c, false, name.length(), name.c_str());
-    xcb_intern_atom_reply_t * r = xcb_intern_atom_reply(_c, c, NULL);
+      xcb_intern_atom(m_c, false, name.length(), name.c_str());
+    xcb_intern_atom_reply_t * r = xcb_intern_atom_reply(m_c, c, NULL);
 
     if (r) {
       _atoms[name] = r->atom;
@@ -363,7 +363,7 @@ x_connection::request_change_current_desktop(unsigned int desktop_id)
   uint32_t mask = XCB_EVENT_MASK_SUBSTRUCTURE_REDIRECT
                 | XCB_EVENT_MASK_SUBSTRUCTURE_NOTIFY;
 
-  xcb_send_event(_c, false, _root_window, mask, (const char *)&event);
+  xcb_send_event(m_c, false, _root_window, mask, (const char *)&event);
 }
 
 void
@@ -385,7 +385,7 @@ x_connection::request_change_active_window(xcb_window_t window)
   uint32_t mask = XCB_EVENT_MASK_SUBSTRUCTURE_REDIRECT
                 | XCB_EVENT_MASK_SUBSTRUCTURE_NOTIFY;
 
-  xcb_send_event(_c, false, _root_window, mask, (const char *)&event);
+  xcb_send_event(m_c, false, _root_window, mask, (const char *)&event);
 }
 
 // root, window
@@ -394,8 +394,8 @@ x_connection::query_pointer(const xcb_window_t & window) const
 {
   xcb_generic_error_t * error;
   xcb_query_pointer_cookie_t c =
-    xcb_query_pointer(_c, window == XCB_NONE ? _root_window : window);
-  xcb_query_pointer_reply_t * r = xcb_query_pointer_reply(_c, c, &error);
+    xcb_query_pointer(m_c, window == XCB_NONE ? _root_window : window);
+  xcb_query_pointer_reply_t * r = xcb_query_pointer_reply(m_c, c, &error);
 
   if (error) {
     delete error;
@@ -414,8 +414,8 @@ x_connection::get_geometry(const xcb_window_t & window) const
 {
   xcb_generic_error_t * error;
   xcb_get_geometry_cookie_t c =
-    xcb_get_geometry(_c, window == XCB_NONE ? _root_window : window);
-  xcb_get_geometry_reply_t * r = xcb_get_geometry_reply(_c, c, &error);
+    xcb_get_geometry(m_c, window == XCB_NONE ? _root_window : window);
+  xcb_get_geometry_reply_t * r = xcb_get_geometry_reply(m_c, c, &error);
 
   if (error) {
     delete error;
@@ -489,7 +489,7 @@ x_connection::find_default_screen(void)
 {
   int screen = _screen_number;
   xcb_screen_iterator_t iter;
-  iter = xcb_setup_roots_iterator(xcb_get_setup(_c));
+  iter = xcb_setup_roots_iterator(xcb_get_setup(m_c));
   for (; iter.rem; --screen, xcb_screen_next(&iter))
     if (screen == 0) {
       _default_screen = iter.data;
@@ -502,52 +502,52 @@ x_connection::find_default_screen(void)
 void
 x_connection::init_composite(void)
 {
-  xcb_prefetch_extension_data(_c, &xcb_composite_id);
+  xcb_prefetch_extension_data(m_c, &xcb_composite_id);
 
-  xcb_composite_query_version(_c, XCB_COMPOSITE_MAJOR_VERSION,
+  xcb_composite_query_version(m_c, XCB_COMPOSITE_MAJOR_VERSION,
                                   XCB_COMPOSITE_MINOR_VERSION);
 
-  xcb_composite_redirect_subwindows(_c, _root_window,
+  xcb_composite_redirect_subwindows(m_c, _root_window,
                                     XCB_COMPOSITE_REDIRECT_AUTOMATIC);
 }
 
 void
 x_connection::init_damage(void)
 {
-  xcb_prefetch_extension_data(_c, &xcb_damage_id);
+  xcb_prefetch_extension_data(m_c, &xcb_damage_id);
 
   const xcb_query_extension_reply_t * extension_reply =
-    xcb_get_extension_data(_c, &xcb_damage_id);
+    xcb_get_extension_data(m_c, &xcb_damage_id);
 
   _damage_event_id = extension_reply->first_event + XCB_DAMAGE_NOTIFY;
 
   // necessary to get xdamage of the ground
-  xcb_damage_query_version(_c, XCB_DAMAGE_MAJOR_VERSION,
+  xcb_damage_query_version(m_c, XCB_DAMAGE_MAJOR_VERSION,
                                 XCB_DAMAGE_MINOR_VERSION);
 }
 
 void
-x_connection::init_render(void) { xcb_prefetch_extension_data(_c, &xcb_render_id); }
+x_connection::init_render(void) { xcb_prefetch_extension_data(m_c, &xcb_render_id); }
 
 void
 x_connection::init_xfixes(void)
 {
-  xcb_prefetch_extension_data(_c, &xcb_xfixes_id);
-  xcb_xfixes_query_version(_c, XCB_XFIXES_MAJOR_VERSION,
+  xcb_prefetch_extension_data(m_c, &xcb_xfixes_id);
+  xcb_xfixes_query_version(m_c, XCB_XFIXES_MAJOR_VERSION,
                                XCB_XFIXES_MINOR_VERSION);
 }
 
 void
 x_connection::init_xinerama(void)
 {
-  xcb_prefetch_extension_data(_c, &xcb_xinerama_id);
-  xcb_xinerama_query_version(_c, XCB_XINERAMA_MAJOR_VERSION,
+  xcb_prefetch_extension_data(m_c, &xcb_xinerama_id);
+  xcb_xinerama_query_version(m_c, XCB_XINERAMA_MAJOR_VERSION,
                                  XCB_XINERAMA_MINOR_VERSION);
 
   xcb_xinerama_is_active_cookie_t is_active_cookie =
-    xcb_xinerama_is_active(_c);
+    xcb_xinerama_is_active(m_c);
   xcb_xinerama_is_active_reply_t * is_active_reply =
-    xcb_xinerama_is_active_reply(_c, is_active_cookie, NULL);
+    xcb_xinerama_is_active_reply(m_c, is_active_cookie, NULL);
 
   if (is_active_reply && is_active_reply->state) {
     delete is_active_reply;
@@ -559,10 +559,10 @@ void
 x_connection::update_xinerama(void)
 {
   xcb_xinerama_query_screens_cookie_t query_screens_cookie =
-    xcb_xinerama_query_screens(_c);
+    xcb_xinerama_query_screens(m_c);
 
   xcb_xinerama_query_screens_reply_t * query_screens_reply =
-    xcb_xinerama_query_screens_reply(_c, query_screens_cookie, NULL);
+    xcb_xinerama_query_screens_reply(m_c, query_screens_cookie, NULL);
 
   if (query_screens_reply
       && 0 < xcb_xinerama_query_screens_screen_info_length(query_screens_reply))

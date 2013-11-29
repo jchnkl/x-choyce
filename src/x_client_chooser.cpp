@@ -7,23 +7,23 @@
 x_client_chooser::x_client_chooser(x_connection & c,
                                    x::xrm & xrm,
                                    chooser_t * chooser)
-  : _c(c), _xrm(xrm), _chooser(chooser)
+  : m_c(c), _xrm(xrm), _chooser(chooser)
 {
-  _c.attach(0, XCB_KEY_PRESS, this);
-  _c.attach(0, XCB_KEY_RELEASE, this);
-  _c.attach(0, XCB_BUTTON_PRESS, this);
-  _c.attach(0, XCB_MOTION_NOTIFY, this);
+  m_c.attach(0, XCB_KEY_PRESS, this);
+  m_c.attach(0, XCB_KEY_RELEASE, this);
+  m_c.attach(0, XCB_BUTTON_PRESS, this);
+  m_c.attach(0, XCB_MOTION_NOTIFY, this);
   _xrm.attach(this);
   load_config();
-  _modifier_map = _c.modifier_mapping();
+  _modifier_map = m_c.modifier_mapping();
 }
 
 x_client_chooser::~x_client_chooser(void)
 {
-  _c.detach(XCB_KEY_PRESS, this);
-  _c.detach(XCB_KEY_RELEASE, this);
-  _c.detach(XCB_BUTTON_PRESS, this);
-  _c.detach(XCB_MOTION_NOTIFY, this);
+  m_c.detach(XCB_KEY_PRESS, this);
+  m_c.detach(XCB_KEY_RELEASE, this);
+  m_c.detach(XCB_BUTTON_PRESS, this);
+  m_c.detach(XCB_MOTION_NOTIFY, this);
   _xrm.detach(this);
 }
 
@@ -50,8 +50,8 @@ x_client_chooser::handle(xcb_generic_event_t * ge)
       } else {
         _active = true;
         _last_motion = XCB_NONE;
-        _c.grab_keyboard();
-        _c.grab_pointer(_c.root_window(),
+        m_c.grab_keyboard();
+        m_c.grab_pointer(m_c.root_window(),
                         XCB_EVENT_MASK_POINTER_MOTION
                         | XCB_EVENT_MASK_BUTTON_PRESS);
         _chooser->show();
@@ -101,7 +101,7 @@ x_client_chooser::handle(xcb_generic_event_t * ge)
     result = true;
     xcb_motion_notify_event_t *e = (xcb_motion_notify_event_t *)ge;
 
-    if (e->event == _c.root_window()) {
+    if (e->event == m_c.root_window()) {
       _ignore_release = true;
     }
 
@@ -126,29 +126,29 @@ void
 x_client_chooser::quit(void)
 {
   _active = false;
-  _c.ungrab_pointer();
-  _c.ungrab_keyboard();
+  m_c.ungrab_pointer();
+  m_c.ungrab_keyboard();
   _chooser->hide();
 }
 
 void
 x_client_chooser::load_config(void)
 {
-  _c.ungrab_key(_action_modmask, _action_keysym);
+  m_c.ungrab_key(_action_modmask, _action_keysym);
 
   _north_keycode =
-    _c.keysym_to_keycode(XStringToKeysym(_xrm["north"].v.str->c_str()));
+    m_c.keysym_to_keycode(XStringToKeysym(_xrm["north"].v.str->c_str()));
   _south_keycode =
-    _c.keysym_to_keycode(XStringToKeysym(_xrm["south"].v.str->c_str()));
+    m_c.keysym_to_keycode(XStringToKeysym(_xrm["south"].v.str->c_str()));
   _east_keycode =
-    _c.keysym_to_keycode(XStringToKeysym(_xrm["east"].v.str->c_str()));
+    m_c.keysym_to_keycode(XStringToKeysym(_xrm["east"].v.str->c_str()));
   _west_keycode =
-    _c.keysym_to_keycode(XStringToKeysym(_xrm["west"].v.str->c_str()));
+    m_c.keysym_to_keycode(XStringToKeysym(_xrm["west"].v.str->c_str()));
   _quit_keycode =
-    _c.keysym_to_keycode(XStringToKeysym(_xrm["escape"].v.str->c_str()));
+    m_c.keysym_to_keycode(XStringToKeysym(_xrm["escape"].v.str->c_str()));
 
   _action_keysym = XStringToKeysym(_xrm["action"].v.str->c_str());
-  _action_keycode = _c.keysym_to_keycode(_action_keysym);
+  _action_keycode = m_c.keysym_to_keycode(_action_keysym);
 
   int mask = 0;
   std::stringstream ss(*_xrm["mod"].v.str);
@@ -167,5 +167,5 @@ x_client_chooser::load_config(void)
 
   _action_modmask = (xcb_mod_mask_t)mask;
 
-  _c.grab_key(_action_modmask, _action_keysym);
+  m_c.grab_key(_action_modmask, _action_keysym);
 }

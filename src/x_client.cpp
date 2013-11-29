@@ -1,13 +1,13 @@
 #include "x_client.hpp"
 
 x_client::x_client(x_connection & c, const xcb_window_t & window)
-  : _c(c), _window(window)
+  : m_c(c), _window(window)
 {
-  _c.attach(0, XCB_MAP_NOTIFY, this);
-  _c.attach(0, XCB_UNMAP_NOTIFY, this);
-  _c.attach(0, XCB_CONFIGURE_NOTIFY, this);
-  _c.attach(0, XCB_PROPERTY_NOTIFY, this);
-  _c.update_input(_window, XCB_EVENT_MASK_STRUCTURE_NOTIFY
+  m_c.attach(0, XCB_MAP_NOTIFY, this);
+  m_c.attach(0, XCB_UNMAP_NOTIFY, this);
+  m_c.attach(0, XCB_CONFIGURE_NOTIFY, this);
+  m_c.attach(0, XCB_PROPERTY_NOTIFY, this);
+  m_c.update_input(_window, XCB_EVENT_MASK_STRUCTURE_NOTIFY
                            | XCB_EVENT_MASK_PROPERTY_CHANGE);
   update_geometry();
   update_net_wm_desktop();
@@ -17,13 +17,13 @@ x_client::x_client(x_connection & c, const xcb_window_t & window)
 
 x_client::~x_client(void)
 {
-  _c.detach(XCB_MAP_NOTIFY, this);
-  _c.detach(XCB_UNMAP_NOTIFY, this);
-  _c.detach(XCB_CONFIGURE_NOTIFY, this);
-  _c.detach(XCB_PROPERTY_NOTIFY, this);
+  m_c.detach(XCB_MAP_NOTIFY, this);
+  m_c.detach(XCB_UNMAP_NOTIFY, this);
+  m_c.detach(XCB_CONFIGURE_NOTIFY, this);
+  m_c.detach(XCB_PROPERTY_NOTIFY, this);
 
-  xcb_free_pixmap(_c(), _name_window_pixmap);
-  xcb_free_pixmap(_c(), _name_window_dummy);
+  xcb_free_pixmap(m_c(), _name_window_pixmap);
+  xcb_free_pixmap(m_c(), _name_window_dummy);
 }
 
 const    rectangle & x_client::rect(void)   const { return _rectangle; }
@@ -43,7 +43,7 @@ unsigned int x_client::net_wm_desktop(void) const { return _net_wm_desktop; }
 void x_client::update_geometry(void)
 {
   xcb_get_geometry_reply_t * geometry_reply =
-    xcb_get_geometry_reply(_c(), xcb_get_geometry(_c(), _window), NULL);
+    xcb_get_geometry_reply(m_c(), xcb_get_geometry(m_c(), _window), NULL);
 
   _rectangle.x()      = geometry_reply->x;
   _rectangle.y()      = geometry_reply->y;
@@ -68,7 +68,7 @@ x_client::handle(xcb_generic_event_t * ge)
       _rectangle.width() = e->width; _rectangle.height() = e->height;
     }
 
-    if (e->window == _c.root_window() || e->window == _window) {
+    if (e->window == m_c.root_window() || e->window == _window) {
       update();
     }
 
@@ -114,8 +114,8 @@ x_client::update_net_wm_desktop(void)
 {
   xcb_generic_error_t * error = NULL;
   xcb_get_property_cookie_t c = xcb_get_property(
-      _c(), false, _window, a_net_wm_desktop, XCB_ATOM_CARDINAL, 0, 32);
-  xcb_get_property_reply_t * r = xcb_get_property_reply(_c(), c, &error);
+      m_c(), false, _window, a_net_wm_desktop, XCB_ATOM_CARDINAL, 0, 32);
+  xcb_get_property_reply_t * r = xcb_get_property_reply(m_c(), c, &error);
 
   if (error || r->value_len == 0) {
     delete error;
@@ -132,21 +132,21 @@ x_client::update_parent_window(void)
 {
   xcb_window_t next_parent = _window;
 
-  while (next_parent != _c.root_window() && next_parent != XCB_NONE) {
+  while (next_parent != m_c.root_window() && next_parent != XCB_NONE) {
     _parent = next_parent;
-    next_parent = std::get<0>(_c.query_tree(next_parent));
+    next_parent = std::get<0>(m_c.query_tree(next_parent));
   }
 }
 
 void
 x_client::update_name_window_pixmap(void)
 {
-  xcb_free_pixmap(_c(), _name_window_pixmap);
-  _name_window_pixmap = xcb_generate_id(_c());
+  xcb_free_pixmap(m_c(), _name_window_pixmap);
+  _name_window_pixmap = xcb_generate_id(m_c());
   xcb_void_cookie_t c = xcb_composite_name_window_pixmap_checked(
-      _c(), _parent, _name_window_pixmap);
+      m_c(), _parent, _name_window_pixmap);
 
-  xcb_generic_error_t * error = xcb_request_check(_c(), c);
+  xcb_generic_error_t * error = xcb_request_check(m_c(), c);
 
   if (error) {
     delete error;
@@ -158,19 +158,19 @@ x_client::update_name_window_pixmap(void)
 void
 x_client::make_dummy(void)
 {
-  xcb_free_pixmap(_c(), _name_window_dummy);
-  _name_window_dummy = xcb_generate_id(_c());
-  xcb_create_pixmap(_c(), 24, _name_window_dummy, _c.root_window(),
+  xcb_free_pixmap(m_c(), _name_window_dummy);
+  _name_window_dummy = xcb_generate_id(m_c());
+  xcb_create_pixmap(m_c(), 24, _name_window_dummy, m_c.root_window(),
       _rectangle.width(), _rectangle.height());
 
-  xcb_gcontext_t gc = xcb_generate_id(_c());
+  xcb_gcontext_t gc = xcb_generate_id(m_c());
   uint32_t fg = 0xff808080;
 
-  xcb_create_gc(_c(), gc, _name_window_dummy, XCB_GC_FOREGROUND, &fg);
+  xcb_create_gc(m_c(), gc, _name_window_dummy, XCB_GC_FOREGROUND, &fg);
   xcb_rectangle_t r = {
     0, 0, (uint16_t)_rectangle.width(), (uint16_t)_rectangle.height() };
-  xcb_poly_fill_rectangle(_c(), _name_window_dummy, gc, 1, &r);
-  xcb_free_gc(_c(), gc);
+  xcb_poly_fill_rectangle(m_c(), _name_window_dummy, gc, 1, &r);
+  xcb_free_gc(m_c(), gc);
 }
 
 // free functions

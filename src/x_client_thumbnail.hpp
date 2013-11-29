@@ -44,7 +44,7 @@ class x_client_thumbnail : public x_event_handler_t
   private:
     typedef std::shared_ptr<x_client> x_client_ptr;
 
-    x_connection & _c;
+    x_connection & m_c;
     x_client_ptr _x_client;
 
     double _scale;

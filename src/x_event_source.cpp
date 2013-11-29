@@ -3,9 +3,9 @@
 #include <algorithm>
 #include <X11/Xlibint.h>
 
-x_event_source::x_event_source(x_connection & c) : _c(c)
+x_event_source::x_event_source(x_connection & c) : m_c(c)
 {
-  _c.update_input(_c.root_window(), XCB_EVENT_MASK_STRUCTURE_NOTIFY);
+  m_c.update_input(m_c.root_window(), XCB_EVENT_MASK_STRUCTURE_NOTIFY);
 }
 
 void
@@ -34,8 +34,8 @@ x_event_source::run_event_loop(void)
 {
   xcb_generic_event_t * ge = NULL;
   while (_running) {
-    _c.flush();
-    ge = xcb_wait_for_event(_c());
+    m_c.flush();
+    ge = xcb_wait_for_event(m_c());
 
     if (! ge) {
       break;
@@ -62,12 +62,12 @@ x_event_source::run_event_loop(void)
         // the X server e.g. the OpenGL lib waiting for DRI2 events.
 
         Bool (*proc)(Display*, XEvent*, xEvent*) =
-          XESetWireToEvent(_c.dpy(), response_type, 0);
+          XESetWireToEvent(m_c.dpy(), response_type, 0);
         if (proc) {
-          XESetWireToEvent(_c.dpy(), response_type, proc);
+          XESetWireToEvent(m_c.dpy(), response_type, proc);
           XEvent dummy;
-          ge->sequence = LastKnownRequestProcessed(_c.dpy());
-          proc(_c.dpy(), &dummy, (xEvent*)ge);
+          ge->sequence = LastKnownRequestProcessed(m_c.dpy());
+          proc(m_c.dpy(), &dummy, (xEvent*)ge);
         }
       }
 
@@ -87,11 +87,11 @@ x_event_source::shutdown(void)
   e.response_type = XCB_CLIENT_MESSAGE;
   e.format = 32;
   e.type = XCB_ATOM_CARDINAL;
-  e.window = _c.root_window();
+  e.window = m_c.root_window();
   e.data.data32[0] = id;
 
-  xcb_send_event(_c(), false, _c.root_window(),
+  xcb_send_event(m_c(), false, m_c.root_window(),
                  XCB_EVENT_MASK_STRUCTURE_NOTIFY, (const char *)&e);
 
-  _c.flush();
+  m_c.flush();
 }

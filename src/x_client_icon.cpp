@@ -6,10 +6,10 @@
 #include <xcb/xcb_image.h>
 
 x_client_icon::x_client_icon(x_connection & c, x_client & x_client)
-  : _c(c), _x_client(x_client)
+  : m_c(c), _x_client(x_client)
 {
-  _c.attach(10, XCB_PROPERTY_NOTIFY, this);
-  _c.update_input(_x_client.window(), XCB_EVENT_MASK_PROPERTY_CHANGE);
+  m_c.attach(10, XCB_PROPERTY_NOTIFY, this);
+  m_c.update_input(_x_client.window(), XCB_EVENT_MASK_PROPERTY_CHANGE);
 
   update_net_wm_icon();
   if (_net_wm_icon == XCB_NONE) {
@@ -19,9 +19,9 @@ x_client_icon::x_client_icon(x_connection & c, x_client & x_client)
 
 x_client_icon::~x_client_icon(void)
 {
-  _c.detach(XCB_PROPERTY_NOTIFY, this);
-  xcb_free_pixmap(_c(), _net_wm_icon);
-  xcb_free_pixmap(_c(), _wm_hints_icon);
+  m_c.detach(XCB_PROPERTY_NOTIFY, this);
+  xcb_free_pixmap(m_c(), _net_wm_icon);
+  xcb_free_pixmap(m_c(), _wm_hints_icon);
 }
 
 bool
@@ -52,16 +52,16 @@ x_client_icon::handle(xcb_generic_event_t * ge)
 void
 x_client_icon::update_net_wm_icon(void)
 {
-  xcb_free_pixmap(_c(), _net_wm_icon);
+  xcb_free_pixmap(m_c(), _net_wm_icon);
   _net_wm_icon = XCB_NONE;
 
   xcb_generic_error_t * error;
   xcb_get_property_cookie_t c =
-    xcb_ewmh_get_wm_icon(_c.ewmh(), _x_client.window());
+    xcb_ewmh_get_wm_icon(m_c.ewmh(), _x_client.window());
 
   xcb_ewmh_get_wm_icon_reply_t wm_icon;
   std::memset(&wm_icon, 0, sizeof(xcb_ewmh_get_wm_icon_reply_t));
-  xcb_ewmh_get_wm_icon_reply(_c.ewmh(), c, &wm_icon, &error);
+  xcb_ewmh_get_wm_icon_reply(m_c.ewmh(), c, &wm_icon, &error);
 
   if (error) {
     delete error;
@@ -84,24 +84,24 @@ x_client_icon::update_net_wm_icon(void)
     _icon_geometry.first = width;
     _icon_geometry.second = height;
 
-    _net_wm_icon = xcb_generate_id(_c());
+    _net_wm_icon = xcb_generate_id(m_c());
     xcb_create_pixmap(
-        _c(), 32, _net_wm_icon, _c.root_window(), width, height);
+        m_c(), 32, _net_wm_icon, m_c.root_window(), width, height);
 
     xcb_image_t * image = xcb_image_create_native(
-        _c(), width, height, XCB_IMAGE_FORMAT_Z_PIXMAP, 32, NULL, 0, NULL);
+        m_c(), width, height, XCB_IMAGE_FORMAT_Z_PIXMAP, 32, NULL, 0, NULL);
 
     image->data = (uint8_t *)data;
 
     alpha_transform(image->data, width, height);
 
-    xcb_gcontext_t gc = xcb_generate_id(_c());
-    xcb_create_gc(_c(), gc, _net_wm_icon, 0, NULL);
+    xcb_gcontext_t gc = xcb_generate_id(m_c());
+    xcb_create_gc(m_c(), gc, _net_wm_icon, 0, NULL);
 
-    xcb_image_put(_c(), _net_wm_icon, gc, image, 0, 0, 0);
+    xcb_image_put(m_c(), _net_wm_icon, gc, image, 0, 0, 0);
 
     xcb_image_destroy(image);
-    xcb_free_gc(_c(), gc);
+    xcb_free_gc(m_c(), gc);
 
     xcb_ewmh_get_wm_icon_reply_wipe(&wm_icon);
   }
@@ -110,14 +110,14 @@ x_client_icon::update_net_wm_icon(void)
 void
 x_client_icon::update_wm_hints_icon(void)
 {
-  xcb_free_pixmap(_c(), _wm_hints_icon);
+  xcb_free_pixmap(m_c(), _wm_hints_icon);
   _wm_hints_icon = XCB_NONE;
 
   xcb_generic_error_t * error;
 
   xcb_get_property_cookie_t c =
-    xcb_icccm_get_wm_hints(_c(), _x_client.window());
-  xcb_get_property_reply_t * r = xcb_get_property_reply(_c(), c, &error);
+    xcb_icccm_get_wm_hints(m_c(), _x_client.window());
+  xcb_get_property_reply_t * r = xcb_get_property_reply(m_c(), c, &error);
 
   if (error) {
     delete error;
@@ -133,29 +133,29 @@ x_client_icon::update_wm_hints_icon(void)
         Window root;
         int x, y;
         unsigned int border_width, depth;
-        XGetGeometry(_c.dpy(), wm_hints.icon_pixmap, &root,
+        XGetGeometry(m_c.dpy(), wm_hints.icon_pixmap, &root,
             &x, &y, &width, &height, &border_width, &depth);
         _icon_geometry.first = width;
         _icon_geometry.second = height;
       }
 
-      xcb_image_t * icon_rgb = xcb_image_get(_c(), wm_hints.icon_pixmap,
+      xcb_image_t * icon_rgb = xcb_image_get(m_c(), wm_hints.icon_pixmap,
           0, 0, width, height, 0xffffffff, XCB_IMAGE_FORMAT_XY_PIXMAP);
 
       xcb_image_t * icon_mask;
       if (wm_hints.flags & XCB_ICCCM_WM_HINT_ICON_MASK) {
-        icon_mask = xcb_image_get(_c(), wm_hints.icon_mask,
+        icon_mask = xcb_image_get(m_c(), wm_hints.icon_mask,
             0, 0, width, height, 0xffffffff, XCB_IMAGE_FORMAT_XY_PIXMAP);
 
       } else {
         icon_mask = xcb_image_create_native(
-            _c(), width, height, XCB_IMAGE_FORMAT_Z_PIXMAP, 32, NULL, 0, NULL);
+            m_c(), width, height, XCB_IMAGE_FORMAT_Z_PIXMAP, 32, NULL, 0, NULL);
         std::memset(icon_mask->data, 0xff,
                     width * height * (icon_mask->bpp / icon_mask->stride));
       }
 
       xcb_image_t * icon_rgba = xcb_image_create_native(
-          _c(), width, height, XCB_IMAGE_FORMAT_Z_PIXMAP, 32, NULL, 0, NULL);
+          m_c(), width, height, XCB_IMAGE_FORMAT_Z_PIXMAP, 32, NULL, 0, NULL);
 
       for (std::size_t x = 0; x < width; ++x) {
         for (std::size_t y = 0; y < height; ++y) {
@@ -176,19 +176,19 @@ x_client_icon::update_wm_hints_icon(void)
         }
       }
 
-      _wm_hints_icon = xcb_generate_id(_c());
+      _wm_hints_icon = xcb_generate_id(m_c());
       xcb_create_pixmap(
-          _c(), 32, _wm_hints_icon, _c.root_window(), width, height);
+          m_c(), 32, _wm_hints_icon, m_c.root_window(), width, height);
 
-      xcb_gcontext_t gc = xcb_generate_id(_c());
-      xcb_create_gc(_c(), gc, _wm_hints_icon, 0, NULL);
+      xcb_gcontext_t gc = xcb_generate_id(m_c());
+      xcb_create_gc(m_c(), gc, _wm_hints_icon, 0, NULL);
 
-      xcb_image_put(_c(), _wm_hints_icon, gc, icon_rgba, 0, 0, 0);
+      xcb_image_put(m_c(), _wm_hints_icon, gc, icon_rgba, 0, 0, 0);
 
       xcb_image_destroy(icon_rgb);
       xcb_image_destroy(icon_mask);
       xcb_image_destroy(icon_rgba);
-      xcb_free_gc(_c(), gc);
+      xcb_free_gc(m_c(), gc);
     }
   }
 

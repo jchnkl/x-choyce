@@ -7,17 +7,17 @@
 thumbnail_manager::thumbnail_manager(x_connection & c,
                                      const layout_t * layout,
                                      const thumbnail_t::factory * factory)
-  : _c(c), _layout(layout), _factory(factory)
+  : m_c(c), _layout(layout), _factory(factory)
 {
-  _c.attach(0, XCB_PROPERTY_NOTIFY, this);
-  _c.attach(20, XCB_CONFIGURE_NOTIFY, this);
-  _c.update_input(_c.root_window(), XCB_EVENT_MASK_PROPERTY_CHANGE);
+  m_c.attach(0, XCB_PROPERTY_NOTIFY, this);
+  m_c.attach(20, XCB_CONFIGURE_NOTIFY, this);
+  m_c.update_input(m_c.root_window(), XCB_EVENT_MASK_PROPERTY_CHANGE);
 }
 
 thumbnail_manager::~thumbnail_manager(void)
 {
-  _c.detach(XCB_PROPERTY_NOTIFY, this);
-  _c.detach(XCB_CONFIGURE_NOTIFY, this);
+  m_c.detach(XCB_PROPERTY_NOTIFY, this);
+  m_c.detach(XCB_CONFIGURE_NOTIFY, this);
 }
 
 void
@@ -126,8 +126,8 @@ thumbnail_manager::handle(xcb_generic_event_t * ge)
   if (XCB_PROPERTY_NOTIFY == (ge->response_type & ~0x80)) {
     xcb_property_notify_event_t * e = (xcb_property_notify_event_t *)ge;
     if (_active
-        && e->window == _c.root_window()
-        && e->atom == _c.intern_atom("_NET_CLIENT_LIST_STACKING"))
+        && e->window == m_c.root_window()
+        && e->atom == m_c.intern_atom("_NET_CLIENT_LIST_STACKING"))
     {
       update();
       reset();
@@ -191,7 +191,7 @@ thumbnail_manager::reset(void)
 inline void
 thumbnail_manager::update(void)
 {
-  _windows = _c.net_client_list_stacking();
+  _windows = m_c.net_client_list_stacking();
   auto rects = _layout->arrange(query_current_screen(), _windows.size());
 
   for (auto item = _thumbnails.begin(); item != _thumbnails.end(); ) {
@@ -315,8 +315,8 @@ thumbnail_manager::query_current_screen(void)
   rectangle screen = { 0, 0, 800, 600 };
 
   try {
-    auto pos = _c.query_pointer();
-    screen = _c.current_screen(pos.first);
+    auto pos = m_c.query_pointer();
+    screen = m_c.current_screen(pos.first);
   } catch (...) {}
 
   return screen;

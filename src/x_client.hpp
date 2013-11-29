@@ -39,7 +39,7 @@ class x_client : public x_event_handler_t
     void update_name_window_pixmap(void);
 
   private:
-    x_connection & _c;
+    x_connection & m_c;
 
     rectangle _rectangle;
     unsigned int _net_wm_desktop;
@@ -48,7 +48,7 @@ class x_client : public x_event_handler_t
     xcb_pixmap_t _name_window_pixmap = XCB_NONE;
     xcb_pixmap_t _name_window_dummy = XCB_NONE;
 
-    xcb_atom_t a_net_wm_desktop = _c.intern_atom("_NET_WM_DESKTOP");
+    xcb_atom_t a_net_wm_desktop = m_c.intern_atom("_NET_WM_DESKTOP");
 
     void make_dummy(void);
     void update_net_wm_desktop(void);

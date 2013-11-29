@@ -16,7 +16,7 @@ class x_client_icon : public x_event_handler_t {
     bool handle(xcb_generic_event_t *);
 
   private:
-    x_connection & _c;
+    x_connection & m_c;
     x_client & _x_client;
 
     xcb_pixmap_t _net_wm_icon = XCB_NONE;
@@ -24,8 +24,8 @@ class x_client_icon : public x_event_handler_t {
 
     std::pair<unsigned int, unsigned int> _icon_geometry;
 
-    xcb_atom_t _a_wm_hints = _c.intern_atom("WM_HINTS");
-    xcb_atom_t _a_net_wm_icon = _c.intern_atom("_NET_WM_ICON");
+    xcb_atom_t _a_wm_hints = m_c.intern_atom("WM_HINTS");
+    xcb_atom_t _a_net_wm_icon = m_c.intern_atom("_NET_WM_ICON");
 
     void update_net_wm_icon(void);
     void update_wm_hints_icon(void);

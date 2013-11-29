@@ -6,10 +6,10 @@
 x_client_name::x_client_name(x_connection & c,
                              x::xrm & xrm,
                              x_client & x_client)
-  : _c(c), _xrm(xrm), _x_client(x_client)
+  : m_c(c), _xrm(xrm), _x_client(x_client)
 {
-  _c.attach(10, XCB_PROPERTY_NOTIFY, this);
-  _c.update_input(_x_client.window(), XCB_EVENT_MASK_PROPERTY_CHANGE);
+  m_c.attach(10, XCB_PROPERTY_NOTIFY, this);
+  m_c.update_input(_x_client.window(), XCB_EVENT_MASK_PROPERTY_CHANGE);
 
   _xrm.attach(this);
   _x_client.attach(this);
@@ -23,10 +23,10 @@ x_client_name::x_client_name(x_connection & c,
 
 x_client_name::~x_client_name(void)
 {
-  _c.detach(XCB_PROPERTY_NOTIFY, this);
+  m_c.detach(XCB_PROPERTY_NOTIFY, this);
   _xrm.detach(this);
   _x_client.detach(this);
-  xcb_free_pixmap(_c(), _title);
+  xcb_free_pixmap(m_c(), _title);
 }
 
 const std::string & x_client_name::net_wm_name(void) const
@@ -142,15 +142,15 @@ x_client_name::update_net_wm_name(void)
 
   xcb_generic_error_t * error;
   xcb_get_property_cookie_t c =
-    xcb_ewmh_get_wm_name(_c.ewmh(), _x_client.window());
-  xcb_get_property_reply_t * r = xcb_get_property_reply(_c(), c, &error);
+    xcb_ewmh_get_wm_name(m_c.ewmh(), _x_client.window());
+  xcb_get_property_reply_t * r = xcb_get_property_reply(m_c(), c, &error);
 
   if (error) {
     delete error;
 
   } else {
     xcb_ewmh_get_utf8_strings_reply_t net_wm_name;
-    if (xcb_ewmh_get_wm_name_from_reply(_c.ewmh(), &net_wm_name, r)) {
+    if (xcb_ewmh_get_wm_name_from_reply(m_c.ewmh(), &net_wm_name, r)) {
       _net_wm_name = std::string(net_wm_name.strings, net_wm_name.strings_len);
       xcb_ewmh_get_utf8_strings_reply_wipe(&net_wm_name);
       r = NULL;
@@ -168,8 +168,8 @@ x_client_name::update_wm_name(void)
   xcb_generic_error_t * error;
   xcb_icccm_get_text_property_reply_t wm_name;
   xcb_get_property_cookie_t c =
-    xcb_icccm_get_wm_name(_c(), _x_client.window());
-  xcb_icccm_get_wm_name_reply(_c(), c, &wm_name, &error);
+    xcb_icccm_get_wm_name(m_c(), _x_client.window());
+  xcb_icccm_get_wm_name_reply(m_c(), c, &wm_name, &error);
 
   // TODO: cause clang to crash, FILE A BUG REPORT
 #if defined  __GNUC__
@@ -194,8 +194,8 @@ x_client_name::update_wm_class(void)
 
   xcb_generic_error_t * error;
   xcb_get_property_cookie_t c =
-    xcb_icccm_get_wm_class(_c(), _x_client.window());
-  xcb_get_property_reply_t * r = xcb_get_property_reply(_c(), c, &error);
+    xcb_icccm_get_wm_class(m_c(), _x_client.window());
+  xcb_get_property_reply_t * r = xcb_get_property_reply(m_c(), c, &error);
 
   if (error) {
     delete error;
@@ -216,19 +216,19 @@ x_client_name::update_wm_class(void)
 void
 x_client_name::make_title(void)
 {
-  xcb_free_pixmap(_c(), _title);
+  xcb_free_pixmap(m_c(), _title);
 
-  _title = xcb_generate_id(_c());
-  xcb_create_pixmap(_c(), 32, _title, _c.root_window(),
+  _title = xcb_generate_id(m_c());
+  xcb_create_pixmap(m_c(), 32, _title, m_c.root_window(),
                     _title_width, _title_height);
 
-  xcb_gcontext_t gc = xcb_generate_id(_c());
-  xcb_create_gc(_c(), gc, _title, XCB_GC_FOREGROUND, &_title_bg_color );
+  xcb_gcontext_t gc = xcb_generate_id(m_c());
+  xcb_create_gc(m_c(), gc, _title, XCB_GC_FOREGROUND, &_title_bg_color );
   xcb_rectangle_t r = { 0, 0, (uint16_t)_title_width, (uint16_t)_title_height };
-  xcb_poly_fill_rectangle(_c(), _title, gc, 1, &r);
-  xcb_free_gc(_c(), gc);
+  xcb_poly_fill_rectangle(m_c(), _title, gc, 1, &r);
+  xcb_free_gc(m_c(), gc);
 
-  _x_xft = std::shared_ptr<x::xft>(new x::xft(_c.dpy(), _title, 32));
+  _x_xft = std::shared_ptr<x::xft>(new x::xft(m_c.dpy(), _title, 32));
 
   std::string pname = _class_name;
   std::string title = _net_wm_name.empty() ? _wm_name : _net_wm_name;

@@ -65,13 +65,13 @@ class x_client_thumbnail : public x_event_handler_t
           make(const xcb_window_t &, const rectangle &) const;
 
       private:
-        x_connection & _c;
+        x_connection & m_c;
         x::xrm & _xrm;
         x::gl::api _gl_api;
     };
 
   private:
-    x_connection & _c;
+    x_connection & m_c;
     x::xrm & _xrm;
     const x::gl::api & _gl_api;
     x::gl::context _gl_ctx;
