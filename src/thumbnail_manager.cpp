@@ -31,7 +31,7 @@ thumbnail_manager::show(void)
   _next_window = *(m_cyclic_iterator + 1);
   _current_window = *m_cyclic_iterator;
 
-  for (auto & item : _thumbnails) {
+  for (auto & item : m_thumbnails) {
     item.second->show().update();
   }
 }
@@ -41,7 +41,7 @@ thumbnail_manager::hide(void)
 {
   _active = false;
 
-  for (auto & item : _thumbnails) {
+  for (auto & item : m_thumbnails) {
     item.second->hide();
   }
 }
@@ -57,11 +57,11 @@ thumbnail_manager::select(const xcb_window_t & window)
 {
   if (window == XCB_NONE) {
     try {
-      _thumbnails.at(*m_cyclic_iterator)->select();
+      m_thumbnails.at(*m_cyclic_iterator)->select();
     } catch (...) {}
 
   } else {
-    for (auto & item : _thumbnails) {
+    for (auto & item : m_thumbnails) {
       if (item.second->id() == window) {
         item.second->select();
         break;
@@ -73,10 +73,10 @@ thumbnail_manager::select(const xcb_window_t & window)
 void
 thumbnail_manager::highlight(const unsigned int & window)
 {
-  for (auto & item : _thumbnails) {
+  for (auto & item : m_thumbnails) {
     if (item.second->id() == window) {
       try {
-        _thumbnails.at(_current_window)->highlight(false).update();
+        m_thumbnails.at(_current_window)->highlight(false).update();
         item.second->highlight(true).update();
         while (*m_cyclic_iterator != item.first) ++m_cyclic_iterator;
         _next_window = *(m_cyclic_iterator + 1);
@@ -133,7 +133,7 @@ thumbnail_manager::handle(xcb_generic_event_t * ge)
       reset();
 
       try {
-        _thumbnails.at(*m_cyclic_iterator)->highlight(true).update();
+        m_thumbnails.at(*m_cyclic_iterator)->highlight(true).update();
       } catch (...) {}
     }
 
@@ -144,7 +144,7 @@ thumbnail_manager::handle(xcb_generic_event_t * ge)
       auto rects = m_layout->arrange(query_current_screen(), m_windows.size());
       for (size_t i = 0; i < m_windows.size(); ++i) {
         try {
-          _thumbnails.at(m_windows[i])->update(rects[i]).update();
+          m_thumbnails.at(m_windows[i])->update(rects[i]).update();
         } catch (...) {}
       }
     }
@@ -194,17 +194,17 @@ thumbnail_manager::update(void)
   m_windows = m_c.net_client_list_stacking();
   auto rects = m_layout->arrange(query_current_screen(), m_windows.size());
 
-  for (auto item = _thumbnails.begin(); item != _thumbnails.end(); ) {
+  for (auto item = m_thumbnails.begin(); item != m_thumbnails.end(); ) {
     auto result = std::find(m_windows.begin(), m_windows.end(), item->first);
     if (result == m_windows.end()) {
-      item = _thumbnails.erase(item);
+      item = m_thumbnails.erase(item);
     } else {
       ++item;
     }
   }
 
   for (size_t i = 0; i < m_windows.size(); ++i) {
-    auto result = _thumbnails.find(m_windows[i]);
+    auto result = m_thumbnails.find(m_windows[i]);
 
     if (result == m_thumbnails.end()) {
       m_thumbnails[m_windows[i]] = m_factory->make(m_windows[i], rects[i]);
@@ -221,9 +221,9 @@ void
 thumbnail_manager::next_or_prev(bool next)
 {
   try {
-    _thumbnails.at(*m_cyclic_iterator)->highlight(false).update();
+    m_thumbnails.at(*m_cyclic_iterator)->highlight(false).update();
     next ? ++m_cyclic_iterator : --m_cyclic_iterator;
-    _thumbnails.at(*m_cyclic_iterator)->highlight(true).update();
+    m_thumbnails.at(*m_cyclic_iterator)->highlight(true).update();
   } catch (...) {}
 
   _next_window = *(m_cyclic_iterator + 1);
@@ -237,7 +237,7 @@ nearest_thumbnail(const std::function<bool(double)> & direction)
   xcb_window_t thumbnail_id = XCB_NONE;
 
   try {
-    auto & current = _thumbnails.at(_current_window);
+    auto & current = m_thumbnails.at(_current_window);
     auto & r1 = current->rect();
 
     // in X (x,y) coordinates are actually flipped on the x axis
@@ -247,7 +247,7 @@ nearest_thumbnail(const std::function<bool(double)> & direction)
 
     double min_distance = 0xffffffff;
 
-    for (auto & item : _thumbnails) {
+    for (auto & item : m_thumbnails) {
       if (item.second->id() == current->id()) {
         continue;
       } else {

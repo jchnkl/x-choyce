@@ -45,7 +45,7 @@ class thumbnail_manager : public chooser_t
     window_cyclic_iterator m_cyclic_iterator;
 
     window_list_t m_windows;
-    std::unordered_map<xcb_window_t, thumbnail_t::ptr> _thumbnails;
+    std::unordered_map<xcb_window_t, thumbnail_t::ptr> m_thumbnails;
 
     bool _active = false;
     xcb_window_t _next_window = XCB_NONE;
