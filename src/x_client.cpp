@@ -28,7 +28,7 @@ x_client::~x_client(void)
 
 const    rectangle & x_client::rect(void)   const { return m_rectangle; }
 const xcb_window_t & x_client::window(void) const { return m_window; }
-const xcb_window_t & x_client::parent(void) const { return _parent; }
+const xcb_window_t & x_client::parent(void) const { return m_parent; }
 
 const xcb_window_t &
 x_client::name_window_pixmap(void) const
@@ -133,7 +133,7 @@ x_client::update_parent_window(void)
   xcb_window_t next_parent = m_window;
 
   while (next_parent != m_c.root_window() && next_parent != XCB_NONE) {
-    _parent = next_parent;
+    m_parent = next_parent;
     next_parent = std::get<0>(m_c.query_tree(next_parent));
   }
 }
@@ -144,7 +144,7 @@ x_client::update_name_window_pixmap(void)
   xcb_free_pixmap(m_c(), _name_window_pixmap);
   _name_window_pixmap = xcb_generate_id(m_c());
   xcb_void_cookie_t c = xcb_composite_name_window_pixmap_checked(
-      m_c(), _parent, _name_window_pixmap);
+      m_c(), m_parent, _name_window_pixmap);
 
   xcb_generic_error_t * error = xcb_request_check(m_c(), c);
 

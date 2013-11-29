@@ -44,7 +44,7 @@ class x_client : public x_event_handler_t
     rectangle m_rectangle;
     unsigned int m_net_wm_desktop;
     xcb_window_t m_window;
-    xcb_window_t _parent;
+    xcb_window_t m_parent;
     xcb_pixmap_t _name_window_pixmap = XCB_NONE;
     xcb_pixmap_t _name_window_dummy = XCB_NONE;
 
