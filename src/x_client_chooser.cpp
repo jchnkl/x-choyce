@@ -37,11 +37,11 @@ x_client_chooser::handle(xcb_generic_event_t * ge)
     m_ignore_release = false;
     xcb_key_press_event_t * e = (xcb_key_press_event_t *)ge;
 
-    if (e->detail == _action_keycode
-        && (e->state == _action_modmask
-          || e->state == (_action_modmask | XCB_MOD_MASK_SHIFT))) {
+    if (e->detail == m_action_keycode
+        && (e->state == m_action_modmask
+          || e->state == (m_action_modmask | XCB_MOD_MASK_SHIFT))) {
       if (m_active) {
-        if (e->state == _action_modmask) {
+        if (e->state == m_action_modmask) {
           m_chooser->next();
         } else {
           m_chooser->prev();
@@ -58,19 +58,19 @@ x_client_chooser::handle(xcb_generic_event_t * ge)
         m_chooser->next();
       }
 
-    } else if (e->detail == _east_keycode) {
+    } else if (e->detail == m_east_keycode) {
       m_chooser->east();
 
-    } else if (e->detail == _west_keycode) {
+    } else if (e->detail == m_west_keycode) {
       m_chooser->west();
 
-    } else if (e->detail == _north_keycode) {
+    } else if (e->detail == m_north_keycode) {
       m_chooser->north();
 
-    } else if (e->detail == _south_keycode) {
+    } else if (e->detail == m_south_keycode) {
       m_chooser->south();
 
-    } else if (e->detail == _quit_keycode) {
+    } else if (e->detail == m_quit_keycode) {
       quit();
     }
 
@@ -134,21 +134,21 @@ x_client_chooser::quit(void)
 void
 x_client_chooser::load_config(void)
 {
-  m_c.ungrab_key(_action_modmask, _action_keysym);
+  m_c.ungrab_key(m_action_modmask, m_action_keysym);
 
-  _north_keycode =
+  m_north_keycode =
     m_c.keysym_to_keycode(XStringToKeysym(m_xrm["north"].v.str->c_str()));
-  _south_keycode =
+  m_south_keycode =
     m_c.keysym_to_keycode(XStringToKeysym(m_xrm["south"].v.str->c_str()));
-  _east_keycode =
+  m_east_keycode =
     m_c.keysym_to_keycode(XStringToKeysym(m_xrm["east"].v.str->c_str()));
-  _west_keycode =
+  m_west_keycode =
     m_c.keysym_to_keycode(XStringToKeysym(m_xrm["west"].v.str->c_str()));
-  _quit_keycode =
+  m_quit_keycode =
     m_c.keysym_to_keycode(XStringToKeysym(m_xrm["escape"].v.str->c_str()));
 
-  _action_keysym = XStringToKeysym(m_xrm["action"].v.str->c_str());
-  _action_keycode = m_c.keysym_to_keycode(_action_keysym);
+  m_action_keysym = XStringToKeysym(m_xrm["action"].v.str->c_str());
+  m_action_keycode = m_c.keysym_to_keycode(m_action_keysym);
 
   int mask = 0;
   std::stringstream ss(*m_xrm["mod"].v.str);
@@ -165,7 +165,7 @@ x_client_chooser::load_config(void)
     else if ("control" == m) mask |= XCB_MOD_MASK_CONTROL;
   }
 
-  _action_modmask = (xcb_mod_mask_t)mask;
+  m_action_modmask = (xcb_mod_mask_t)mask;
 
-  m_c.grab_key(_action_modmask, _action_keysym);
+  m_c.grab_key(m_action_modmask, m_action_keysym);
 }

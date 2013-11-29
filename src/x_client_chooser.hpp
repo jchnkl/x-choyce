@@ -31,14 +31,14 @@ class x_client_chooser : public x_event_handler_t
     x_connection::modifier_map _modifier_map;
 
     // necessary for {un,}grabbing
-    xcb_keysym_t _action_keysym = XCB_NONE;
-    xcb_keycode_t _east_keycode;
-    xcb_keycode_t _west_keycode;
-    xcb_keycode_t _north_keycode;
-    xcb_keycode_t _south_keycode;
-    xcb_keycode_t _quit_keycode;
-    xcb_keycode_t _action_keycode;
-    xcb_mod_mask_t _action_modmask;
+    xcb_keysym_t m_action_keysym = XCB_NONE;
+    xcb_keycode_t m_east_keycode;
+    xcb_keycode_t m_west_keycode;
+    xcb_keycode_t m_north_keycode;
+    xcb_keycode_t m_south_keycode;
+    xcb_keycode_t m_quit_keycode;
+    xcb_keycode_t m_action_keycode;
+    xcb_mod_mask_t m_action_modmask;
 
     void quit(void);
     void load_config(void);
