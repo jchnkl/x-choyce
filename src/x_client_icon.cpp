@@ -81,8 +81,8 @@ x_client_icon::update_net_wm_icon(void)
       }
     }
 
-    _icon_geometry.first = width;
-    _icon_geometry.second = height;
+    m_icon_geometry.first = width;
+    m_icon_geometry.second = height;
 
     m_net_wm_icon = xcb_generate_id(m_c());
     xcb_create_pixmap(
@@ -135,8 +135,8 @@ x_client_icon::update_wm_hints_icon(void)
         unsigned int border_width, depth;
         XGetGeometry(m_c.dpy(), wm_hints.icon_pixmap, &root,
             &x, &y, &width, &height, &border_width, &depth);
-        _icon_geometry.first = width;
-        _icon_geometry.second = height;
+        m_icon_geometry.first = width;
+        m_icon_geometry.second = height;
       }
 
       xcb_image_t * icon_rgb = xcb_image_get(m_c(), wm_hints.icon_pixmap,

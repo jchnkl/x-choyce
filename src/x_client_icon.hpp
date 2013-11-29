@@ -22,7 +22,7 @@ class x_client_icon : public x_event_handler_t {
     xcb_pixmap_t m_net_wm_icon = XCB_NONE;
     xcb_pixmap_t m_wm_hints_icon = XCB_NONE;
 
-    std::pair<unsigned int, unsigned int> _icon_geometry;
+    std::pair<unsigned int, unsigned int> m_icon_geometry;
 
     xcb_atom_t m_a_wm_hints = m_c.intern_atom("WM_HINTS");
     xcb_atom_t m_a_net_wm_icon = m_c.intern_atom("_NET_WM_ICON");
@@ -59,7 +59,7 @@ x_client_icon::wm_hints_icon(void) const
 inline const std::pair<unsigned int, unsigned int> &
 x_client_icon::icon_geometry(void) const
 {
-  return _icon_geometry;
+  return m_icon_geometry;
 }
 
 #endif
