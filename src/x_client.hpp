@@ -23,7 +23,7 @@ class x_client : public x_event_handler_t
 
     bool operator==(const x_client & other)
     {
-      return _window == other._window;
+      return m_window == other.m_window;
     }
 
     const rectangle &  rect(void) const;
@@ -43,7 +43,7 @@ class x_client : public x_event_handler_t
 
     rectangle _rectangle;
     unsigned int _net_wm_desktop;
-    xcb_window_t _window;
+    xcb_window_t m_window;
     xcb_window_t _parent;
     xcb_pixmap_t _name_window_pixmap = XCB_NONE;
     xcb_pixmap_t _name_window_dummy = XCB_NONE;

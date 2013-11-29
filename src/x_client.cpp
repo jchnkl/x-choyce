@@ -1,13 +1,13 @@
 #include "x_client.hpp"
 
 x_client::x_client(x_connection & c, const xcb_window_t & window)
-  : m_c(c), _window(window)
+  : m_c(c), m_window(window)
 {
   m_c.attach(0, XCB_MAP_NOTIFY, this);
   m_c.attach(0, XCB_UNMAP_NOTIFY, this);
   m_c.attach(0, XCB_CONFIGURE_NOTIFY, this);
   m_c.attach(0, XCB_PROPERTY_NOTIFY, this);
-  m_c.update_input(_window, XCB_EVENT_MASK_STRUCTURE_NOTIFY
+  m_c.update_input(m_window, XCB_EVENT_MASK_STRUCTURE_NOTIFY
                            | XCB_EVENT_MASK_PROPERTY_CHANGE);
   update_geometry();
   update_net_wm_desktop();
@@ -27,7 +27,7 @@ x_client::~x_client(void)
 }
 
 const    rectangle & x_client::rect(void)   const { return _rectangle; }
-const xcb_window_t & x_client::window(void) const { return _window; }
+const xcb_window_t & x_client::window(void) const { return m_window; }
 const xcb_window_t & x_client::parent(void) const { return _parent; }
 
 const xcb_window_t &
@@ -43,7 +43,7 @@ unsigned int x_client::net_wm_desktop(void) const { return _net_wm_desktop; }
 void x_client::update_geometry(void)
 {
   xcb_get_geometry_reply_t * geometry_reply =
-    xcb_get_geometry_reply(m_c(), xcb_get_geometry(m_c(), _window), NULL);
+    xcb_get_geometry_reply(m_c(), xcb_get_geometry(m_c(), m_window), NULL);
 
   _rectangle.x()      = geometry_reply->x;
   _rectangle.y()      = geometry_reply->y;
@@ -63,12 +63,12 @@ x_client::handle(xcb_generic_event_t * ge)
 
   if (XCB_CONFIGURE_NOTIFY == (ge->response_type & ~0x80)) {
     xcb_configure_notify_event_t * e = (xcb_configure_notify_event_t *)ge;
-    if (e->window == _window) {
+    if (e->window == m_window) {
       _rectangle.x() = e->x; _rectangle.y() = e->y;
       _rectangle.width() = e->width; _rectangle.height() = e->height;
     }
 
-    if (e->window == m_c.root_window() || e->window == _window) {
+    if (e->window == m_c.root_window() || e->window == m_window) {
       update();
     }
 
@@ -77,7 +77,7 @@ x_client::handle(xcb_generic_event_t * ge)
   } else if (XCB_PROPERTY_NOTIFY == (ge->response_type & ~0x80)) {
     xcb_property_notify_event_t * e = (xcb_property_notify_event_t *)ge;
 
-    if (e->window != _window) return true;
+    if (e->window != m_window) return true;
 
     if (e->atom == a_net_wm_desktop) {
       update_net_wm_desktop();
@@ -88,7 +88,7 @@ x_client::handle(xcb_generic_event_t * ge)
   } else if (XCB_MAP_NOTIFY == (ge->response_type & ~0x80)) {
     xcb_map_notify_event_t * e = (xcb_map_notify_event_t *)ge;
 
-    if (e->window == _window) {
+    if (e->window == m_window) {
       update();
     }
 
@@ -97,7 +97,7 @@ x_client::handle(xcb_generic_event_t * ge)
   } else if (XCB_UNMAP_NOTIFY == (ge->response_type & ~0x80)) {
     xcb_unmap_notify_event_t * e = (xcb_unmap_notify_event_t *)ge;
 
-    if (e->window == _window) {
+    if (e->window == m_window) {
       update();
     }
 
@@ -114,7 +114,7 @@ x_client::update_net_wm_desktop(void)
 {
   xcb_generic_error_t * error = NULL;
   xcb_get_property_cookie_t c = xcb_get_property(
-      m_c(), false, _window, a_net_wm_desktop, XCB_ATOM_CARDINAL, 0, 32);
+      m_c(), false, m_window, a_net_wm_desktop, XCB_ATOM_CARDINAL, 0, 32);
   xcb_get_property_reply_t * r = xcb_get_property_reply(m_c(), c, &error);
 
   if (error || r->value_len == 0) {
@@ -130,7 +130,7 @@ x_client::update_net_wm_desktop(void)
 void
 x_client::update_parent_window(void)
 {
-  xcb_window_t next_parent = _window;
+  xcb_window_t next_parent = m_window;
 
   while (next_parent != m_c.root_window() && next_parent != XCB_NONE) {
     _parent = next_parent;
@@ -185,7 +185,7 @@ make_x_clients(x_connection & c, const std::vector<xcb_window_t> & windows)
 
 bool operator==(const x_client & x_client, const xcb_window_t & window)
 {
-  return x_client._window == window;
+  return x_client.m_window == window;
 }
 
 bool operator==(const xcb_window_t & window, const x_client & x_client)

@@ -35,7 +35,7 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
   _alpha_picture = xcb_generate_id(m_c());
   configure_alpha_picture(_alpha_value);
 
-  _window_picture = make_picture(m_c, _x_client->window());
+  m_window_picture = make_picture(m_c, _x_client->window());
   _thumbnail_picture = make_picture(m_c, _thumbnail_window);
 }
 
@@ -44,7 +44,7 @@ x_client_thumbnail::~x_client_thumbnail(void)
   m_c.detach(m_c.damage_event_id(), this);
   xcb_destroy_window(m_c(), _thumbnail_window);
   xcb_render_free_picture(m_c(), _alpha_picture);
-  xcb_render_free_picture(m_c(), _window_picture);
+  xcb_render_free_picture(m_c(), m_window_picture);
   xcb_render_free_picture(m_c(), _thumbnail_picture);
 }
 
@@ -82,7 +82,7 @@ void
 x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height)
 {
   xcb_render_composite(m_c(), XCB_RENDER_PICT_OP_SRC,
-                       _window_picture, _alpha_picture, _thumbnail_picture,
+                       m_window_picture, _alpha_picture, _thumbnail_picture,
                        // int16_t src_x, int16_t src_y,
                        x, y,
                        // int16_t mask_x, int16_t mask_y,
@@ -159,7 +159,7 @@ x_client_thumbnail::configure_thumbnail_picture(void)
     , DOUBLE_TO_FIXED(0), DOUBLE_TO_FIXED(0), DOUBLE_TO_FIXED(_scale)
     };
 
-  xcb_render_set_picture_transform(m_c(), _window_picture, transform_matrix);
+  xcb_render_set_picture_transform(m_c(), m_window_picture, transform_matrix);
 }
 
 void
