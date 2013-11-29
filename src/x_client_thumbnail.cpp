@@ -32,20 +32,20 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
 
   m_damage = xcb_generate_id(m_c());
 
-  _alpha_picture = xcb_generate_id(m_c());
-  configure_alpha_picture(_alpha_value);
+  m_alpha_picture = xcb_generate_id(m_c());
+  configure_alpha_picture(m_alpha_value);
 
   m_window_picture = make_picture(m_c, m_x_client->window());
-  _thumbnail_picture = make_picture(m_c, m_thumbnail_window);
+  m_thumbnail_picture = make_picture(m_c, m_thumbnail_window);
 }
 
 x_client_thumbnail::~x_client_thumbnail(void)
 {
   m_c.detach(m_c.damage_event_id(), this);
   xcb_destroy_window(m_c(), m_thumbnail_window);
-  xcb_render_free_picture(m_c(), _alpha_picture);
+  xcb_render_free_picture(m_c(), m_alpha_picture);
   xcb_render_free_picture(m_c(), m_window_picture);
-  xcb_render_free_picture(m_c(), _thumbnail_picture);
+  xcb_render_free_picture(m_c(), m_thumbnail_picture);
 }
 
 void
@@ -82,7 +82,7 @@ void
 x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height)
 {
   xcb_render_composite(m_c(), XCB_RENDER_PICT_OP_SRC,
-                       m_window_picture, _alpha_picture, _thumbnail_picture,
+                       m_window_picture, m_alpha_picture, m_thumbnail_picture,
                        // int16_t src_x, int16_t src_y,
                        x, y,
                        // int16_t mask_x, int16_t mask_y,
@@ -99,10 +99,10 @@ x_client_thumbnail::highlight(bool want_highlight)
   xcb_rectangle_t r = { 0, 0, 1, 1 };
   xcb_render_color_t color = { 0, 0, 0, 0xffff };
 
-  if (! want_highlight) { color.alpha = _alpha_value; }
+  if (! want_highlight) { color.alpha = m_alpha_value; }
 
   xcb_render_fill_rectangles(m_c(), XCB_RENDER_PICT_OP_SRC,
-                             _alpha_picture, color, 1, &r);
+                             m_alpha_picture, color, 1, &r);
 
   update();
 }
@@ -176,7 +176,7 @@ x_client_thumbnail::configure_alpha_picture(uint16_t alpha_value)
   uint32_t mask = XCB_RENDER_CP_REPEAT | XCB_RENDER_CP_COMPONENT_ALPHA;
   uint32_t values[] = { true, true };
 
-  xcb_render_create_picture(m_c(), _alpha_picture, alpha_pixmap,
+  xcb_render_create_picture(m_c(), m_alpha_picture, alpha_pixmap,
                             format->id, mask, values);
 
   xcb_free_pixmap(m_c(), alpha_pixmap);
@@ -185,7 +185,7 @@ x_client_thumbnail::configure_alpha_picture(uint16_t alpha_value)
 
   xcb_rectangle_t r = { 0, 0, 1, 1 };
   xcb_render_fill_rectangles(m_c(), XCB_RENDER_PICT_OP_SRC,
-                             _alpha_picture, color, 1, &r);
+                             m_alpha_picture, color, 1, &r);
 }
 
 bool operator==(const x_client_thumbnail & thumbnail, const xcb_window_t & window)

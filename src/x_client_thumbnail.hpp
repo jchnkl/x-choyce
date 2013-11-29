@@ -52,11 +52,11 @@ class x_client_thumbnail : public x_event_handler_t
 
     xcb_window_t m_thumbnail_window;
     xcb_damage_damage_t m_damage;
-    xcb_render_picture_t _alpha_picture;
+    xcb_render_picture_t m_alpha_picture;
     xcb_render_picture_t m_window_picture;
-    xcb_render_picture_t _thumbnail_picture;
+    xcb_render_picture_t m_thumbnail_picture;
 
-    uint16_t _alpha_value = (uint16_t)(0.75f * 0xffff);
+    uint16_t m_alpha_value = (uint16_t)(0.75f * 0xffff);
 
     void update(int x, int y, unsigned int width, unsigned int height);
     void configure_thumbnail_window(void);
