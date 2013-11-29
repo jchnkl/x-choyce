@@ -68,16 +68,16 @@ class x_connection : public x_event_handler_t
     // ugly :(
     void set(x_ewmh * const ewmh)
     {
-      if (_ewmh) return;
-      _ewmh = ewmh;
+      if (m_ewmh) return;
+      m_ewmh = ewmh;
     }
 
     // ugly :(
     void set(x_event_source_t * const event_source)
     {
-      if (_event_source) return;
-      _event_source = event_source;
-      _event_source->attach(0, XCB_CONFIGURE_NOTIFY, this);
+      if (m_event_source) return;
+      m_event_source = event_source;
+      m_event_source->attach(0, XCB_CONFIGURE_NOTIFY, this);
     }
 
     void attach(priority_t p, event_id_t i, x_event_handler_t * eh);
@@ -87,17 +87,17 @@ class x_connection : public x_event_handler_t
 
   private:
     uint8_t m_damage_event_id;
-    int _screen_number = 0;
-    xcb_window_t _root_window = 0;
-    Display * _dpy = NULL;
+    int m_screen_number = 0;
+    xcb_window_t m_root_window = 0;
+    Display * m_dpy = NULL;
     xcb_connection_t * m_c = NULL;
-    xcb_screen_t * _default_screen = NULL;
+    xcb_screen_t * m_default_screen = NULL;
 
-    std::vector<rectangle> _screens;
-    std::unordered_map<std::string, xcb_atom_t> _atoms;
+    std::vector<rectangle> m_screens;
+    std::unordered_map<std::string, xcb_atom_t> m_atoms;
 
-    x_ewmh * _ewmh = NULL;
-    x_event_source_t * _event_source = NULL;
+    x_ewmh * m_ewmh = NULL;
+    x_event_source_t * m_event_source = NULL;
 
     void find_default_screen(void);
     void init_composite(void);

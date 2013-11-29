@@ -12,19 +12,19 @@
 
 x_connection::x_connection(void)
 {
-  _dpy = XOpenDisplay(NULL);
-  XSetEventQueueOwner(_dpy, XCBOwnsEventQueue);
-  _screen_number = DefaultScreen(_dpy);
-  m_c = XGetXCBConnection(_dpy);
+  m_dpy = XOpenDisplay(NULL);
+  XSetEventQueueOwner(m_dpy, XCBOwnsEventQueue);
+  m_screen_number = DefaultScreen(m_dpy);
+  m_c = XGetXCBConnection(m_dpy);
   find_default_screen();
-  _root_window = _default_screen->root;
+  m_root_window = m_default_screen->root;
 
   init_composite();
   init_damage();
   init_render();
   init_xfixes();
   init_xinerama();
-  update_input(_root_window, XCB_EVENT_MASK_STRUCTURE_NOTIFY);
+  update_input(m_root_window, XCB_EVENT_MASK_STRUCTURE_NOTIFY);
 }
 
 x_connection::~x_connection(void)
@@ -36,12 +36,12 @@ xcb_connection_t * const
 x_connection::operator()(void) const { return m_c; }
 
 Display * const
-x_connection::dpy(void) const { return _dpy; }
+x_connection::dpy(void) const { return m_dpy; }
 
 xcb_ewmh_connection_t *
 x_connection::ewmh(void) const
 {
-  return _ewmh->connection();
+  return m_ewmh->connection();
 }
 
 void
@@ -73,14 +73,14 @@ xcb_visualtype_t *
 x_connection::default_visual_of_screen(void)
 {
   xcb_depth_iterator_t depth_iterator =
-    xcb_screen_allowed_depths_iterator(_default_screen);
+    xcb_screen_allowed_depths_iterator(m_default_screen);
 
   if (depth_iterator.data) {
     for (; depth_iterator.rem; xcb_depth_next(&depth_iterator)) {
       xcb_visualtype_iterator_t visual_iterator =
         xcb_depth_visuals_iterator(depth_iterator.data);
       for (; visual_iterator.rem; xcb_visualtype_next(&visual_iterator)) {
-        if (_default_screen->root_visual == visual_iterator.data->visual_id) {
+        if (m_default_screen->root_visual == visual_iterator.data->visual_id) {
           return visual_iterator.data;
         }
       }
@@ -117,19 +117,19 @@ x_connection::flush(void) const { xcb_flush(m_c); }
 int
 x_connection::screen_number(void) const
 {
-  return _screen_number;
+  return m_screen_number;
 }
 
 xcb_screen_t * const
 x_connection::default_screen(void) const
 {
-  return _default_screen;
+  return m_default_screen;
 }
 
 xcb_window_t const &
 x_connection::root_window(void) const
 {
-  return _root_window;
+  return m_root_window;
 }
 
 uint8_t
@@ -140,7 +140,7 @@ x_connection::grab_key(uint16_t modifiers, xcb_keysym_t keysym) const
 {
   xcb_keycode_t keycode = keysym_to_keycode(keysym);
   if (keycode != 0) {
-    xcb_grab_key(m_c, false, _root_window, modifiers, keycode,
+    xcb_grab_key(m_c, false, m_root_window, modifiers, keycode,
                  XCB_GRAB_MODE_ASYNC, XCB_GRAB_MODE_ASYNC);
   }
 }
@@ -150,7 +150,7 @@ x_connection::ungrab_key(uint16_t modifiers, xcb_keysym_t keysym) const
 {
   xcb_keycode_t keycode = keysym_to_keycode(keysym);
   if (keycode != 0) {
-    xcb_ungrab_key(m_c, keycode, _root_window, modifiers);
+    xcb_ungrab_key(m_c, keycode, m_root_window, modifiers);
   }
 }
 
@@ -300,7 +300,7 @@ x_connection::net_client_list_stacking(void) const
     xcb_intern_atom_reply(m_c, atom_cookie, NULL);
 
   xcb_get_property_cookie_t property_cookie =
-    xcb_get_property(m_c, false, _root_window,
+    xcb_get_property(m_c, false, m_root_window,
                      atom_reply->atom, XCB_ATOM_WINDOW, 0, UINT_MAX);
 
   delete atom_reply;
@@ -324,16 +324,16 @@ xcb_atom_t
 x_connection::intern_atom(const std::string & name)
 {
   try {
-    return _atoms.at(name);
+    return m_atoms.at(name);
   } catch (...) {
     xcb_intern_atom_cookie_t c =
       xcb_intern_atom(m_c, false, name.length(), name.c_str());
     xcb_intern_atom_reply_t * r = xcb_intern_atom_reply(m_c, c, NULL);
 
     if (r) {
-      _atoms[name] = r->atom;
+      m_atoms[name] = r->atom;
       delete r;
-      return _atoms[name];
+      return m_atoms[name];
     }
 
     return XCB_ATOM_NONE;
@@ -343,7 +343,7 @@ x_connection::intern_atom(const std::string & name)
 xcb_window_t
 x_connection::net_active_window(void) const
 {
-  return _ewmh->net_active_window();
+  return m_ewmh->net_active_window();
 }
 
 void
@@ -354,7 +354,7 @@ x_connection::request_change_current_desktop(unsigned int desktop_id)
 
   event.response_type = XCB_CLIENT_MESSAGE;
   event.format = 32;
-  event.window = _root_window;
+  event.window = m_root_window;
   event.type = intern_atom("_NET_CURRENT_DESKTOP");
 
   event.data.data32[0] = desktop_id;
@@ -363,7 +363,7 @@ x_connection::request_change_current_desktop(unsigned int desktop_id)
   uint32_t mask = XCB_EVENT_MASK_SUBSTRUCTURE_REDIRECT
                 | XCB_EVENT_MASK_SUBSTRUCTURE_NOTIFY;
 
-  xcb_send_event(m_c, false, _root_window, mask, (const char *)&event);
+  xcb_send_event(m_c, false, m_root_window, mask, (const char *)&event);
 }
 
 void
@@ -385,7 +385,7 @@ x_connection::request_change_active_window(xcb_window_t window)
   uint32_t mask = XCB_EVENT_MASK_SUBSTRUCTURE_REDIRECT
                 | XCB_EVENT_MASK_SUBSTRUCTURE_NOTIFY;
 
-  xcb_send_event(m_c, false, _root_window, mask, (const char *)&event);
+  xcb_send_event(m_c, false, m_root_window, mask, (const char *)&event);
 }
 
 // root, window
@@ -394,7 +394,7 @@ x_connection::query_pointer(const xcb_window_t & window) const
 {
   xcb_generic_error_t * error;
   xcb_query_pointer_cookie_t c =
-    xcb_query_pointer(m_c, window == XCB_NONE ? _root_window : window);
+    xcb_query_pointer(m_c, window == XCB_NONE ? m_root_window : window);
   xcb_query_pointer_reply_t * r = xcb_query_pointer_reply(m_c, c, &error);
 
   if (error) {
@@ -414,7 +414,7 @@ x_connection::get_geometry(const xcb_window_t & window) const
 {
   xcb_generic_error_t * error;
   xcb_get_geometry_cookie_t c =
-    xcb_get_geometry(m_c, window == XCB_NONE ? _root_window : window);
+    xcb_get_geometry(m_c, window == XCB_NONE ? m_root_window : window);
   xcb_get_geometry_reply_t * r = xcb_get_geometry_reply(m_c, c, &error);
 
   if (error) {
@@ -433,8 +433,8 @@ x_connection::get_geometry(const xcb_window_t & window) const
 rectangle
 x_connection::current_screen(const position & p) const
 {
-  if (! _screens.empty()) {
-    for (auto & screen : _screens) {
+  if (! m_screens.empty()) {
+    for (auto & screen : m_screens) {
       if (p.x >= screen.x() && p.x <= screen.x() + (int)screen.width()
           && p.y >= screen.y() && p.y <= screen.y() + (int)screen.height()) {
         return screen;
@@ -450,7 +450,7 @@ x_connection::handle(xcb_generic_event_t * ge)
 {
   if (XCB_CONFIGURE_NOTIFY == (ge->response_type & ~0x80)) {
     xcb_configure_request_event_t * e = (xcb_configure_request_event_t *)ge;
-    if (e->window == _root_window) {
+    if (e->window == m_root_window) {
       update_xinerama();
     }
   }
@@ -461,25 +461,25 @@ x_connection::handle(xcb_generic_event_t * ge)
 void
 x_connection::attach(priority_t p, event_id_t i, x_event_handler_t * eh)
 {
-  _event_source->attach(p, i, eh);
+  m_event_source->attach(p, i, eh);
 }
 
 void
 x_connection::detach(event_id_t i, x_event_handler_t * eh)
 {
-  _event_source->detach(i, eh);
+  m_event_source->detach(i, eh);
 }
 
 void
 x_connection::run_event_loop(void)
 {
-  _event_source->run_event_loop();
+  m_event_source->run_event_loop();
 }
 
 void
 x_connection::shutdown(void)
 {
-  _event_source->shutdown();
+  m_event_source->shutdown();
 }
 
 // private
@@ -487,12 +487,12 @@ x_connection::shutdown(void)
 void
 x_connection::find_default_screen(void)
 {
-  int screen = _screen_number;
+  int screen = m_screen_number;
   xcb_screen_iterator_t iter;
   iter = xcb_setup_roots_iterator(xcb_get_setup(m_c));
   for (; iter.rem; --screen, xcb_screen_next(&iter))
     if (screen == 0) {
-      _default_screen = iter.data;
+      m_default_screen = iter.data;
       return;
     }
 
@@ -507,7 +507,7 @@ x_connection::init_composite(void)
   xcb_composite_query_version(m_c, XCB_COMPOSITE_MAJOR_VERSION,
                                   XCB_COMPOSITE_MINOR_VERSION);
 
-  xcb_composite_redirect_subwindows(m_c, _root_window,
+  xcb_composite_redirect_subwindows(m_c, m_root_window,
                                     XCB_COMPOSITE_REDIRECT_AUTOMATIC);
 }
 
@@ -567,13 +567,13 @@ x_connection::update_xinerama(void)
   if (query_screens_reply
       && 0 < xcb_xinerama_query_screens_screen_info_length(query_screens_reply))
   {
-    _screens.clear();
+    m_screens.clear();
     xcb_xinerama_screen_info_t * screen_info =
       xcb_xinerama_query_screens_screen_info(query_screens_reply);
     int length =
       xcb_xinerama_query_screens_screen_info_length(query_screens_reply);
     for (int i = 0; i < length; ++i) {
-      _screens.push_back(
+      m_screens.push_back(
           rectangle(screen_info[i].x_org, screen_info[i].y_org,
             screen_info[i].width, screen_info[i].height));
     }
