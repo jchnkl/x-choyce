@@ -49,7 +49,7 @@ class thumbnail_manager : public chooser_t
 
     bool m_active = false;
     xcb_window_t m_next_window = XCB_NONE;
-    xcb_window_t _current_window = XCB_NONE;
+    xcb_window_t m_current_window = XCB_NONE;
 
     void reset(void);
     void update(void);

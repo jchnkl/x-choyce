@@ -29,7 +29,7 @@ thumbnail_manager::show(void)
 
   m_cyclic_iterator = window_cyclic_iterator(&m_windows);
   m_next_window = *(m_cyclic_iterator + 1);
-  _current_window = *m_cyclic_iterator;
+  m_current_window = *m_cyclic_iterator;
 
   for (auto & item : m_thumbnails) {
     item.second->show().update();
@@ -76,11 +76,11 @@ thumbnail_manager::highlight(const unsigned int & window)
   for (auto & item : m_thumbnails) {
     if (item.second->id() == window) {
       try {
-        m_thumbnails.at(_current_window)->highlight(false).update();
+        m_thumbnails.at(m_current_window)->highlight(false).update();
         item.second->highlight(true).update();
         while (*m_cyclic_iterator != item.first) ++m_cyclic_iterator;
         m_next_window = *(m_cyclic_iterator + 1);
-        _current_window = *m_cyclic_iterator;
+        m_current_window = *m_cyclic_iterator;
       } catch (...) {}
 
       break;
@@ -163,7 +163,7 @@ thumbnail_manager::reset(void)
 
   // search for current thumbnail
   for (std::size_t i = 0; i < m_windows.size(); ++i) {
-    if (*m_cyclic_iterator == _current_window) {
+    if (*m_cyclic_iterator == m_current_window) {
       found = true;
       break;
     } else {
@@ -185,7 +185,7 @@ thumbnail_manager::reset(void)
   }
 
   m_next_window = *(m_cyclic_iterator + 1);
-  _current_window = *m_cyclic_iterator;
+  m_current_window = *m_cyclic_iterator;
 }
 
 inline void
@@ -227,7 +227,7 @@ thumbnail_manager::next_or_prev(bool next)
   } catch (...) {}
 
   m_next_window = *(m_cyclic_iterator + 1);
-  _current_window = *m_cyclic_iterator;
+  m_current_window = *m_cyclic_iterator;
 }
 
 inline xcb_window_t
@@ -237,7 +237,7 @@ nearest_thumbnail(const std::function<bool(double)> & direction)
   xcb_window_t thumbnail_id = XCB_NONE;
 
   try {
-    auto & current = m_thumbnails.at(_current_window);
+    auto & current = m_thumbnails.at(m_current_window);
     auto & r1 = current->rect();
 
     // in X (x,y) coordinates are actually flipped on the x axis
