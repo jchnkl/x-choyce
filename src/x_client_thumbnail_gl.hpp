@@ -82,8 +82,8 @@ class x_client_thumbnail : public x_event_handler_t
     double m_scale;
     double _icon_scale_x;
     double _icon_scale_y;
-    double _title_scale_x;
-    double _title_scale_y;
+    double m_title_scale_x;
+    double m_title_scale_y;
 
     bool _visible = false;
     bool _highlight = false;
@@ -99,8 +99,8 @@ class x_client_thumbnail : public x_event_handler_t
 
     // >> config options
 
-    unsigned int _icon_size;
-    unsigned int _border_width;
+    unsigned int m_icon_size;
+    unsigned int m_border_width;
 
     // red, green, blue, alpha
     std::tuple<double, double, double, double> _focused_border_color;

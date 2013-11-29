@@ -23,10 +23,10 @@ class x_client_name : public x_event_handler_t
 
     const xcb_pixmap_t & title(void) const;
 
-    const unsigned int & title_width(void) const { return _title_width; }
-    const unsigned int & title_height(void) const { return _title_height; }
-    void title_width(const unsigned int & w) { _title_width = w; }
-    void title_height(const unsigned int & h) { _title_height = h; }
+    const unsigned int & title_width(void) const { return m_title_width; }
+    const unsigned int & title_height(void) const { return m_title_height; }
+    void title_width(const unsigned int & w) { m_title_width = w; }
+    void title_height(const unsigned int & h) { m_title_height = h; }
 
     void make_title(void);
     bool handle(xcb_generic_event_t *);
@@ -37,33 +37,33 @@ class x_client_name : public x_event_handler_t
     x_connection & m_c;
     x::xrm & m_xrm;
     x_client & m_x_client;
-    std::shared_ptr<x::xft> _x_xft;
+    std::shared_ptr<x::xft> m_x_xft;
 
-    std::string _net_wm_name;
-    std::string _wm_name;
-    std::string _class_name;
-    std::string _instance_name;
+    std::string m_net_wm_name;
+    std::string m_wm_name;
+    std::string m_class_name;
+    std::string m_instance_name;
 
-    xcb_pixmap_t _title = XCB_NONE;
+    xcb_pixmap_t m_title = XCB_NONE;
 
-    xcb_atom_t _a_wm_name = m_c.intern_atom("WM_NAME");
-    xcb_atom_t _a_wm_class = m_c.intern_atom("WM_CLASS");
-    xcb_atom_t _a_net_wm_name = m_c.intern_atom("_NET_WM_NAME");
+    xcb_atom_t m_a_wm_name = m_c.intern_atom("WM_NAME");
+    xcb_atom_t m_a_wm_class = m_c.intern_atom("WM_CLASS");
+    xcb_atom_t m_a_net_wm_name = m_c.intern_atom("_NET_WM_NAME");
 
-    unsigned int _title_width = 0;
-    unsigned int _title_height = 0;
+    unsigned int m_title_width = 0;
+    unsigned int m_title_height = 0;
 
     // >> config options
 
-    int _border_width;
-    int _icon_size;
+    int m_border_width;
+    int m_icon_size;
 
     // 0.375 * 0xff; 0.25 * 0xff
-    uint32_t _title_bg_color;
+    uint32_t m_title_bg_color;
 
-    x::type::fontname _pnamefont;
-    x::type::fontname _titlefont;
-    x::type::colorname _colorname;
+    x::type::fontname m_pnamefont;
+    x::type::fontname m_titlefont;
+    x::type::colorname m_colorname;
 
     // << config options
 
