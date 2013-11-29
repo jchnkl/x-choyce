@@ -42,7 +42,7 @@ class thumbnail_manager : public chooser_t
     const layout_t * m_layout;
     const thumbnail_t::factory * m_factory;
 
-    window_cyclic_iterator _cyclic_iterator;
+    window_cyclic_iterator m_cyclic_iterator;
 
     window_list_t _windows;
     std::unordered_map<xcb_window_t, thumbnail_t::ptr> _thumbnails;

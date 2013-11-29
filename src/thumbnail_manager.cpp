@@ -27,9 +27,9 @@ thumbnail_manager::show(void)
 
   update();
 
-  _cyclic_iterator = window_cyclic_iterator(&_windows);
-  _next_window = *(_cyclic_iterator + 1);
-  _current_window = *_cyclic_iterator;
+  m_cyclic_iterator = window_cyclic_iterator(&_windows);
+  _next_window = *(m_cyclic_iterator + 1);
+  _current_window = *m_cyclic_iterator;
 
   for (auto & item : _thumbnails) {
     item.second->show().update();
@@ -57,7 +57,7 @@ thumbnail_manager::select(const xcb_window_t & window)
 {
   if (window == XCB_NONE) {
     try {
-      _thumbnails.at(*_cyclic_iterator)->select();
+      _thumbnails.at(*m_cyclic_iterator)->select();
     } catch (...) {}
 
   } else {
@@ -78,9 +78,9 @@ thumbnail_manager::highlight(const unsigned int & window)
       try {
         _thumbnails.at(_current_window)->highlight(false).update();
         item.second->highlight(true).update();
-        while (*_cyclic_iterator != item.first) ++_cyclic_iterator;
-        _next_window = *(_cyclic_iterator + 1);
-        _current_window = *_cyclic_iterator;
+        while (*m_cyclic_iterator != item.first) ++m_cyclic_iterator;
+        _next_window = *(m_cyclic_iterator + 1);
+        _current_window = *m_cyclic_iterator;
       } catch (...) {}
 
       break;
@@ -133,7 +133,7 @@ thumbnail_manager::handle(xcb_generic_event_t * ge)
       reset();
 
       try {
-        _thumbnails.at(*_cyclic_iterator)->highlight(true).update();
+        _thumbnails.at(*m_cyclic_iterator)->highlight(true).update();
       } catch (...) {}
     }
 
@@ -159,33 +159,33 @@ inline void
 thumbnail_manager::reset(void)
 {
   bool found = false;
-  _cyclic_iterator = window_cyclic_iterator(&_windows);
+  m_cyclic_iterator = window_cyclic_iterator(&_windows);
 
   // search for current thumbnail
   for (std::size_t i = 0; i < _windows.size(); ++i) {
-    if (*_cyclic_iterator == _current_window) {
+    if (*m_cyclic_iterator == _current_window) {
       found = true;
       break;
     } else {
-      ++_cyclic_iterator;
+      ++m_cyclic_iterator;
     }
   }
 
   // search for next thumbnail if current was not found
   if (! found) {
-    _cyclic_iterator = window_cyclic_iterator(&_windows);
+    m_cyclic_iterator = window_cyclic_iterator(&_windows);
 
     for (std::size_t i = 0; i < _windows.size(); ++i) {
-      if (*_cyclic_iterator == _next_window) {
+      if (*m_cyclic_iterator == _next_window) {
         break;
       } else {
-        ++_cyclic_iterator;
+        ++m_cyclic_iterator;
       }
     }
   }
 
-  _next_window = *(_cyclic_iterator + 1);
-  _current_window = *_cyclic_iterator;
+  _next_window = *(m_cyclic_iterator + 1);
+  _current_window = *m_cyclic_iterator;
 }
 
 inline void
@@ -221,13 +221,13 @@ void
 thumbnail_manager::next_or_prev(bool next)
 {
   try {
-    _thumbnails.at(*_cyclic_iterator)->highlight(false).update();
-    next ? ++_cyclic_iterator : --_cyclic_iterator;
-    _thumbnails.at(*_cyclic_iterator)->highlight(true).update();
+    _thumbnails.at(*m_cyclic_iterator)->highlight(false).update();
+    next ? ++m_cyclic_iterator : --m_cyclic_iterator;
+    _thumbnails.at(*m_cyclic_iterator)->highlight(true).update();
   } catch (...) {}
 
-  _next_window = *(_cyclic_iterator + 1);
-  _current_window = *_cyclic_iterator;
+  _next_window = *(m_cyclic_iterator + 1);
+  _current_window = *m_cyclic_iterator;
 }
 
 inline xcb_window_t
