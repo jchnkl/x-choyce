@@ -20,7 +20,7 @@ class x_ewmh : public x_event_handler_t {
   private:
     x_connection & m_c;
     xcb_ewmh_connection_t m_ewmh;
-    xcb_window_t _net_active_window = XCB_NONE;
+    xcb_window_t m_net_active_window = XCB_NONE;
 
     void update_net_active_window(void);
 };

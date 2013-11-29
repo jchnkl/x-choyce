@@ -17,7 +17,7 @@ x_ewmh::~x_ewmh(void)
 
 xcb_window_t x_ewmh::net_active_window(void) const
 {
-  return _net_active_window;
+  return m_net_active_window;
 }
 
 xcb_ewmh_connection_t *
@@ -45,7 +45,7 @@ void x_ewmh::update_net_active_window(void)
 {
   xcb_atom_t atom = m_c.intern_atom("_NET_ACTIVE_WINDOW");
   if (atom == XCB_ATOM_NONE) {
-    _net_active_window = XCB_NONE;
+    m_net_active_window = XCB_NONE;
     return;
   }
 
@@ -58,9 +58,9 @@ void x_ewmh::update_net_active_window(void)
 
   if (error || property_reply->value_len == 0) {
     delete error;
-    _net_active_window = XCB_NONE;
+    m_net_active_window = XCB_NONE;
   } else {
-    _net_active_window = *(xcb_window_t *)xcb_get_property_value(property_reply);
+    m_net_active_window = *(xcb_window_t *)xcb_get_property_value(property_reply);
   }
 
   delete property_reply;
