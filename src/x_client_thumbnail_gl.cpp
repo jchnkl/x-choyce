@@ -11,20 +11,20 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
                                        const xcb_window_t & window)
   : m_c(c), m_xrm(xrm), _gl_api(api)
   , _gl_ctx(api, m_c.dpy(), m_c.screen_number())
-  , _x_client(m_c, window)
-  , _x_client_icon(m_c, _x_client)
-  , _x_client_name(m_c, m_xrm, _x_client)
+  , m_x_client(m_c, window)
+  , m_x_client_icon(m_c, m_x_client)
+  , m_x_client_name(m_c, m_xrm, m_x_client)
 {
   load_config();
   update(rect);
 
-  _x_client_name.make_title();
+  m_x_client_name.make_title();
 
   m_c.attach(0, m_c.damage_event_id(), this);
 
   m_xrm.attach(this);
-  _x_client.attach(this);
-  _x_client_name.attach(this);
+  m_x_client.attach(this);
+  m_x_client_name.attach(this);
 
   _damage = xcb_generate_id(m_c());
 
@@ -47,7 +47,7 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
 
   xcb_create_window(m_c(), depth, _thumbnail_window,
                     m_c.root_window(), 0, 0,
-                    _x_client.rect().width(), _x_client.rect().height(),
+                    m_x_client.rect().width(), m_x_client.rect().height(),
                     0, XCB_WINDOW_CLASS_INPUT_OUTPUT, vt->visual_id,
                     valuemask, valuelist);
 
@@ -60,9 +60,9 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
     _gl_ctx.load("./normal.frag", "normal_shader");
     _gl_ctx.load("./grayscale.frag", "grayscale_shader");
 
-    _gl_ctx.load(0, _x_client.name_window_pixmap(), 24);
-    _gl_ctx.load(1, _x_client_name.title(), 32);
-    _gl_ctx.load(2, _x_client_icon.icon(), 32);
+    _gl_ctx.load(0, m_x_client.name_window_pixmap(), 24);
+    _gl_ctx.load(1, m_x_client_name.title(), 32);
+    _gl_ctx.load(2, m_x_client_icon.icon(), 32);
 
     for (auto & t : { 0, 1, 2 }) {
       _gl_ctx.texture(t, [](const GLuint &)
@@ -82,8 +82,8 @@ x_client_thumbnail::~x_client_thumbnail(void)
 {
   m_c.detach(m_c.damage_event_id(), this);
   m_xrm.detach(this);
-  _x_client.detach(this);
-  _x_client_name.detach(this);
+  m_x_client.detach(this);
+  m_x_client_name.detach(this);
   xcb_damage_destroy(m_c(), _damage);
   xcb_destroy_window(m_c(), _thumbnail_window);
 }
@@ -94,7 +94,7 @@ x_client_thumbnail::show(void)
   if (_visible) return *this;
 
   _visible = true;
-  xcb_damage_create(m_c(), _damage, _x_client.window(),
+  xcb_damage_create(m_c(), _damage, m_x_client.window(),
                     XCB_DAMAGE_REPORT_LEVEL_NON_EMPTY);
 
   configure_thumbnail_window(true);
@@ -124,8 +124,8 @@ x_client_thumbnail::hide(void)
 thumbnail_t &
 x_client_thumbnail::select(void)
 {
-  m_c.request_change_current_desktop(_x_client.net_wm_desktop());
-  m_c.request_change_active_window(_x_client.window());
+  m_c.request_change_current_desktop(m_x_client.net_wm_desktop());
+  m_c.request_change_active_window(m_x_client.window());
   return *this;
 }
 
@@ -148,12 +148,12 @@ x_client_thumbnail::update(const rectangle & r)
 {
   _configure_thumbnail = true;
 
-  _scale = std::min((double)r.width() / _x_client.rect().width(),
-                    (double)r.height() / _x_client.rect().height());
+  _scale = std::min((double)r.width() / m_x_client.rect().width(),
+                    (double)r.height() / m_x_client.rect().height());
   _scale = std::min(1.0, _scale);
 
-  m_rectangle.width() = _x_client.rect().width() * _scale;
-  m_rectangle.height() = _x_client.rect().height() * _scale;
+  m_rectangle.width() = m_x_client.rect().width() * _scale;
+  m_rectangle.height() = m_x_client.rect().height() * _scale;
 
   m_rectangle.x() = r.x() + (r.width() - m_rectangle.width()) / 2;
   m_rectangle.y() = r.y() + (r.height() - m_rectangle.height()) / 2;
@@ -161,8 +161,8 @@ x_client_thumbnail::update(const rectangle & r)
   _icon_scale_x = _icon_size / (double)m_rectangle.width();
   _icon_scale_y = _icon_size / (double)m_rectangle.height();
 
-  _x_client_name.title_width(m_rectangle.width());
-  _x_client_name.title_height(_icon_size + _border_width);
+  m_x_client_name.title_width(m_rectangle.width());
+  m_x_client_name.title_height(_icon_size + _border_width);
 
   _title_scale_x = (double)m_rectangle.width() / (double)m_rectangle.width();
   _title_scale_y = (_icon_size + _border_width) / (double)m_rectangle.height();
@@ -256,10 +256,10 @@ x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height
 void
 x_client_thumbnail::update_title_pixmap(void)
 {
-  _x_client_name.make_title();
+  m_x_client_name.make_title();
   _gl_ctx.run([this](x::gl::context & ctx)
   {
-    ctx.load(1, _x_client_name.title(), 32);
+    ctx.load(1, m_x_client_name.title(), 32);
     ctx.texture(1, [](const GLuint &)
     {
       glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -271,11 +271,11 @@ x_client_thumbnail::update_title_pixmap(void)
 void
 x_client_thumbnail::update_name_window_pixmap(void)
 {
-  _x_client.update_parent_window();
-  _x_client.update_name_window_pixmap();
+  m_x_client.update_parent_window();
+  m_x_client.update_name_window_pixmap();
   _gl_ctx.run([this](x::gl::context & ctx)
   {
-    ctx.load(0, _x_client.name_window_pixmap(), 24);
+    ctx.load(0, m_x_client.name_window_pixmap(), 24);
     ctx.texture(0, [](const GLuint &)
     {
       glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -293,7 +293,7 @@ x_client_thumbnail::id(void)
 const xcb_window_t &
 x_client_thumbnail::window(void)
 {
-  return _x_client.window();
+  return m_x_client.window();
 }
 
 thumbnail_t &
@@ -422,7 +422,7 @@ x_client_thumbnail::configure_thumbnail_window(bool now)
   }
 
   xcb_xfixes_region_t region = xcb_generate_id(m_c());
-  xcb_xfixes_create_region_from_window(m_c(), region, _x_client.window(),
+  xcb_xfixes_create_region_from_window(m_c(), region, m_x_client.window(),
                                        XCB_SHAPE_SK_BOUNDING);
 
   xcb_xfixes_fetch_region_cookie_t fetch_region_cookie =
@@ -498,7 +498,7 @@ x_client_thumbnail::load_config(void)
 
 bool operator==(const x_client_thumbnail & thumbnail, const xcb_window_t & window)
 {
-  return thumbnail._x_client == window;
+  return thumbnail.m_x_client == window;
 }
 
 bool operator==(const xcb_window_t & window, const x_client_thumbnail & thumbnail)

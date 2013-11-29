@@ -6,13 +6,13 @@
 x_client_name::x_client_name(x_connection & c,
                              x::xrm & xrm,
                              x_client & x_client)
-  : m_c(c), m_xrm(xrm), _x_client(x_client)
+  : m_c(c), m_xrm(xrm), m_x_client(x_client)
 {
   m_c.attach(10, XCB_PROPERTY_NOTIFY, this);
-  m_c.update_input(_x_client.window(), XCB_EVENT_MASK_PROPERTY_CHANGE);
+  m_c.update_input(m_x_client.window(), XCB_EVENT_MASK_PROPERTY_CHANGE);
 
   m_xrm.attach(this);
-  _x_client.attach(this);
+  m_x_client.attach(this);
 
   load_config();
 
@@ -25,7 +25,7 @@ x_client_name::~x_client_name(void)
 {
   m_c.detach(XCB_PROPERTY_NOTIFY, this);
   m_xrm.detach(this);
-  _x_client.detach(this);
+  m_x_client.detach(this);
   xcb_free_pixmap(m_c(), _title);
 }
 
@@ -64,7 +64,7 @@ x_client_name::handle(xcb_generic_event_t * ge)
   if (XCB_PROPERTY_NOTIFY == (ge->response_type & ~0x80)) {
     xcb_property_notify_event_t * e = (xcb_property_notify_event_t *)ge;
 
-    if (e->window != _x_client.window()) result = true;
+    if (e->window != m_x_client.window()) result = true;
 
     if (e->atom == _a_wm_name) {
       update_title = true;
@@ -142,7 +142,7 @@ x_client_name::update_net_wm_name(void)
 
   xcb_generic_error_t * error;
   xcb_get_property_cookie_t c =
-    xcb_ewmh_get_wm_name(m_c.ewmh(), _x_client.window());
+    xcb_ewmh_get_wm_name(m_c.ewmh(), m_x_client.window());
   xcb_get_property_reply_t * r = xcb_get_property_reply(m_c(), c, &error);
 
   if (error) {
@@ -168,7 +168,7 @@ x_client_name::update_wm_name(void)
   xcb_generic_error_t * error;
   xcb_icccm_get_text_property_reply_t wm_name;
   xcb_get_property_cookie_t c =
-    xcb_icccm_get_wm_name(m_c(), _x_client.window());
+    xcb_icccm_get_wm_name(m_c(), m_x_client.window());
   xcb_icccm_get_wm_name_reply(m_c(), c, &wm_name, &error);
 
   // TODO: cause clang to crash, FILE A BUG REPORT
@@ -194,7 +194,7 @@ x_client_name::update_wm_class(void)
 
   xcb_generic_error_t * error;
   xcb_get_property_cookie_t c =
-    xcb_icccm_get_wm_class(m_c(), _x_client.window());
+    xcb_icccm_get_wm_class(m_c(), m_x_client.window());
   xcb_get_property_reply_t * r = xcb_get_property_reply(m_c(), c, &error);
 
   if (error) {

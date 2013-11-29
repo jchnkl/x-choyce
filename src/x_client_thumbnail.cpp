@@ -12,9 +12,9 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
     throw std::invalid_argument(
         "x_client_thumbnail requires either window or xclient parameter");
   } else if (xclient == NULL) {
-    _x_client = x_client_ptr(new x_client(m_c, window));
+    m_x_client = x_client_ptr(new x_client(m_c, window));
   } else {
-    _x_client = xclient;
+    m_x_client = xclient;
   }
 
   update_rectangle(rect);
@@ -35,7 +35,7 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
   _alpha_picture = xcb_generate_id(m_c());
   configure_alpha_picture(_alpha_value);
 
-  m_window_picture = make_picture(m_c, _x_client->window());
+  m_window_picture = make_picture(m_c, m_x_client->window());
   _thumbnail_picture = make_picture(m_c, _thumbnail_window);
 }
 
@@ -51,7 +51,7 @@ x_client_thumbnail::~x_client_thumbnail(void)
 void
 x_client_thumbnail::show(void)
 {
-  xcb_damage_create(m_c(), _damage, _x_client->window(),
+  xcb_damage_create(m_c(), _damage, m_x_client->window(),
                     XCB_DAMAGE_REPORT_LEVEL_NON_EMPTY);
   configure_thumbnail_window();
   configure_thumbnail_picture();
@@ -68,8 +68,8 @@ x_client_thumbnail::hide(void)
 void
 x_client_thumbnail::select(void)
 {
-  m_c.request_change_current_desktop(_x_client->net_wm_desktop());
-  m_c.request_change_active_window(_x_client->window());
+  m_c.request_change_current_desktop(m_x_client->net_wm_desktop());
+  m_c.request_change_active_window(m_x_client->window());
 }
 
 void
@@ -124,13 +124,13 @@ x_client_thumbnail::handle(xcb_generic_event_t * ge)
 void
 x_client_thumbnail::update_rectangle(const rectangle & rect)
 {
-  _scale = std::min((double)rect.width() / _x_client->rect().width(),
-                    (double)rect.height() / _x_client->rect().height());
+  _scale = std::min((double)rect.width() / m_x_client->rect().width(),
+                    (double)rect.height() / m_x_client->rect().height());
 
   m_rectangle.x() = rect.x();
   m_rectangle.y() = rect.y();
-  m_rectangle.width() = _x_client->rect().width() * _scale;
-  m_rectangle.height() = _x_client->rect().height() * _scale;
+  m_rectangle.width() = m_x_client->rect().width() * _scale;
+  m_rectangle.height() = m_x_client->rect().height() * _scale;
 }
 
 void
@@ -190,7 +190,7 @@ x_client_thumbnail::configure_alpha_picture(uint16_t alpha_value)
 
 bool operator==(const x_client_thumbnail & thumbnail, const xcb_window_t & window)
 {
-  return *(thumbnail._x_client) == window;
+  return *(thumbnail.m_x_client) == window;
 }
 
 bool operator==(const xcb_window_t & window, const x_client_thumbnail & thumbnail)

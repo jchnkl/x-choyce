@@ -75,9 +75,9 @@ class x_client_thumbnail : public x_event_handler_t
     x::xrm & m_xrm;
     const x::gl::api & _gl_api;
     x::gl::context _gl_ctx;
-    x_client _x_client;
-    x_client_icon _x_client_icon;
-    x_client_name _x_client_name;
+    x_client m_x_client;
+    x_client_icon m_x_client_icon;
+    x_client_name m_x_client_name;
 
     double _scale;
     double _icon_scale_x;

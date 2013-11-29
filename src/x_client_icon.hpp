@@ -17,7 +17,7 @@ class x_client_icon : public x_event_handler_t {
 
   private:
     x_connection & m_c;
-    x_client & _x_client;
+    x_client & m_x_client;
 
     xcb_pixmap_t _net_wm_icon = XCB_NONE;
     xcb_pixmap_t _wm_hints_icon = XCB_NONE;

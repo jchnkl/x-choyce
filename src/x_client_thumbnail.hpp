@@ -45,7 +45,7 @@ class x_client_thumbnail : public x_event_handler_t
     typedef std::shared_ptr<x_client> x_client_ptr;
 
     x_connection & m_c;
-    x_client_ptr _x_client;
+    x_client_ptr m_x_client;
 
     double _scale;
     rectangle m_rectangle;
