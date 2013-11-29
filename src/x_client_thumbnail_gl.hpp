@@ -92,7 +92,7 @@ class x_client_thumbnail : public x_event_handler_t
     bool _configure_thumbnail = true;
     bool _configure_highlight = true;
 
-    rectangle _rectangle;
+    rectangle m_rectangle;
 
     xcb_window_t _thumbnail_window = XCB_NONE;
     xcb_damage_damage_t _damage;

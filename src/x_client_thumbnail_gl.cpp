@@ -137,7 +137,7 @@ x_client_thumbnail::update(void)
   _gl_ctx.run([this](x::gl::context &)
   {
     configure_highlight();
-    update(0, 0, _rectangle.width(), _rectangle.height());
+    update(0, 0, m_rectangle.width(), m_rectangle.height());
   });
 
   return *this;
@@ -152,20 +152,20 @@ x_client_thumbnail::update(const rectangle & r)
                     (double)r.height() / _x_client.rect().height());
   _scale = std::min(1.0, _scale);
 
-  _rectangle.width() = _x_client.rect().width() * _scale;
-  _rectangle.height() = _x_client.rect().height() * _scale;
+  m_rectangle.width() = _x_client.rect().width() * _scale;
+  m_rectangle.height() = _x_client.rect().height() * _scale;
 
-  _rectangle.x() = r.x() + (r.width() - _rectangle.width()) / 2;
-  _rectangle.y() = r.y() + (r.height() - _rectangle.height()) / 2;
+  m_rectangle.x() = r.x() + (r.width() - m_rectangle.width()) / 2;
+  m_rectangle.y() = r.y() + (r.height() - m_rectangle.height()) / 2;
 
-  _icon_scale_x = _icon_size / (double)_rectangle.width();
-  _icon_scale_y = _icon_size / (double)_rectangle.height();
+  _icon_scale_x = _icon_size / (double)m_rectangle.width();
+  _icon_scale_y = _icon_size / (double)m_rectangle.height();
 
-  _x_client_name.title_width(_rectangle.width());
+  _x_client_name.title_width(m_rectangle.width());
   _x_client_name.title_height(_icon_size + _border_width);
 
-  _title_scale_x = (double)_rectangle.width() / (double)_rectangle.width();
-  _title_scale_y = (_icon_size + _border_width) / (double)_rectangle.height();
+  _title_scale_x = (double)m_rectangle.width() / (double)m_rectangle.width();
+  _title_scale_y = (_icon_size + _border_width) / (double)m_rectangle.height();
 
   if (_visible) {
     update_title_pixmap();
@@ -181,7 +181,7 @@ x_client_thumbnail::update(const rectangle & r)
 const rectangle &
 x_client_thumbnail::rect(void)
 {
-  return _rectangle;
+  return m_rectangle;
 }
 
 void
@@ -191,8 +191,8 @@ x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height
   glScissor(x, y, width, height);
 
   glViewport(_border_width, _border_width,
-             _rectangle.width() - 2 * _border_width,
-             _rectangle.height() - 2 * _border_width);
+             m_rectangle.width() - 2 * _border_width,
+             m_rectangle.height() - 2 * _border_width);
 
   auto * bc = _highlight ? &_focused_border_color : &_unfocused_border_color;
 
@@ -237,8 +237,8 @@ x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height
   {
     glPushMatrix();
     glTranslatef(
-      -1.0 + _icon_scale_x + (_border_width / (double)_rectangle.width()),
-      -1.0 + _icon_scale_y + (_border_width / (double)_rectangle.height()),
+      -1.0 + _icon_scale_x + (_border_width / (double)m_rectangle.width()),
+      -1.0 + _icon_scale_y + (_border_width / (double)m_rectangle.height()),
       0.0);
     glBegin(GL_QUADS);
     glTexCoord2f(0.0, 0.0); glVertex3f(-_icon_scale_x,  _icon_scale_y, 0.0);
@@ -437,7 +437,7 @@ x_client_thumbnail::configure_thumbnail_window(bool now)
   delete fetch_region_reply;
   xcb_xfixes_destroy_region(m_c(), region);
 
-  double ar = (double)_rectangle.width() / _rectangle.height();
+  double ar = (double)m_rectangle.width() / m_rectangle.height();
   unsigned int width_cutoff = std::ceil(10.0 * ar * _scale) ;
   unsigned int height_cutoff = std::ceil(10.0 * (1.0/ar) * _scale);
   for (int i = 0; i < nrects; ++i) {
@@ -462,10 +462,10 @@ x_client_thumbnail::configure_thumbnail_window(bool now)
                 | XCB_CONFIG_WINDOW_WIDTH | XCB_CONFIG_WINDOW_HEIGHT
                 | XCB_CONFIG_WINDOW_STACK_MODE;
 
-  uint32_t values[] = { (uint32_t)_rectangle.x(),
-                        (uint32_t)_rectangle.y(),
-                        (uint32_t)_rectangle.width(),
-                        (uint32_t)_rectangle.height(),
+  uint32_t values[] = { (uint32_t)m_rectangle.x(),
+                        (uint32_t)m_rectangle.y(),
+                        (uint32_t)m_rectangle.width(),
+                        (uint32_t)m_rectangle.height(),
                         XCB_STACK_MODE_ABOVE };
 
   xcb_configure_window(m_c(), _thumbnail_window, mask, values);

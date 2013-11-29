@@ -75,7 +75,7 @@ x_client_thumbnail::select(void)
 void
 x_client_thumbnail::update(void)
 {
-  update(0, 0, _rectangle.width(), _rectangle.height());
+  update(0, 0, m_rectangle.width(), m_rectangle.height());
 }
 
 void
@@ -127,10 +127,10 @@ x_client_thumbnail::update_rectangle(const rectangle & rect)
   _scale = std::min((double)rect.width() / _x_client->rect().width(),
                     (double)rect.height() / _x_client->rect().height());
 
-  _rectangle.x() = rect.x();
-  _rectangle.y() = rect.y();
-  _rectangle.width() = _x_client->rect().width() * _scale;
-  _rectangle.height() = _x_client->rect().height() * _scale;
+  m_rectangle.x() = rect.x();
+  m_rectangle.y() = rect.y();
+  m_rectangle.width() = _x_client->rect().width() * _scale;
+  m_rectangle.height() = _x_client->rect().height() * _scale;
 }
 
 void
@@ -140,10 +140,10 @@ x_client_thumbnail::configure_thumbnail_window(void)
                 | XCB_CONFIG_WINDOW_WIDTH | XCB_CONFIG_WINDOW_HEIGHT
                 | XCB_CONFIG_WINDOW_STACK_MODE;
 
-  uint32_t values[] = { (uint32_t)_rectangle.x(),
-                        (uint32_t)_rectangle.y(),
-                        (uint32_t)_rectangle.width(),
-                        (uint32_t)_rectangle.height(),
+  uint32_t values[] = { (uint32_t)m_rectangle.x(),
+                        (uint32_t)m_rectangle.y(),
+                        (uint32_t)m_rectangle.width(),
+                        (uint32_t)m_rectangle.height(),
                         XCB_STACK_MODE_ABOVE };
 
   xcb_configure_window(m_c(), _thumbnail_window, mask, values);

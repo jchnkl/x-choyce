@@ -26,7 +26,7 @@ x_client::~x_client(void)
   xcb_free_pixmap(m_c(), _name_window_dummy);
 }
 
-const    rectangle & x_client::rect(void)   const { return _rectangle; }
+const    rectangle & x_client::rect(void)   const { return m_rectangle; }
 const xcb_window_t & x_client::window(void) const { return m_window; }
 const xcb_window_t & x_client::parent(void) const { return _parent; }
 
@@ -45,10 +45,10 @@ void x_client::update_geometry(void)
   xcb_get_geometry_reply_t * geometry_reply =
     xcb_get_geometry_reply(m_c(), xcb_get_geometry(m_c(), m_window), NULL);
 
-  _rectangle.x()      = geometry_reply->x;
-  _rectangle.y()      = geometry_reply->y;
-  _rectangle.width()  = geometry_reply->width;
-  _rectangle.height() = geometry_reply->height;
+  m_rectangle.x()      = geometry_reply->x;
+  m_rectangle.y()      = geometry_reply->y;
+  m_rectangle.width()  = geometry_reply->width;
+  m_rectangle.height() = geometry_reply->height;
 
   delete geometry_reply;
 }
@@ -64,8 +64,8 @@ x_client::handle(xcb_generic_event_t * ge)
   if (XCB_CONFIGURE_NOTIFY == (ge->response_type & ~0x80)) {
     xcb_configure_notify_event_t * e = (xcb_configure_notify_event_t *)ge;
     if (e->window == m_window) {
-      _rectangle.x() = e->x; _rectangle.y() = e->y;
-      _rectangle.width() = e->width; _rectangle.height() = e->height;
+      m_rectangle.x() = e->x; m_rectangle.y() = e->y;
+      m_rectangle.width() = e->width; m_rectangle.height() = e->height;
     }
 
     if (e->window == m_c.root_window() || e->window == m_window) {
@@ -161,14 +161,14 @@ x_client::make_dummy(void)
   xcb_free_pixmap(m_c(), _name_window_dummy);
   _name_window_dummy = xcb_generate_id(m_c());
   xcb_create_pixmap(m_c(), 24, _name_window_dummy, m_c.root_window(),
-      _rectangle.width(), _rectangle.height());
+      m_rectangle.width(), m_rectangle.height());
 
   xcb_gcontext_t gc = xcb_generate_id(m_c());
   uint32_t fg = 0xff808080;
 
   xcb_create_gc(m_c(), gc, _name_window_dummy, XCB_GC_FOREGROUND, &fg);
   xcb_rectangle_t r = {
-    0, 0, (uint16_t)_rectangle.width(), (uint16_t)_rectangle.height() };
+    0, 0, (uint16_t)m_rectangle.width(), (uint16_t)m_rectangle.height() };
   xcb_poly_fill_rectangle(m_c(), _name_window_dummy, gc, 1, &r);
   xcb_free_gc(m_c(), gc);
 }
