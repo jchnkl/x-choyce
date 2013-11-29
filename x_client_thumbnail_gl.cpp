@@ -380,9 +380,9 @@ x_client_thumbnail::configure_highlight(bool now)
     auto & program = _gl_ctx.program(name);
     _gl_api.glUseProgram(program);
     for (auto tid : { 0, 1, 2 }) {
-      GLint location = _gl_api.glGetUniformLocationEXT(
+      GLint location = _gl_api.glGetUniformLocation(
           program, ("texture_" + std::to_string(tid)).c_str());
-      _gl_api.glUniform1iEXT(location, tid);
+      _gl_api.glUniform1i(location, tid);
     }
   };
 

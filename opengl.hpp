@@ -63,25 +63,25 @@ class api {
       glBindSampler = (PFNGLBINDSAMPLERPROC)
         glXGetProcAddressARB((const GLubyte *)"glBindSampler");
 
-      glUniform1fEXT = (PFNGLUNIFORM1FPROC)
+      glUniform1f = (PFNGLUNIFORM1FPROC)
         glXGetProcAddress((const GLubyte *)"glUniform1f");
-      glUniform2fEXT = (PFNGLUNIFORM2FPROC)
+      glUniform2f = (PFNGLUNIFORM2FPROC)
         glXGetProcAddress((const GLubyte *)"glUniform2f");
-      glUniform3fEXT = (PFNGLUNIFORM3FPROC)
+      glUniform3f = (PFNGLUNIFORM3FPROC)
         glXGetProcAddress((const GLubyte *)"glUniform3f");
-      glUniform4fEXT = (PFNGLUNIFORM4FPROC)
+      glUniform4f = (PFNGLUNIFORM4FPROC)
         glXGetProcAddress((const GLubyte *)"glUniform4f");
 
-      glUniform1iEXT = (PFNGLUNIFORM1IPROC)
+      glUniform1i = (PFNGLUNIFORM1IPROC)
         glXGetProcAddress((const GLubyte *)"glUniform1i");
-      glUniform2iEXT = (PFNGLUNIFORM2IPROC)
+      glUniform2i = (PFNGLUNIFORM2IPROC)
         glXGetProcAddress((const GLubyte *)"glUniform2i");
-      glUniform3iEXT = (PFNGLUNIFORM3IPROC)
+      glUniform3i = (PFNGLUNIFORM3IPROC)
         glXGetProcAddress((const GLubyte *)"glUniform3i");
-      glUniform4iEXT = (PFNGLUNIFORM4IPROC)
+      glUniform4i = (PFNGLUNIFORM4IPROC)
         glXGetProcAddress((const GLubyte *)"glUniform4i");
 
-      glGetUniformLocationEXT = (PFNGLGETUNIFORMLOCATIONPROC)
+      glGetUniformLocation = (PFNGLGETUNIFORMLOCATIONPROC)
         glXGetProcAddress((const GLubyte *)"glGetUniformLocation");
       glGetUniformBlockIndex = (PFNGLGETUNIFORMBLOCKINDEXPROC)
         glXGetProcAddress((const GLubyte *)"glGetUniformBlockIndex");
@@ -113,17 +113,17 @@ class api {
     PFNGLDELETESAMPLERSPROC       glDeleteSamplers        = 0;
     PFNGLBINDSAMPLERPROC          glBindSampler           = 0;
 
-    PFNGLUNIFORM1FPROC            glUniform1fEXT          = 0;
-    PFNGLUNIFORM2FPROC            glUniform2fEXT          = 0;
-    PFNGLUNIFORM3FPROC            glUniform3fEXT          = 0;
-    PFNGLUNIFORM4FPROC            glUniform4fEXT          = 0;
+    PFNGLUNIFORM1FPROC            glUniform1f             = 0;
+    PFNGLUNIFORM2FPROC            glUniform2f             = 0;
+    PFNGLUNIFORM3FPROC            glUniform3f             = 0;
+    PFNGLUNIFORM4FPROC            glUniform4f             = 0;
 
-    PFNGLUNIFORM1IPROC            glUniform1iEXT          = 0;
-    PFNGLUNIFORM2IPROC            glUniform2iEXT          = 0;
-    PFNGLUNIFORM3IPROC            glUniform3iEXT          = 0;
-    PFNGLUNIFORM4IPROC            glUniform4iEXT          = 0;
+    PFNGLUNIFORM1IPROC            glUniform1i             = 0;
+    PFNGLUNIFORM2IPROC            glUniform2i             = 0;
+    PFNGLUNIFORM3IPROC            glUniform3i             = 0;
+    PFNGLUNIFORM4IPROC            glUniform4i             = 0;
 
-    PFNGLGETUNIFORMLOCATIONPROC   glGetUniformLocationEXT = 0;
+    PFNGLGETUNIFORMLOCATIONPROC   glGetUniformLocation    = 0;
     PFNGLGETUNIFORMBLOCKINDEXPROC glGetUniformBlockIndex  = 0;
     PFNGLUNIFORMBLOCKBINDINGPROC  glUniformBlockBinding   = 0;
 }; // class api
