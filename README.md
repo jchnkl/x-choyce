@@ -57,10 +57,16 @@ xcb-image:          0.3.9
 xft:                2.3.1
 ```
 
+### Installation
+Run `sudo make install`. The default prefix is `/usr`, hence the binary will be
+installed to `/usr/bin` and the shader programs to
+`/usr/share/x:choyce/shaders`. The prefix is configurable, e.g. `make install
+PREFIX=${HOME}/.local/x:choyce`. So is the path to the shader programs using the
+`SHADER_PATH` variable. Don't change it unless you know what you're doing. For
+the shader path also look at the configuration variable `shaderpath`.
+
 ### Running
-Make sure that the `normal.frag` and `grayscale.frag` files are in the same
-directory, where the `x:choyce` binary resides. Now type `./x:choyce` and the
-program should start up.
+Type `x:choyce` and the program should start up.
 
 Your window manager needs to support at least the `_NET_CLIENT_LIST_STACKING`,
 `_NET_CURRENT_DESKTOP` and `_NET_ACTIVE_WINDOW` hints from the EWMH
@@ -130,6 +136,8 @@ escape:         string.  Key for stopping choosing without selecting a window.
 mod:            string.  Modifier key. Release chooses the currently selected
                          window. Valid options are 'mod1' through 'mod5',
                          'control' and combinations like 'mod1+control'.
+shaderpath:     string.  Path to shader programs. Only change when you know what
+                         you're doing.
 ```
 
 #### Default values:
@@ -153,4 +161,5 @@ west:           h
 action:         Tab
 escape:         Escape
 mod:            mod4
+shaderpath:     Default is taken from the preprocessor variable "SHADER_PATH"
 ```
