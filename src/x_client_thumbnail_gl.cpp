@@ -57,8 +57,8 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
 
   m_gl_ctx.run([this](x::gl::context &)
   {
-    m_gl_ctx.load("./normal.frag", "normal_shader");
-    m_gl_ctx.load("./grayscale.frag", "grayscale_shader");
+    m_gl_ctx.load(m_shader_path + "/normal.frag", "normal_shader");
+    m_gl_ctx.load(m_shader_path + "/grayscale.frag", "grayscale_shader");
 
     m_gl_ctx.load(0, m_x_client.name_window_pixmap(), 24);
     m_gl_ctx.load(1, m_x_client_name.title(), 32);
@@ -477,6 +477,7 @@ x_client_thumbnail::load_config(void)
 {
   m_icon_size    = m_xrm["iconsize"].v.num;
   m_border_width = m_xrm["borderwidth"].v.num;
+  m_shader_path  = *m_xrm["shaderpath"].v.str;
 
   // #xxxxxx: r: [1,2]; g: [3,4], b: [5,6]
   // 0123456

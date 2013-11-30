@@ -3,6 +3,8 @@ LIBS=xcb xcb-atom xcb-keysyms xcb-composite xcb-damage xcb-xinerama \
 CXXFLAGS=-g -std=c++11 -Wall -O3 $(shell pkg-config --cflags ${LIBS})
 LDFLAGS=$(shell pkg-config --libs ${LIBS})
 
+CXXFLAGS+=-DSHADER_PATH='"${SHADER_PATH}"'
+
 CPPSRCS=main.cpp \
 				data_types.cpp \
 				cyclic_iterator.cpp \
