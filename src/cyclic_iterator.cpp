@@ -57,7 +57,7 @@ cyclic_iterator<T>::operator-(int n)
   template<typename T> typename cyclic_iterator<T>::self_type &
 cyclic_iterator<T>::operator+=(int n)
 {
-  if (n != 0) {
+  if (n != 0 && ! m_container->empty()) {
 
     int distance = (m_container->end() - m_iterator) - 1;
     n %= m_container->size();
@@ -76,7 +76,7 @@ cyclic_iterator<T>::operator+=(int n)
   template<typename T> typename cyclic_iterator<T>::self_type &
 cyclic_iterator<T>::operator-=(int n)
 {
-  if (n != 0) {
+  if (n != 0 && ! m_container->empty()) {
 
     int distance = m_iterator - m_container->begin();
     n %= (m_container->size() + 0);
@@ -210,7 +210,7 @@ const_cyclic_iterator<T>::operator-(int n)
   template<typename T> typename const_cyclic_iterator<T>::self_type &
 const_cyclic_iterator<T>::operator+=(int n)
 {
-  if (n != 0) {
+  if (n != 0 && ! m_container->empty()) {
 
     int distance = (m_container->end() - m_iterator) - 1;
     n %= m_container->size();
@@ -229,7 +229,7 @@ const_cyclic_iterator<T>::operator+=(int n)
   template<typename T> typename const_cyclic_iterator<T>::self_type &
 const_cyclic_iterator<T>::operator-=(int n)
 {
-  if (n != 0) {
+  if (n != 0 && ! m_container->empty()) {
 
     int distance = m_iterator - m_container->begin();
     n %= (m_container->size() + 0);
