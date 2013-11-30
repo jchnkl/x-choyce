@@ -6,6 +6,8 @@
 std::deque<rectangle>
 grid_t::arrange(const rectangle & screen, unsigned int nrects) const
 {
+  if (nrects == 0) return {};
+
   int gap = 5;
 
   int radix = std::round(std::sqrt(nrects));
