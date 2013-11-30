@@ -1,7 +1,7 @@
 #ifndef THUMBNAIL_MANAGER_HPP
 #define THUMBNAIL_MANAGER_HPP
 
-#include <vector>
+#include <deque>
 #include <unordered_map>
 
 #include "cyclic_iterator.hpp"
@@ -35,7 +35,7 @@ class thumbnail_manager : public chooser_t
     bool handle(xcb_generic_event_t *);
 
   private:
-    typedef std::vector<xcb_window_t> window_list_t;
+    typedef std::deque<xcb_window_t> window_list_t;
     typedef const_cyclic_iterator<window_list_t> window_cyclic_iterator;
 
     x_connection & m_c;

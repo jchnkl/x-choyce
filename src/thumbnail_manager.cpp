@@ -191,7 +191,8 @@ thumbnail_manager::reset(void)
 inline void
 thumbnail_manager::update(void)
 {
-  m_windows = m_c.net_client_list_stacking();
+  auto windows = m_c.net_client_list_stacking();
+  m_windows = window_list_t(windows.begin(), windows.end());
   auto rects = m_layout->arrange(query_current_screen(), m_windows.size());
 
   for (auto item = m_thumbnails.begin(); item != m_thumbnails.end(); ) {
