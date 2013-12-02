@@ -56,11 +56,23 @@ class name {
 }; // namespace generic
 
 class colorname : public generic::name {
+#if (__GNUC__ >= 4 && __GNUC_MINOR__ >= 8)
   using generic::name::name;
+#else
+  public:
+    colorname(void) {}
+    colorname(const std::string & name) : generic::name(name) {}
+#endif
 };
 
 class fontname : public generic::name {
+#if (__GNUC__ >= 4 && __GNUC_MINOR__ >= 8)
   using generic::name::name;
+#else
+  public:
+    fontname(void) {}
+    fontname(const std::string & name) : generic::name(name) {}
+#endif
 };
 
 }; // namespace type
