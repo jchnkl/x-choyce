@@ -11,8 +11,8 @@
 #include "x_client_thumbnail_gl.hpp"
 
 #ifndef SHADER_PATH
-#define SHADER_PATH "/usr/share/x:choyce"
-#warning "SHADER_PATH has not been defind. Using '/usr/share/x:choyce'"
+#define SHADER_PATH "."
+#warning "SHADER_PATH has not been defined. Using working directory (./)"
 #endif
 
 x_event_source_t * g_event_source = NULL;
