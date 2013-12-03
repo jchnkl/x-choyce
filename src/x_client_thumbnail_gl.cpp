@@ -72,6 +72,7 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
       });
     }
 
+    glEnable(GL_SCISSOR_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     configure_highlight(true);
@@ -187,7 +188,6 @@ x_client_thumbnail::rect(void)
 void
 x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height)
 {
-  glEnable(GL_SCISSOR_TEST);
   glScissor(x, y, width, height);
 
   glViewport(m_border_width, m_border_width,
@@ -250,7 +250,6 @@ x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height
   });
 
   glXSwapBuffers(m_c.dpy(), m_thumbnail_window);
-  glDisable(GL_SCISSOR_TEST);
 }
 
 void
