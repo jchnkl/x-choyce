@@ -70,11 +70,11 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
     m_gl_ctx.load(2, m_x_client_icon.icon(), 32);
 
     for (auto & t : { 0, 1, 2 }) {
-      m_gl_ctx.texture(t, [](const GLuint &)
-      {
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-      });
+      m_gl_ctx.active_texture(t);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
     }
 
     glEnable(GL_SCISSOR_TEST);
@@ -232,11 +232,11 @@ x_client_thumbnail::update_title_pixmap(void)
   m_gl_ctx.run([this](x::gl::context & ctx)
   {
     ctx.load(1, m_x_client_name.title(), 32);
-    ctx.texture(1, [](const GLuint &)
-    {
-      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    });
+    m_gl_ctx.active_texture(1);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
   });
 }
 
@@ -248,11 +248,11 @@ x_client_thumbnail::update_name_window_pixmap(void)
   m_gl_ctx.run([this](x::gl::context & ctx)
   {
     ctx.load(0, m_x_client.name_window_pixmap(), 24);
-    ctx.texture(0, [](const GLuint &)
-    {
-      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    });
+    m_gl_ctx.active_texture(0);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
   });
 }
 
