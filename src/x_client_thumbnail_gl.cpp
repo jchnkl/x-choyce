@@ -78,7 +78,7 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
     }
 
     glEnable(GL_SCISSOR_TEST);
-    configure_highlight(true);
+    update(0, 0, m_rectangle.width(), m_rectangle.height());
   });
 }
 
