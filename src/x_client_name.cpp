@@ -238,7 +238,7 @@ x_client_name::make_title(void)
 
   XGlyphInfo text_extents = m_x_xft->text_extents_utf8(m_pnamefont, lower + upper);
 
-  int x_off = m_icon_size + 3 * m_border_width;
+  int x_off = m_icon_size + 4 * m_border_width;
   int y_off = m_border_width;
 
   y_off += text_extents.height;
