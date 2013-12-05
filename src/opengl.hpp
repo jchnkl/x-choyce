@@ -240,41 +240,64 @@ class context {
     }
 
     // load shader
-    context & load(const std::string & filename, const std::string & name)
+    context & load(const std::string & p_name,
+                   const std::string & v_file,
+                   const std::string & f_file)
     {
-      std::ifstream file(filename);
-      std::string shader_source_str((std::istreambuf_iterator<char>(file)),
-                                     std::istreambuf_iterator<char>());
+      std::ifstream file(v_file);
+      std::string v_source((std::istreambuf_iterator<char>(file)),
+                            std::istreambuf_iterator<char>());
       file.close();
 
-      const GLchar * shader_source[]  = { shader_source_str.c_str() };
-      const GLint shader_source_len[] = { (GLint)(shader_source_str.length()) };
+      file.open(f_file);
+      std::string f_source((std::istreambuf_iterator<char>(file)),
+                            std::istreambuf_iterator<char>());
+      file.close();
+
+      shader_t v = m_api.glCreateShader(GL_VERTEX_SHADER);
+      shader_t f = m_api.glCreateShader(GL_FRAGMENT_SHADER);
+
+      {
+        const GLchar * v_c_str[] = { v_source.c_str() };
+        const GLint v_c_len[] = { (GLint)v_source.length() };
+        const GLchar * f_c_str[] = { f_source.c_str() };
+        const GLint f_c_len[] = { (GLint)f_source.length() };
+        m_api.glShaderSource(v, 1, v_c_str, v_c_len);
+        m_api.glShaderSource(f, 1, f_c_str, f_c_len);
+      }
+
+      m_api.glCompileShader(v);
+      m_api.glCompileShader(f);
 
       GLsizei log_length = 0, max_len = 1024;
       GLchar log_buffer[max_len];
 
-      shader_t s = m_api.glCreateShader(GL_FRAGMENT_SHADER);
-      m_api.glShaderSource(s, 1, shader_source, shader_source_len);
-      m_api.glCompileShader(s);
 
-      m_api.glGetShaderInfoLog(s, max_len, &log_length, log_buffer);
+      m_api.glGetShaderInfoLog(v, max_len, &log_length, log_buffer);
       if (log_length > 0) {
-        std::cerr << "Shader compilation for " << name << " failed:" << std::endl
-                  << log_buffer << std::endl;
+        std::cerr << "Shader compilation for " << p_name << " failed:"
+                  << std::endl << log_buffer << std::endl;
+      }
+
+      m_api.glGetShaderInfoLog(f, max_len, &log_length, log_buffer);
+      if (log_length > 0) {
+        std::cerr << "Shader compilation for " << p_name << " failed:"
+                  << std::endl << log_buffer << std::endl;
       }
 
       program_t p = m_api.glCreateProgram();
 
-      m_api.glAttachShader(p, s);
+      m_api.glAttachShader(p, v);
+      m_api.glAttachShader(p, f);
       m_api.glLinkProgram(p);
 
       m_api.glGetProgramInfoLog(p, max_len, &log_length, log_buffer);
       if (log_length > 0) {
-        std::cerr << "Program creation for " << name << " failed:" << std::endl
+        std::cerr << "Program creation for " << p_name << " failed:" << std::endl
                   << log_buffer << std::endl;
       }
 
-      m_programs[name] = { p, s };
+      m_programs[p_name] = { p, 0 };
 
       return *this;
     }
