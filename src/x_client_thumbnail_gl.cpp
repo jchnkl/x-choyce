@@ -310,13 +310,15 @@ x_client_thumbnail::handle(xcb_generic_event_t * ge)
   bool result = false;
   if (m_c.damage_event_id() == (ge->response_type & ~0x80)) {
     xcb_damage_notify_event_t * e = (xcb_damage_notify_event_t *)ge;
-    xcb_damage_subtract(m_c(), e->damage, XCB_NONE, XCB_NONE);
 
-    m_gl_ctx.run([&](x::gl::context &)
-    {
-      update(e->area.x * m_scale, e->area.y * m_scale,
-             e->area.width * m_scale, e->area.height * m_scale);
-    });
+    if (e->drawable == m_x_client.window()) {
+      xcb_damage_subtract(m_c(), e->damage, XCB_NONE, XCB_NONE);
+      m_gl_ctx.run([&](x::gl::context &)
+      {
+        update(e->area.x * m_scale, e->area.y * m_scale,
+               e->area.width * m_scale, e->area.height * m_scale);
+      });
+    }
 
     result = true;
 
