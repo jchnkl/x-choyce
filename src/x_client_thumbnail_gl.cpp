@@ -78,8 +78,6 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
     }
 
     glEnable(GL_SCISSOR_TEST);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     configure_highlight(true);
   });
 }
