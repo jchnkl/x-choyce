@@ -80,10 +80,11 @@ class x_client_thumbnail : public x_event_handler_t
     x_client_name m_x_client_name;
 
     double m_scale;
-    double m_icon_scale_x;
-    double m_icon_scale_y;
-    double m_title_scale_x;
-    double m_title_scale_y;
+
+    std::pair<double, double> m_icon_scale;
+    std::pair<double, double> m_icon_offset;
+    std::pair<double, double> m_title_scale;
+    std::pair<double, double> m_title_offset;
 
     bool m_visible = false;
     bool m_highlight = false;
@@ -110,6 +111,7 @@ class x_client_thumbnail : public x_event_handler_t
     // << config options
 
     void update(int x, int y, unsigned int width, unsigned int height);
+    void update_uniforms(const GLuint & program);
     void update_title_pixmap(void);
     void update_name_window_pixmap(void);
     void configure_highlight(bool now = false);

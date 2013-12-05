@@ -164,18 +164,29 @@ x_client_thumbnail::update(const rectangle & r)
   m_rectangle.x() = r.x() + (r.width() - m_rectangle.width()) / 2;
   m_rectangle.y() = r.y() + (r.height() - m_rectangle.height()) / 2;
 
-  m_icon_scale_x = m_icon_size / (double)m_rectangle.width();
-  m_icon_scale_y = m_icon_size / (double)m_rectangle.height();
-
   m_x_client_name.title_width(m_rectangle.width());
   m_x_client_name.title_height(m_icon_size + m_border_width);
 
-  m_title_scale_x = (double)m_rectangle.width() / (double)m_rectangle.width();
-  m_title_scale_y = (m_icon_size + m_border_width) / (double)m_rectangle.height();
+  m_icon_scale.first  = m_icon_size / (double)m_rectangle.width();
+  m_icon_scale.second = m_icon_size / (double)m_rectangle.height();
+
+  m_title_scale.first  = 1.0;
+  m_title_scale.second = (double)(m_icon_size + m_border_width)
+                       / (double)m_rectangle.height();
+
+  double icon_offset   = 0.5 * (double)m_border_width / (double)m_icon_size;
+  m_icon_offset.first  = icon_offset;
+  m_icon_offset.second = ((double)m_rectangle.height() / (double)m_icon_size)
+                       - icon_offset - 1.0;
+
+  m_title_offset.first  = 0.0;
+  m_title_offset.second = (double)m_rectangle.height()
+                        / m_x_client_name.title_height() - 1.0;
 
   if (m_visible) {
     update_title_pixmap();
     configure_thumbnail_window(true);
+
   } else {
     m_update_title_pixmap = true;
     m_configure_thumbnail = true;
@@ -221,8 +232,27 @@ x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height
   glXSwapBuffers(m_c.dpy(), m_thumbnail_window);
 }
 
+void
+x_client_thumbnail::update_uniforms(const GLuint & program)
+{
+  GLint l;
 
+  for (auto tid : { 0, 1, 2 }) {
+    l = m_gl_api.glGetUniformLocation(program, ("texture_" + std::to_string(tid)).c_str());
+    m_gl_api.glUniform1i(l, tid);
+  }
 
+  l = m_gl_api.glGetUniformLocation(program, "t1_scale");
+  m_gl_api.glUniform2f(l, m_title_scale.first, m_title_scale.second);
+
+  l = m_gl_api.glGetUniformLocation(program, "t2_scale");
+  m_gl_api.glUniform2f(l, m_icon_scale.first, m_icon_scale.second);
+
+  l = m_gl_api.glGetUniformLocation(program, "t1_offset");
+  m_gl_api.glUniform2f(l, m_title_offset.first, m_title_offset.second);
+
+  l = m_gl_api.glGetUniformLocation(program, "t2_offset");
+  m_gl_api.glUniform2f(l, m_icon_offset.first, m_icon_offset.second);
 }
 
 void
