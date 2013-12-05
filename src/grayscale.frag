@@ -10,6 +10,9 @@ const float blur = 1.0/3072.0;
 
 void main(void)
 {
+  vec4 t1 = texture2D(texture_1, gl_TexCoord[1].st);
+  vec4 t2 = texture2D(texture_2, gl_TexCoord[2].st);
+
   vec4 sum = vec4(0.0);
 
   sum += texture2D(texture_0, vec2(gl_TexCoord[0].x - 4.0*blur, gl_TexCoord[0].y - 4.0*blur)) * 0.05;
@@ -27,10 +30,7 @@ void main(void)
   float blue  = sum.b * 0.114;
   float grey  = red * alpha + green * alpha + blue * alpha;
 
-  vec4 t1 = texture2D(texture_1, gl_TexCoord[0].st);
-  vec4 t2 = texture2D(texture_2, gl_TexCoord[0].st);
-
-  gl_FragColor = vec4(grey);
-  gl_FragColor.a = t1.a * t2.a;
-  gl_FragColor.rgb += t1.rgb + t2.rgb;
+  gl_FragColor = mix(vec4(grey), t1, t1.a);
+  gl_FragColor = mix(gl_FragColor, t2, t2.a);
+  gl_FragColor.a = 1.0;
 }

@@ -57,8 +57,13 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
 
   m_gl_ctx.run([this](x::gl::context &)
   {
-    m_gl_ctx.load(m_shader_path + "/normal.frag", "normal_shader");
-    m_gl_ctx.load(m_shader_path + "/grayscale.frag", "grayscale_shader");
+    m_gl_ctx.load("normal_shader",
+                  m_shader_path + "/normal.vert",
+                  m_shader_path + "/normal.frag");
+
+    m_gl_ctx.load("grayscale_shader",
+                  m_shader_path + "/normal.vert",
+                  m_shader_path + "/grayscale.frag");
 
     m_gl_ctx.load(0, m_x_client.name_window_pixmap(), 24);
     m_gl_ctx.load(1, m_x_client_name.title(), 32);
@@ -202,54 +207,22 @@ x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-  glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
 
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-
-  m_gl_ctx.texture(0, [](const GLuint &)
-  {
-    glPushMatrix();
-    glBegin(GL_QUADS);
-    glTexCoord2f(0.0, 0.0); glVertex3f(-1.0,  1.0, 0.0);
-    glTexCoord2f(1.0, 0.0); glVertex3f( 1.0,  1.0, 0.0);
-    glTexCoord2f(1.0, 1.0); glVertex3f( 1.0, -1.0, 0.0);
-    glTexCoord2f(0.0, 1.0); glVertex3f(-1.0, -1.0, 0.0);
-    glEnd();
-    glPopMatrix();
-  });
-
-  m_gl_ctx.texture(1, [&](const GLuint &)
-  {
-    glPushMatrix();
-    glTranslatef(-1.0 + m_title_scale_x, -1.0 + m_title_scale_y, 0.0);
-    glBegin(GL_QUADS);
-    glTexCoord2f(0.0, 0.0); glVertex3f(-m_title_scale_x,  m_title_scale_y, 0.0);
-    glTexCoord2f(1.0, 0.0); glVertex3f( m_title_scale_x,  m_title_scale_y, 0.0);
-    glTexCoord2f(1.0, 1.0); glVertex3f( m_title_scale_x, -m_title_scale_y, 0.0);
-    glTexCoord2f(0.0, 1.0); glVertex3f(-m_title_scale_x, -m_title_scale_y, 0.0);
-    glEnd();
-    glPopMatrix();
-  });
-
-  m_gl_ctx.texture(2, [&](const GLuint &)
-  {
-    glPushMatrix();
-    glTranslatef(
-      -1.0 + m_icon_scale_x + (m_border_width / (double)m_rectangle.width()),
-      -1.0 + m_icon_scale_y + (m_border_width / (double)m_rectangle.height()),
-      0.0);
-    glBegin(GL_QUADS);
-    glTexCoord2f(0.0, 0.0); glVertex3f(-m_icon_scale_x,  m_icon_scale_y, 0.0);
-    glTexCoord2f(1.0, 0.0); glVertex3f( m_icon_scale_x,  m_icon_scale_y, 0.0);
-    glTexCoord2f(1.0, 1.0); glVertex3f( m_icon_scale_x, -m_icon_scale_y, 0.0);
-    glTexCoord2f(0.0, 1.0); glVertex3f(-m_icon_scale_x, -m_icon_scale_y, 0.0);
-    glEnd();
-    glPopMatrix();
-  });
+  glPushMatrix();
+  glBegin(GL_QUADS);
+  glTexCoord2f(0.0, 0.0); glVertex3f(-1.0,  1.0, 0.0);
+  glTexCoord2f(1.0, 0.0); glVertex3f( 1.0,  1.0, 0.0);
+  glTexCoord2f(1.0, 1.0); glVertex3f( 1.0, -1.0, 0.0);
+  glTexCoord2f(0.0, 1.0); glVertex3f(-1.0, -1.0, 0.0);
+  glEnd();
+  glPopMatrix();
 
   glXSwapBuffers(m_c.dpy(), m_thumbnail_window);
+}
+
+
+
 }
 
 void
