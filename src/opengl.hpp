@@ -87,45 +87,58 @@ class api {
         glXGetProcAddress((const GLubyte *)"glGetUniformBlockIndex");
       glUniformBlockBinding = (PFNGLUNIFORMBLOCKBINDINGPROC)
         glXGetProcAddress((const GLubyte *)"glUniformBlockBinding");
+
+      glGetInteger64v = (PFNGLGETINTEGER64VPROC)
+        glXGetProcAddress((const GLubyte *)"glGetInteger64v");
+
+      glBlendFuncSeparateEXT = (PFNGLBLENDFUNCSEPARATEEXTPROC)
+        glXGetProcAddress((const GLubyte *)"glBlendFuncSeparateEXT");
+      glBlendEquationSeparateEXT = (PFNGLBLENDEQUATIONSEPARATEEXTPROC)
+        glXGetProcAddress((const GLubyte *)"glBlendEquationSeparateEXT");
     }
 
-    PFNGLXBINDTEXIMAGEEXTPROC     glXBindTexImageEXT      = 0;
-    PFNGLXRELEASETEXIMAGEEXTPROC  glXReleaseTexImageEXT   = 0;
-    PFNGLXGETFBCONFIGSPROC        glXGetFBConfigs         = 0;
-    PFNGLCREATESHADERPROC         glCreateShader          = 0;
-    PFNGLDELETESHADERPROC         glDeleteShader          = 0;
-    PFNGLSHADERSOURCEPROC         glShaderSource          = 0;
-    PFNGLCOMPILESHADERPROC        glCompileShader         = 0;
-    PFNGLCREATEPROGRAMPROC        glCreateProgram         = 0;
-    PFNGLDELETEPROGRAMPROC        glDeleteProgram         = 0;
-    PFNGLATTACHSHADERPROC         glAttachShader          = 0;
-    PFNGLDETACHSHADERPROC         glDetachShader          = 0;
-    PFNGLLINKPROGRAMPROC          glLinkProgram           = 0;
-    PFNGLUSEPROGRAMPROC           glUseProgram            = 0;
-    PFNGLGETPROGRAMINFOLOGPROC    glGetProgramInfoLog     = 0;
-    PFNGLGETSHADERINFOLOGPROC     glGetShaderInfoLog      = 0;
-    PFNGLGENERATEMIPMAPPROC       glGenerateMipmap        = 0;
-    PFNGLGENERATEMIPMAPEXTPROC    glGenerateMipmapEXT     = 0;
-    PFNGLACTIVETEXTUREPROC        glActiveTextureEXT      = 0;
-    PFNGLBLENDFUNCSEPARATEPROC    glBlendFuncSeparate     = 0;
+    PFNGLXBINDTEXIMAGEEXTPROC         glXBindTexImageEXT         = 0;
+    PFNGLXRELEASETEXIMAGEEXTPROC      glXReleaseTexImageEXT      = 0;
+    PFNGLXGETFBCONFIGSPROC            glXGetFBConfigs            = 0;
+    PFNGLCREATESHADERPROC             glCreateShader             = 0;
+    PFNGLDELETESHADERPROC             glDeleteShader             = 0;
+    PFNGLSHADERSOURCEPROC             glShaderSource             = 0;
+    PFNGLCOMPILESHADERPROC            glCompileShader            = 0;
+    PFNGLCREATEPROGRAMPROC            glCreateProgram            = 0;
+    PFNGLDELETEPROGRAMPROC            glDeleteProgram            = 0;
+    PFNGLATTACHSHADERPROC             glAttachShader             = 0;
+    PFNGLDETACHSHADERPROC             glDetachShader             = 0;
+    PFNGLLINKPROGRAMPROC              glLinkProgram              = 0;
+    PFNGLUSEPROGRAMPROC               glUseProgram               = 0;
+    PFNGLGETPROGRAMINFOLOGPROC        glGetProgramInfoLog        = 0;
+    PFNGLGETSHADERINFOLOGPROC         glGetShaderInfoLog         = 0;
+    PFNGLGENERATEMIPMAPPROC           glGenerateMipmap           = 0;
+    PFNGLGENERATEMIPMAPEXTPROC        glGenerateMipmapEXT        = 0;
+    PFNGLACTIVETEXTUREPROC            glActiveTextureEXT         = 0;
+    PFNGLBLENDFUNCSEPARATEPROC        glBlendFuncSeparate        = 0;
 
-    PFNGLGENSAMPLERSPROC          glGenSamplers           = 0;
-    PFNGLDELETESAMPLERSPROC       glDeleteSamplers        = 0;
-    PFNGLBINDSAMPLERPROC          glBindSampler           = 0;
+    PFNGLGENSAMPLERSPROC              glGenSamplers              = 0;
+    PFNGLDELETESAMPLERSPROC           glDeleteSamplers           = 0;
+    PFNGLBINDSAMPLERPROC              glBindSampler              = 0;
 
-    PFNGLUNIFORM1FPROC            glUniform1f             = 0;
-    PFNGLUNIFORM2FPROC            glUniform2f             = 0;
-    PFNGLUNIFORM3FPROC            glUniform3f             = 0;
-    PFNGLUNIFORM4FPROC            glUniform4f             = 0;
+    PFNGLUNIFORM1FPROC                glUniform1f                = 0;
+    PFNGLUNIFORM2FPROC                glUniform2f                = 0;
+    PFNGLUNIFORM3FPROC                glUniform3f                = 0;
+    PFNGLUNIFORM4FPROC                glUniform4f                = 0;
 
-    PFNGLUNIFORM1IPROC            glUniform1i             = 0;
-    PFNGLUNIFORM2IPROC            glUniform2i             = 0;
-    PFNGLUNIFORM3IPROC            glUniform3i             = 0;
-    PFNGLUNIFORM4IPROC            glUniform4i             = 0;
+    PFNGLUNIFORM1IPROC                glUniform1i                = 0;
+    PFNGLUNIFORM2IPROC                glUniform2i                = 0;
+    PFNGLUNIFORM3IPROC                glUniform3i                = 0;
+    PFNGLUNIFORM4IPROC                glUniform4i                = 0;
 
-    PFNGLGETUNIFORMLOCATIONPROC   glGetUniformLocation    = 0;
-    PFNGLGETUNIFORMBLOCKINDEXPROC glGetUniformBlockIndex  = 0;
-    PFNGLUNIFORMBLOCKBINDINGPROC  glUniformBlockBinding   = 0;
+    PFNGLGETUNIFORMLOCATIONPROC       glGetUniformLocation       = 0;
+    PFNGLGETUNIFORMBLOCKINDEXPROC     glGetUniformBlockIndex     = 0;
+    PFNGLUNIFORMBLOCKBINDINGPROC      glUniformBlockBinding      = 0;
+
+    PFNGLGETINTEGER64VPROC            glGetInteger64v            = 0;
+
+    PFNGLBLENDFUNCSEPARATEEXTPROC     glBlendFuncSeparateEXT     = 0;
+    PFNGLBLENDEQUATIONSEPARATEEXTPROC glBlendEquationSeparateEXT = 0;
 }; // class api
 
 class context {
