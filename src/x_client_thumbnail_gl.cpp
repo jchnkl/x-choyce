@@ -6,14 +6,14 @@
 
 x_client_thumbnail::x_client_thumbnail(x_connection & c,
                                        x::xrm & xrm,
-                                       const x::gl::api & api,
+                                       const x::gl::config & config,
                                        const rectangle & rect,
                                        const xcb_window_t & window)
-  : m_c(c), m_xrm(xrm), m_gl_api(api)
-  , m_gl_ctx(api, m_c.dpy(), m_c.screen_number())
+  : m_c(c), m_xrm(xrm), m_gl_api(config.api())
+  , m_gl_ctx(config)
   , m_x_client(m_c, window)
   , m_x_client_icon(m_c, m_x_client)
-  , m_x_client_name(m_c, m_xrm, m_x_client)
+  , m_x_client_name(m_c, m_xrm, m_x_client, config.visual_info(), config.colormap())
 {
   load_config();
   update(rect);
@@ -29,13 +29,6 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
   m_damage = xcb_generate_id(m_c());
 
   m_thumbnail_window = xcb_generate_id(m_c());
-  xcb_colormap_t colormap = xcb_generate_id(m_c());
-
-  unsigned int depth = 32;
-  xcb_visualtype_t * const vt = m_c.find_visual(depth);
-
-  xcb_create_colormap(m_c(), XCB_COLORMAP_ALLOC_NONE, colormap,
-                      m_c.root_window(), vt->visual_id);
 
   uint32_t valuemask = XCB_CW_BACK_PIXEL
                      | XCB_CW_BORDER_PIXEL
@@ -43,15 +36,17 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
                      | XCB_CW_COLORMAP
                      ;
 
-  uint32_t valuelist[] = { 0, 0, 1, colormap };
+  uint32_t valuelist[] = { 0, 0, 1, (uint32_t)config.colormap() };
 
-  xcb_create_window(m_c(), depth, m_thumbnail_window,
+  xcb_create_window(m_c(),
+                    config.visual_info()->depth,
+                    m_thumbnail_window,
                     m_c.root_window(), 0, 0,
                     m_x_client.rect().width(), m_x_client.rect().height(),
-                    0, XCB_WINDOW_CLASS_INPUT_OUTPUT, vt->visual_id,
+                    0, XCB_WINDOW_CLASS_INPUT_OUTPUT,
+                    config.visual_info()->visualid,
                     valuemask, valuelist);
 
-  xcb_free_colormap(m_c(), colormap);
 
   m_gl_ctx.drawable(m_thumbnail_window);
 
@@ -504,12 +499,13 @@ bool operator==(const xcb_window_t & window, const x_client_thumbnail & thumbnai
 }
 
 x_client_thumbnail::factory::factory(x_connection & c, x::xrm & xrm)
-  : m_c(c), m_xrm(xrm)
+  : m_c(c), m_xrm(xrm), m_gl_config(c.dpy())
 {}
 
 thumbnail_t::ptr
 x_client_thumbnail::factory::
 make(const xcb_window_t & w, const rectangle & r) const
 {
-  return thumbnail_t::ptr(new x_client_thumbnail(m_c, m_xrm, m_gl_api, r, w));
+  return thumbnail_t::ptr(
+      new x_client_thumbnail(m_c, m_xrm, m_gl_config, r, w));
 }
