@@ -313,15 +313,26 @@ x_client_thumbnail::handle(xcb_generic_event_t * ge)
 
     if (e->drawable == m_x_client.window()) {
       xcb_damage_subtract(m_c(), e->damage, XCB_NONE, XCB_NONE);
+
       m_gl_ctx.run([&](x::gl::context &)
       {
+        if (m_highlight) {
+          m_gl_ctx.active_texture(0);
+          m_gl_ctx.pixmap(0, [&](const GLXPixmap & p)
+          {
+            m_gl_api.glXReleaseTexImageEXT(m_c.dpy(), p, GLX_FRONT_EXT);
+            m_gl_api.glXBindTexImageEXT(m_c.dpy(), p, GLX_FRONT_EXT, NULL);
+          });
+
+          m_gl_api.glGenerateMipmap(GL_TEXTURE_2D);
+        }
+
         update(e->area.x * m_scale, e->area.y * m_scale,
                e->area.width * m_scale, e->area.height * m_scale);
       });
     }
 
     result = true;
-
   }
 
   return result;
@@ -364,9 +375,41 @@ x_client_thumbnail::configure_highlight(bool now)
     return;
   }
 
-  auto & program = m_gl_ctx.program(m_highlight ? "normal_shader" : "grayscale_shader");
-  m_gl_api.glUseProgram(program);
-  update_uniforms(program);
+  auto use_program = [this](const std::string & name)
+  {
+    auto & program = m_gl_ctx.program(name);
+    m_gl_api.glUseProgram(program);
+    for (auto tid : { 0, 1, 2 }) {
+      GLint location = m_gl_api.glGetUniformLocation(
+          program, ("texture_" + std::to_string(tid)).c_str());
+      m_gl_api.glUniform1i(location, tid);
+    }
+  };
+
+  if (m_highlight) {
+    use_program("normal_shader");
+    m_gl_ctx.texture(0, [this](const GLuint &)
+    {
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1);
+      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+      m_gl_api.glGenerateMipmap(GL_TEXTURE_2D);
+    });
+
+  } else {
+    use_program("grayscale_shader");
+    m_gl_ctx.texture(0, [this](const GLuint &)
+    {
+      m_gl_ctx.pixmap(0, [this](const GLXPixmap & p)
+      {
+        m_gl_api.glXReleaseTexImageEXT(m_c.dpy(), p, GLX_FRONT_EXT);
+        m_gl_api.glXBindTexImageEXT(m_c.dpy(), p, GLX_FRONT_EXT, NULL);
+      });
+
+      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    });
+  }
 }
 
 void
