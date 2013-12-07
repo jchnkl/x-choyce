@@ -6,35 +6,16 @@
 using namespace x;
 namespace t = x::type;
 
-xft::xft(Display * dpy, const Drawable & drawable)
-  : m_dpy(dpy), m_drawable(drawable)
+xft::xft(Display * dpy,
+         XVisualInfo * const visual_info, const Colormap & colormap,
+         unsigned int width, unsigned int height)
+  : m_dpy(dpy),
+    m_visual_info(visual_info), m_colormap(colormap),
+    m_width(width), m_height(height),
 {
-  unsigned int depth;
-  {
-    Window root;
-    int x, y;
-    unsigned int w, h, bw;
-    XGetGeometry(m_dpy, drawable, &root, &x, &y, &w, &h, &bw, &depth);
-  }
-
-  XMatchVisualInfo(m_dpy, DefaultScreen(dpy), depth, TrueColor, &m_visual_info);
-
-  m_colormap = XCreateColormap(
-      m_dpy, m_drawable, m_visual_info.visual, AllocNone);
-
-  m_xftdraw = XftDrawCreate(
-      m_dpy, m_drawable, m_visual_info.visual, m_colormap);
-}
-
-xft::xft(Display * dpy, const Pixmap & pixmap, int depth)
-  : m_dpy(dpy), m_drawable(pixmap)
-{
-  XMatchVisualInfo(m_dpy, DefaultScreen(dpy), depth, TrueColor, &m_visual_info);
-
-  m_colormap = XCreateColormap(
-      m_dpy, DefaultRootWindow(m_dpy), m_visual_info.visual, AllocNone);
-
-  m_xftdraw = XftDrawCreateAlpha(m_dpy, m_drawable, depth);
+  m_drawable = XCreatePixmap(
+      m_dpy, DefaultRootWindow(m_dpy), width, height, m_visual_info->depth);
+  m_xftdraw = XftDrawCreate(m_dpy, m_drawable, m_visual_info->visual, m_colormap);
 }
 
 xft::~xft(void)

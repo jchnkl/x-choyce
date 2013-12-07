@@ -12,8 +12,9 @@ namespace x {
 
 class xft {
   public:
-    xft(Display * dpy, const Drawable & drawable);
-    xft(Display * dpy, const Pixmap & pixmap, int depth);
+    xft(Display * dpy,
+        XVisualInfo * const visual_info, const Colormap & colormap,
+        unsigned int width, unsigned int height);
     ~xft(void);
 
     xft(const xft &) = delete;
