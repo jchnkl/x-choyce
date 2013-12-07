@@ -127,14 +127,13 @@ x_client_name::load_config(void)
 {
   m_icon_size    = m_xrm["iconsize"].v.num;
   m_border_width = m_xrm["borderwidth"].v.num;
+
   m_pnamefont    = *m_xrm["titlefont"].v.str;
   m_titlefont    = *m_xrm["subtitlefont"].v.str;
-  m_colorname    = *m_xrm["titlefgcolor"].v.str;
 
-  m_title_bg_color =
-    std::strtol(m_xrm["titlebgcolor"].v.str->substr(1,6).c_str(), NULL, 16);
-
-  m_title_bg_color |= (int)(0xff * m_xrm["titlebgalpha"].v.dbl) << 24;
+  m_bg_alpha     = m_xrm["titlebgalpha"].v.dbl;
+  m_fg_color     = *m_xrm["titlefgcolor"].v.str;
+  m_bg_color     = *m_xrm["titlebgcolor"].v.str;
 }
 
 void
@@ -221,8 +220,8 @@ x_client_name::make_title(void)
   m_xft = std::shared_ptr<x::xft>(
       new x::xft(m_c.dpy(), m_visual_info, m_colormap, m_title_width, m_title_height));
 
-  m_xft->foreground(m_colorname);
-  m_xft->bg_alpha(m_xrm["titlebgalpha"].v.dbl).background(*m_xrm["titlebgcolor"].v.str);
+  m_xft->foreground(m_fg_color);
+  m_xft->bg_alpha(m_bg_alpha).background(m_bg_color);
 
   m_xft->fill();
 

@@ -60,12 +60,12 @@ class x_client_name : public x_event_handler_t
     int m_border_width;
     int m_icon_size;
 
-    // 0.375 * 0xff; 0.25 * 0xff
-    uint32_t m_title_bg_color;
-
     x::type::fontname m_pnamefont;
     x::type::fontname m_titlefont;
-    x::type::colorname m_colorname;
+
+    double m_bg_alpha;
+    x::type::colorname m_fg_color;
+    x::type::colorname m_bg_color;
 
     // << config options
 
