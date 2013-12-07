@@ -230,13 +230,6 @@ class context {
     {
       m_context = glXCreateNewContext(
           m_dpy, config.fb_config(), GLX_RGBA_TYPE, 0, True);
-
-      if (Success !=
-          glXGetFBConfigAttrib(m_dpy, m_config.fb_config(),
-                               GLX_BIND_TO_TEXTURE_TARGETS_EXT, &m_target))
-      {
-        m_target = GLX_TEXTURE_2D_EXT;
-      }
     }
 
     ~context(void)
@@ -398,7 +391,7 @@ class context {
       if (pixmap == None) return *this;
 
       const int attrs[] = {
-        GLX_TEXTURE_TARGET_EXT, m_target,
+        GLX_TEXTURE_TARGET_EXT, GLX_TEXTURE_2D_EXT,
         GLX_MIPMAP_TEXTURE_EXT, GL_TRUE,
         GLX_TEXTURE_FORMAT_EXT, depth,
         None
@@ -424,8 +417,6 @@ class context {
     const api & m_api;
     Display * m_dpy;
     Drawable m_drawable;
-
-    GLint m_target;
 
     GLXContext m_context = None;
     std::unordered_map<unsigned int, GLuint> m_textures;
