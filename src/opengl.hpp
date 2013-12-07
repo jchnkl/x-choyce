@@ -181,10 +181,11 @@ class config {
 
       bool found = false;
       for (int i = 0; i < n_fb_configs; ++i) {
-        XVisualInfo * m_vi = glXGetVisualFromFBConfig(m_dpy, fb_configs[i]);
-        if (! m_vi) continue;
+        m_visual_info = glXGetVisualFromFBConfig(m_dpy, fb_configs[i]);
+        if (! m_visual_info) continue;
 
-        XRenderPictFormat * pict_format = XRenderFindVisualFormat(m_dpy, m_vi->visual);
+        XRenderPictFormat * pict_format =
+          XRenderFindVisualFormat(m_dpy, m_visual_info->visual);
         if (! pict_format) continue;
 
         if (pict_format->direct.alphaMask > 0) {
