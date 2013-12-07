@@ -12,7 +12,6 @@ CPPSRCS=main.cpp \
 				data_types.cpp \
 				cyclic_iterator.cpp \
 				thumbnail_manager.cpp \
-				x_xft.cpp \
 				x_xrm.cpp \
 				x_connection.cpp \
 				x_event_source.cpp \
