@@ -78,8 +78,8 @@ class xft {
   private:
     XftDraw * m_xftdraw;
     Display * m_dpy;
-    Drawable m_drawable;
-    Colormap m_colormap;
+    Drawable m_drawable = None;
+    Colormap m_colormap = None;
     XVisualInfo * m_visual_info;
 
     unsigned int m_width = 0;
