@@ -19,7 +19,7 @@ class xft {
     xft(const xft &) = delete;
     xft & operator=(const xft &) = delete;
 
-    void
+    xft &
     draw_string_utf8(const std::string & text,
                      const unsigned int & x, const unsigned int & y,
                      const x::type::fontname & fontname,

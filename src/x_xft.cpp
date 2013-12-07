@@ -51,7 +51,7 @@ xft::~xft(void)
   XFreeColormap(m_dpy, m_colormap);
 }
 
-void
+xft &
 xft::draw_string_utf8(const std::string & text,
                       const unsigned int & x, const unsigned int & y,
                       const x::type::fontname & fontname,
@@ -67,6 +67,7 @@ xft::draw_string_utf8(const std::string & text,
 
   XftDrawStringUtf8(m_xftdraw, &color, (*this)[fontname], x, y,
                     (FcChar8 *)text.c_str(), text.length());
+  return *this;
 }
 
 XGlyphInfo
