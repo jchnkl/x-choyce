@@ -22,10 +22,7 @@ class xft {
 
     xft &
     draw_string_utf8(const std::string & text,
-                     const unsigned int & x, const unsigned int & y,
-                     const x::type::fontname & fontname,
-                     const x::type::colorname & colorname,
-                     double alpha = 1.0);
+                     const unsigned int & x, const unsigned int & y);
 
     XGlyphInfo
     text_extents_utf8(const x::type::fontname &, const std::string & text);

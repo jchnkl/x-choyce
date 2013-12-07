@@ -36,19 +36,9 @@ xft::~xft(void)
 
 xft &
 xft::draw_string_utf8(const std::string & text,
-                      const unsigned int & x, const unsigned int & y,
-                      const x::type::fontname & fontname,
-                      const x::type::colorname & colorname,
-                      double alpha)
+                      const unsigned int & x, const unsigned int & y)
 {
-  XftColor color = *(*this)[colorname];
-
-  color.color.red   *= alpha;
-  color.color.green *= alpha;
-  color.color.blue  *= alpha;
-  color.color.alpha *= alpha;
-
-  XftDrawStringUtf8(m_xftdraw, &color, (*this)[fontname], x, y,
+  XftDrawStringUtf8(m_xftdraw, &m_fg_color, m_font, x, y,
                     (FcChar8 *)text.c_str(), text.length());
   return *this;
 }
