@@ -46,7 +46,7 @@ class xft {
     draw_string_utf8(const std::string & text,
                      const unsigned int & x, const unsigned int & y)
     {
-      XftDrawStringUtf8(m_xftdraw, &m_fg_color, &m_font, x, y,
+      XftDrawStringUtf8(m_xftdraw, &m_fg_color, m_font, x, y,
                         (FcChar8 *)text.c_str(), text.length());
       return *this;
     }
@@ -92,7 +92,7 @@ class xft {
 
     xft & font(const x::type::fontname & font)
     {
-      m_font = *(*this)[font];
+      m_font = (*this)[font];
       return *this;
     }
 
@@ -140,7 +140,7 @@ class xft {
     unsigned int m_width = 0;
     unsigned int m_height = 0;
 
-    XftFont m_font;
+    XftFont * m_font;
     XftColor m_fg_color;
     XftColor m_bg_color;
 
