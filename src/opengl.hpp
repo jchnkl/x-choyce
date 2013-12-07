@@ -6,6 +6,7 @@
 #include <unordered_map>
 
 #include <X11/Xlib.h>
+#include <X11/extensions/Xrender.h> // XRenderFindVisualFormat
 #include <GL/gl.h>
 #include <GL/glx.h>
 #include <GL/glxext.h>
@@ -155,6 +156,65 @@ class api {
 
     PFNGLXCREATECONTEXTATTRIBSARBPROC glXCreateContextAttribsARB = 0;
 }; // class api
+
+class config {
+  public:
+    config(const api & api, Display * const dpy)
+      : m_api(api), m_dpy(dpy)
+    {
+      const int attrs[] = {
+        GLX_RENDER_TYPE, GLX_RGBA_BIT,
+        // GLX_DRAWABLE_TYPE, GLX_PIXMAP_BIT,
+        // GLX_DRAWABLE_TYPE, GLX_WINDOW_BIT,
+        GLX_DOUBLEBUFFER, True,
+        // GLX_RED_SIZE, 8,
+        // GLX_GREEN_SIZE, 8,
+        // GLX_BLUE_SIZE, 8,
+        // GLX_ALPHA_SIZE, 8,
+        // GLX_DEPTH_SIZE, 16,
+        None
+      };
+
+      int n_fb_configs = 0;
+      GLXFBConfig * fb_configs =
+        glXChooseFBConfig(m_dpy, DefaultScreen(m_dpy), attrs, &n_fb_configs);
+
+      bool found = false;
+      for (int i = 0; i < n_fb_configs; ++i) {
+        XVisualInfo * m_vi = glXGetVisualFromFBConfig(m_dpy, fb_configs[i]);
+        if (! m_vi) continue;
+
+        XRenderPictFormat * pict_format = XRenderFindVisualFormat(m_dpy, m_vi->visual);
+        if (! pict_format) continue;
+
+        if (pict_format->direct.alphaMask > 0) {
+          found = true;
+          m_fb_config = fb_configs[i];
+          break;
+        }
+      }
+
+      if (fb_configs) delete fb_configs;
+      if (! found) throw "Could not find a valid FBConfig!";
+    }
+
+    ~config(void)
+    {
+      if (m_visual_info) delete m_visual_info;
+    }
+
+    const api & api(void) const { return m_api; }
+    Display * const dpy(void) const { return m_dpy; }
+    const GLXFBConfig & fb_config(void) const { return m_fb_config; }
+    XVisualInfo * const visual_info(void) const { return m_visual_info; }
+
+  private:
+    const class api & m_api;
+    Display * const m_dpy;
+
+    GLXFBConfig m_fb_config;
+    XVisualInfo * m_visual_info = NULL;
+};
 
 class context {
   public:
