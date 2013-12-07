@@ -13,7 +13,8 @@ class x_client_name : public x_event_handler_t
                     , public observable<x_client_name>
 {
   public:
-    x_client_name(x_connection & c, x::xrm & xrm, x_client & x_client);
+    x_client_name(x_connection & c, x::xrm & xrm, x_client & x_client,
+                  XVisualInfo * const visual_info, const Colormap & colormap);
     ~x_client_name(void);
 
     const std::string & net_wm_name(void) const;
@@ -21,7 +22,7 @@ class x_client_name : public x_event_handler_t
     const std::string & wm_class_name(void) const;
     const std::string & wm_instance_name(void) const;
 
-    const xcb_pixmap_t & title(void) const;
+    xcb_pixmap_t title(void) const;
 
     const unsigned int & title_width(void) const { return m_title_width; }
     const unsigned int & title_height(void) const { return m_title_height; }
@@ -37,14 +38,15 @@ class x_client_name : public x_event_handler_t
     x_connection & m_c;
     x::xrm & m_xrm;
     x_client & m_x_client;
-    std::shared_ptr<x::xft> m_x_xft;
+    XVisualInfo * m_visual_info;
+    Colormap m_colormap;
+
+    std::shared_ptr<x::xft> m_xft;
 
     std::string m_net_wm_name;
     std::string m_wm_name;
     std::string m_class_name;
     std::string m_instance_name;
-
-    xcb_pixmap_t m_title = XCB_NONE;
 
     xcb_atom_t m_a_wm_name = m_c.intern_atom("WM_NAME");
     xcb_atom_t m_a_wm_class = m_c.intern_atom("WM_CLASS");

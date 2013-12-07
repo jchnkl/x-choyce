@@ -5,8 +5,11 @@
 
 x_client_name::x_client_name(x_connection & c,
                              x::xrm & xrm,
-                             x_client & x_client)
-  : m_c(c), m_xrm(xrm), m_x_client(x_client)
+                             x_client & x_client,
+                             XVisualInfo * const visual_info,
+                             const Colormap & colormap)
+  : m_c(c), m_xrm(xrm), m_x_client(x_client),
+    m_visual_info(visual_info), m_colormap(colormap)
 {
   m_c.attach(10, XCB_PROPERTY_NOTIFY, this);
   m_c.update_input(m_x_client.window(), XCB_EVENT_MASK_PROPERTY_CHANGE);
@@ -26,7 +29,6 @@ x_client_name::~x_client_name(void)
   m_c.detach(XCB_PROPERTY_NOTIFY, this);
   m_xrm.detach(this);
   m_x_client.detach(this);
-  xcb_free_pixmap(m_c(), m_title);
 }
 
 const std::string & x_client_name::net_wm_name(void) const
@@ -49,10 +51,10 @@ const std::string & x_client_name::wm_instance_name(void) const
   return m_instance_name;
 }
 
-const xcb_pixmap_t &
+xcb_pixmap_t
 x_client_name::title(void) const
 {
-  return m_title;
+  return m_xft->drawable();
 }
 
 bool
@@ -216,19 +218,13 @@ x_client_name::update_wm_class(void)
 void
 x_client_name::make_title(void)
 {
-  xcb_free_pixmap(m_c(), m_title);
+  m_xft = std::shared_ptr<x::xft>(
+      new x::xft(m_c.dpy(), m_visual_info, m_colormap, m_title_width, m_title_height));
 
-  m_title = xcb_generate_id(m_c());
-  xcb_create_pixmap(m_c(), 32, m_title, m_c.root_window(),
-                    m_title_width, m_title_height);
+  m_xft->foreground(m_colorname);
+  m_xft->bg_alpha(m_xrm["titlebgalpha"].v.dbl).background(*m_xrm["titlebgcolor"].v.str);
 
-  xcb_gcontext_t gc = xcb_generate_id(m_c());
-  xcb_create_gc(m_c(), gc, m_title, XCB_GC_FOREGROUND, &m_title_bg_color );
-  xcb_rectangle_t r = { 0, 0, (uint16_t)m_title_width, (uint16_t)m_title_height };
-  xcb_poly_fill_rectangle(m_c(), m_title, gc, 1, &r);
-  xcb_free_gc(m_c(), gc);
-
-  m_x_xft = std::shared_ptr<x::xft>(new x::xft(m_c.dpy(), m_title, 32));
+  m_xft->fill();
 
   std::string pname = m_class_name;
   std::string title = m_net_wm_name.empty() ? m_wm_name : m_net_wm_name;
@@ -236,14 +232,14 @@ x_client_name::make_title(void)
   std::string lower = "abcdefghijklmnopqrstuvwxy";
   std::string upper = "ABCDEFGHIJKLMNOPQRSTUVWXY";
 
-  XGlyphInfo text_extents = m_x_xft->text_extents_utf8(m_pnamefont, lower + upper);
+  XGlyphInfo text_extents = m_xft->text_extents_utf8(m_pnamefont, lower + upper);
 
   int x_off = m_icon_size + 4 * m_border_width;
   int y_off = m_border_width;
 
   y_off += text_extents.height;
-  m_x_xft->draw_string_utf8(pname, x_off, y_off, m_pnamefont, m_colorname);
+  m_xft->fontname(m_pnamefont).draw_string_utf8(pname, x_off, y_off);
 
   y_off += text_extents.height;
-  m_x_xft->draw_string_utf8(title, x_off, y_off, m_titlefont, m_colorname);
+  m_xft->fontname(m_titlefont).draw_string_utf8(title, x_off, y_off);
 }
