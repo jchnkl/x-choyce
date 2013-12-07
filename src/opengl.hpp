@@ -8,6 +8,7 @@
 #include <X11/Xlib.h>
 #include <GL/gl.h>
 #include <GL/glx.h>
+#include <GL/glxext.h>
 
 struct GLXFBConfigPrintAdapter {
   GLXFBConfigPrintAdapter(Display * const dpy, const GLXFBConfig & config)
@@ -104,6 +105,9 @@ class api {
         glXGetProcAddress((const GLubyte *)"glBlendFuncSeparateEXT");
       glBlendEquationSeparateEXT = (PFNGLBLENDEQUATIONSEPARATEEXTPROC)
         glXGetProcAddress((const GLubyte *)"glBlendEquationSeparateEXT");
+
+      glXCreateContextAttribsARB = (PFNGLXCREATECONTEXTATTRIBSARBPROC)
+        glXGetProcAddress((const GLubyte *)"glXCreateContextAttribsARB");
     }
 
     PFNGLXBINDTEXIMAGEEXTPROC         glXBindTexImageEXT         = 0;
@@ -148,6 +152,8 @@ class api {
 
     PFNGLBLENDFUNCSEPARATEEXTPROC     glBlendFuncSeparateEXT     = 0;
     PFNGLBLENDEQUATIONSEPARATEEXTPROC glBlendEquationSeparateEXT = 0;
+
+    PFNGLXCREATECONTEXTATTRIBSARBPROC glXCreateContextAttribsARB = 0;
 }; // class api
 
 class context {
