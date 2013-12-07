@@ -64,7 +64,7 @@ class x_client_name : public x_event_handler_t
     xcb_atom_t m_a_wm_class = m_c.intern_atom("WM_CLASS");
     xcb_atom_t m_a_net_wm_name = m_c.intern_atom("_NET_WM_NAME");
 
-    bool m_reset_xft = false;
+    bool m_reset_xft = true;
     unsigned int m_title_width = 0;
     unsigned int m_title_height = 0;
 
