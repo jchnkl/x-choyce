@@ -240,10 +240,10 @@ x_client_name::make_title(void)
   int y_off = m_border_width;
 
   y_off += text_extents.height;
-  m_xft->fontname(m_pnamefont).draw_string_utf8(pname, x_off, y_off);
+  m_xft->font(m_pnamefont).draw_string_utf8(pname, x_off, y_off);
 
   y_off += text_extents.height;
-  m_xft->fontname(m_titlefont).draw_string_utf8(title, x_off, y_off);
+  m_xft->font(m_titlefont).draw_string_utf8(title, x_off, y_off);
 
   return *this;
 }

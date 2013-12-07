@@ -90,7 +90,7 @@ class xft {
       return m_drawable;
     }
 
-    xft & fontname(const x::type::fontname & font)
+    xft & font(const x::type::fontname & font)
     {
       m_font = *(*this)[font];
       return *this;
