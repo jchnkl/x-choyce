@@ -40,9 +40,11 @@ xft::xft(Display * dpy, const Pixmap & pixmap, int depth)
 xft::~xft(void)
 {
   XftDrawDestroy(m_xftdraw);
+
   for (auto & item : m_colors) {
     XftColorFree(m_dpy, m_visual_info.visual, m_colormap, &item.second);
   }
+
   for (auto & item : m_fonts) {
     XftFontClose(m_dpy, item.second);
   }
