@@ -159,8 +159,8 @@ class api {
 
 class config {
   public:
-    config(const api & api, Display * const dpy)
-      : m_api(api), m_dpy(dpy)
+    config(Display * const dpy)
+      : m_dpy(dpy)
     {
       const int attrs[] = {
         GLX_RENDER_TYPE, GLX_RGBA_BIT,
@@ -214,7 +214,7 @@ class config {
     const Colormap & colormap(void) const { return m_colormap; }
 
   private:
-    const class api & m_api;
+    class api m_api;
     Display * const m_dpy;
 
     GLXFBConfig m_fb_config;
