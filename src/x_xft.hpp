@@ -16,6 +16,9 @@ class xft {
     xft(Display * dpy, const Pixmap & pixmap, int depth);
     ~xft(void);
 
+    xft(const xft &) = delete;
+    xft & operator=(const xft &) = delete;
+
     void
     draw_string_utf8(const std::string & text,
                      const unsigned int & x, const unsigned int & y,
