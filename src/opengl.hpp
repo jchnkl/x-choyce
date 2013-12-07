@@ -207,14 +207,14 @@ class config {
       if (m_colormap != None) XFreeColormap(m_dpy, m_colormap);
     }
 
-    const api & api(void) const { return m_api; }
+    const x::gl::api & api(void) const { return m_api; }
     Display * const dpy(void) const { return m_dpy; }
     const GLXFBConfig & fb_config(void) const { return m_fb_config; }
     XVisualInfo * const visual_info(void) const { return m_visual_info; }
     const Colormap & colormap(void) const { return m_colormap; }
 
   private:
-    class api m_api;
+    x::gl::api m_api;
     Display * const m_dpy;
 
     GLXFBConfig m_fb_config;
