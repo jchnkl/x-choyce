@@ -9,6 +9,15 @@
 #include <GL/gl.h>
 #include <GL/glx.h>
 
+struct GLXFBConfigPrintAdapter {
+  GLXFBConfigPrintAdapter(Display * const dpy, const GLXFBConfig & config)
+    : m_dpy(dpy), m_config(config)
+  {}
+
+  Display * const m_dpy;
+  const GLXFBConfig & m_config;
+};
+
 namespace x {
 
 namespace gl {
@@ -382,5 +391,8 @@ class context {
 }; // namespace gl
 
 }; // namespace x
+
+std::ostream &
+operator<<(std::ostream &, const GLXFBConfigPrintAdapter &);
 
 #endif // OPENGL_HPP
