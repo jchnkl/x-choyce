@@ -379,11 +379,7 @@ x_client_thumbnail::configure_highlight(bool now)
   {
     auto & program = m_gl_ctx.program(name);
     m_gl_api.glUseProgram(program);
-    for (auto tid : { 0, 1, 2 }) {
-      GLint location = m_gl_api.glGetUniformLocation(
-          program, ("texture_" + std::to_string(tid)).c_str());
-      m_gl_api.glUniform1i(location, tid);
-    }
+    update_uniforms(program);
   };
 
   if (m_highlight) {
