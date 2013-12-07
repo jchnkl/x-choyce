@@ -218,26 +218,16 @@ class config {
 
 class context {
   public:
-    context(const api & api, Display * const dpy, int screen = None)
-      : m_api(api), m_dpy(dpy)
+    context(const config & config)
+      : m_config(config), m_api(config.api()), m_dpy(config.dpy())
     {
-      if (screen == None) screen = DefaultScreen(dpy);
-      m_xfb_configs =
-        glXChooseFBConfig(m_dpy, screen, m_pixmap_config, &m_xfb_nconfigs);
-      GLint gl_vi_attr[] = {
-        GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
-      XVisualInfo * vi = glXChooseVisual(m_dpy, screen, gl_vi_attr);
-      m_context = glXCreateContext(m_dpy, vi, NULL, GL_TRUE);
-      delete vi;
+      m_context = glXCreateNewContext(
+          m_dpy, config.fb_config(), GLX_RGBA_TYPE, 0, True);
     }
 
     ~context(void)
     {
       glXDestroyContext(m_dpy, m_context);
-
-      if (m_xfb_configs != NULL) {
-        delete m_xfb_configs;
-      }
     }
 
     context(const context & ctx) = delete;
@@ -388,9 +378,7 @@ class context {
         m_textures.erase(id);
       } catch (...) {}
 
-      if (pixmap == None || m_xfb_nconfigs == 0) {
-        return *this;
-      }
+      if (pixmap == None) return *this;
 
       auto format = [&](void)
       {
@@ -410,7 +398,7 @@ class context {
 
       glGenTextures(1, &m_textures[id]);
 
-      m_pixmaps[id] = glXCreatePixmap(m_dpy, m_xfb_configs[0], pixmap, attr);
+      m_pixmaps[id] = glXCreatePixmap(m_dpy, m_config.fb_config(), pixmap, attr);
 
       texture(id, [&, this](const GLuint &)
       {
@@ -424,14 +412,11 @@ class context {
     typedef GLuint shader_t;
     typedef GLuint program_t;
 
+    const config & m_config;
     const api & m_api;
     Display * m_dpy;
     Drawable m_drawable;
 
-    const int m_pixmap_config[3] = { GLX_BIND_TO_TEXTURE_RGBA_EXT, True, None };
-
-    int m_xfb_nconfigs = 0;
-    GLXFBConfig * m_xfb_configs = NULL;
 
     GLXContext m_context = None;
     std::unordered_map<unsigned int, GLuint> m_textures;
