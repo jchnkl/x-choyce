@@ -104,7 +104,7 @@ class xft {
 
     xft & background(const x::type::colorname & background)
     {
-      m_fg_color = *(*this)[background];
+      m_bg_color = *(*this)[background];
       return *this;
     }
 
