@@ -134,8 +134,8 @@ class xft {
     Display * m_dpy;
     Drawable m_drawable = None;
 
-    const Colormap & m_colormap;
     XVisualInfo * const m_visual_info;
+    const Colormap & m_colormap;
 
     unsigned int m_width = 0;
     unsigned int m_height = 0;
