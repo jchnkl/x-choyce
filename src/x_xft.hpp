@@ -110,13 +110,13 @@ class xft {
 
     xft & fg_alpha(const double & a)
     {
-      m_fg_color.color.alpha *= a;
+      m_fg_color.color.alpha = a * 0xffff;
       return *this;
     }
 
     xft & bg_alpha(const double & a)
     {
-      m_bg_color.color.alpha *= a;
+      m_bg_color.color.alpha = a * 0xffff;
       return *this;
     }
 
