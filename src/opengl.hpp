@@ -375,6 +375,9 @@ class context {
     }
 
     // load texture
+    // depth: one of GLX_TEXTURE_FORMAT_RGB_EXT,
+    //               GLX_TEXTURE_FORMAT_RGBA_EXT
+    //            or GLX_TEXTURE_FORMAT_NONE_EXT
     context & load(unsigned int id, const Pixmap & pixmap, int depth)
     {
       try {
@@ -387,19 +390,10 @@ class context {
 
       if (pixmap == None) return *this;
 
-      auto format = [&](void)
-      {
-        switch (depth) {
-          case 24: return GLX_TEXTURE_FORMAT_RGB_EXT;
-          case 32: return GLX_TEXTURE_FORMAT_RGBA_EXT;
-          default: return GLX_TEXTURE_FORMAT_NONE_EXT;
-        }
-      };
-
       const int attrs[] = {
         GLX_TEXTURE_TARGET_EXT, m_target,
         GLX_MIPMAP_TEXTURE_EXT, GL_TRUE,
-        GLX_TEXTURE_FORMAT_EXT, format(),
+        GLX_TEXTURE_FORMAT_EXT, depth,
         None
       };
 
