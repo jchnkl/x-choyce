@@ -222,8 +222,7 @@ x_client_name::make_title(void)
     m_xft = std::shared_ptr<x::xft>(new x::xft(
           m_c.dpy(), m_visual_info, m_colormap, m_title_width, m_title_height));
 
-    m_xft->foreground(m_fg_color);
-    m_xft->bg_alpha(m_bg_alpha).background(m_bg_color);
+    m_xft->foreground(m_fg_color).background(m_bg_color).bg_alpha(m_bg_alpha);
   }
 
   m_xft->fill();
