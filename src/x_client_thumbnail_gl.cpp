@@ -18,8 +18,6 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
   load_config();
   update(rect);
 
-  m_x_client_name.make_title();
-
   m_c.attach(0, m_c.damage_event_id(), this);
 
   m_xrm.attach(this);
@@ -47,6 +45,7 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
                     config.visual_info()->visualid,
                     valuemask, valuelist);
 
+  m_x_client_name.make_title();
 
   m_gl_ctx.drawable(m_thumbnail_window);
 
