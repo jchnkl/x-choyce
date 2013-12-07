@@ -37,7 +37,6 @@ class xft {
       }
 
       if (m_drawable != None) XFreePixmap(m_dpy, m_drawable);
-      if (m_colormap != None) XFreeColormap(m_dpy, m_colormap);
     }
 
     xft(const xft &) = delete;
