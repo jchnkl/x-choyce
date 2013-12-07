@@ -11,7 +11,7 @@ xft::xft(Display * dpy,
          unsigned int width, unsigned int height)
   : m_dpy(dpy),
     m_visual_info(visual_info), m_colormap(colormap),
-    m_width(width), m_height(height),
+    m_width(width), m_height(height)
 {
   m_drawable = XCreatePixmap(
       m_dpy, DefaultRootWindow(m_dpy), width, height, m_visual_info->depth);
@@ -38,7 +38,7 @@ xft &
 xft::draw_string_utf8(const std::string & text,
                       const unsigned int & x, const unsigned int & y)
 {
-  XftDrawStringUtf8(m_xftdraw, &m_fg_color, m_font, x, y,
+  XftDrawStringUtf8(m_xftdraw, &m_fg_color, &m_font, x, y,
                     (FcChar8 *)text.c_str(), text.length());
   return *this;
 }
