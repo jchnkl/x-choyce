@@ -8,6 +8,7 @@ ifneq (${SHADER_PATH},)
 endif
 
 CPPSRCS=main.cpp \
+				opengl.cpp \
 				data_types.cpp \
 				cyclic_iterator.cpp \
 				thumbnail_manager.cpp \
