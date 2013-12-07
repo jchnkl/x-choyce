@@ -29,7 +29,9 @@ xft::~xft(void)
   for (auto & item : m_fonts) {
     XftFontClose(m_dpy, item.second);
   }
-  XFreeColormap(m_dpy, m_colormap);
+
+  if (m_drawable != None) XFreePixmap(m_dpy, m_drawable);
+  if (m_colormap != None) XFreeColormap(m_dpy, m_colormap);
 }
 
 xft &
