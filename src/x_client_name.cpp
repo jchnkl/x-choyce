@@ -214,14 +214,17 @@ x_client_name::update_wm_class(void)
   if (r) delete r;
 }
 
-void
+x_client_name &
 x_client_name::make_title(void)
 {
-  m_xft = std::shared_ptr<x::xft>(
-      new x::xft(m_c.dpy(), m_visual_info, m_colormap, m_title_width, m_title_height));
+  if (m_reset_xft) {
+    m_reset_xft = false;
+    m_xft = std::shared_ptr<x::xft>(new x::xft(
+          m_c.dpy(), m_visual_info, m_colormap, m_title_width, m_title_height));
 
-  m_xft->foreground(m_fg_color);
-  m_xft->bg_alpha(m_bg_alpha).background(m_bg_color);
+    m_xft->foreground(m_fg_color);
+    m_xft->bg_alpha(m_bg_alpha).background(m_bg_color);
+  }
 
   m_xft->fill();
 
@@ -241,4 +244,6 @@ x_client_name::make_title(void)
 
   y_off += text_extents.height;
   m_xft->fontname(m_titlefont).draw_string_utf8(title, x_off, y_off);
+
+  return *this;
 }

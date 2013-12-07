@@ -26,10 +26,22 @@ class x_client_name : public x_event_handler_t
 
     const unsigned int & title_width(void) const { return m_title_width; }
     const unsigned int & title_height(void) const { return m_title_height; }
-    void title_width(const unsigned int & w) { m_title_width = w; }
-    void title_height(const unsigned int & h) { m_title_height = h; }
 
-    void make_title(void);
+    x_client_name & title_width(const unsigned int & w)
+    {
+      m_reset_xft = true;
+      m_title_width = w;
+      return *this;
+    }
+
+    x_client_name & title_height(const unsigned int & h)
+    {
+      m_reset_xft = true;
+      m_title_height = h;
+      return *this;
+    }
+
+    x_client_name & make_title(void);
     bool handle(xcb_generic_event_t *);
     void notify(x::xrm *);
     void notify(x_client *);
@@ -52,6 +64,7 @@ class x_client_name : public x_event_handler_t
     xcb_atom_t m_a_wm_class = m_c.intern_atom("WM_CLASS");
     xcb_atom_t m_a_net_wm_name = m_c.intern_atom("_NET_WM_NAME");
 
+    bool m_reset_xft = false;
     unsigned int m_title_width = 0;
     unsigned int m_title_height = 0;
 
