@@ -196,17 +196,22 @@ class config {
 
       if (fb_configs) delete fb_configs;
       if (! found) throw "Could not find a valid FBConfig!";
+
+      m_colormap = XCreateColormap(m_dpy, DefaultRootWindow(m_dpy),
+                                   m_visual_info->visual, AllocNone);
     }
 
     ~config(void)
     {
       if (m_visual_info) delete m_visual_info;
+      if (m_colormap != None) XFreeColormap(m_dpy, m_colormap);
     }
 
     const api & api(void) const { return m_api; }
     Display * const dpy(void) const { return m_dpy; }
     const GLXFBConfig & fb_config(void) const { return m_fb_config; }
     XVisualInfo * const visual_info(void) const { return m_visual_info; }
+    const Colormap & colormap(void) const { return m_colormap; }
 
   private:
     const class api & m_api;
@@ -214,6 +219,7 @@ class config {
 
     GLXFBConfig m_fb_config;
     XVisualInfo * m_visual_info = NULL;
+    Colormap m_colormap = None;
 };
 
 class context {
