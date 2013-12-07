@@ -42,7 +42,7 @@ class xft {
     Display * m_dpy;
     Drawable m_drawable;
     Colormap m_colormap;
-    XVisualInfo m_visual_info;
+    XVisualInfo * m_visual_info;
 
     std::unordered_map<std::string, XftColor> m_colors;
     std::unordered_map<std::string, XftFont *> m_fonts;

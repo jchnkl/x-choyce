@@ -23,7 +23,7 @@ xft::~xft(void)
   XftDrawDestroy(m_xftdraw);
 
   for (auto & item : m_colors) {
-    XftColorFree(m_dpy, m_visual_info.visual, m_colormap, &item.second);
+    XftColorFree(m_dpy, m_visual_info->visual, m_colormap, &item.second);
   }
 
   for (auto & item : m_fonts) {
@@ -66,7 +66,7 @@ xft::operator[](const x::type::colorname & colorname)
   try {
     return &m_colors.at(*colorname);
   } catch (...) {
-    XftColorAllocName(m_dpy, m_visual_info.visual, m_colormap,
+    XftColorAllocName(m_dpy, m_visual_info->visual, m_colormap,
                       colorname->c_str(), &m_colors[*colorname]);
     return &m_colors[*colorname];
   }
