@@ -50,11 +50,11 @@ int main(int argc, char ** argv)
     , { .type = x::xrm::str,
       .v = { .str = new std::string("Sans:bold:pixelsize=16:antialias=true") } }
     // titlefgcolor
-    , { .type = x::xrm::str, .v = { .str = new std::string("#303030")        } }
+    , { .type = x::xrm::str, .v = { .str = new std::string("#616161")        } }
     // titlebgalpha
-    , { .type = x::xrm::dbl, .v = { .dbl = 0.375                             } }
+    , { .type = x::xrm::dbl, .v = { .dbl = 0.25                              } }
     // titlebgcolor
-    , { .type = x::xrm::str, .v = { .str = new std::string("#484848")        } }
+    , { .type = x::xrm::str, .v = { .str = new std::string("#292929")        } }
     // north
     , { .type = x::xrm::str, .v = { .str = new std::string("k")              } }
     // south
