@@ -433,15 +433,8 @@ class context {
 // helper for reading shaders from a file
 // use with load:
 // load("my_shader", read("/path/to/my_shader_src.txt"));
-static std::string
-read(const std::string & filename)
-{
-  std::fstream file(filename);
-  std::string source((std::istreambuf_iterator<char>(file)),
-                      std::istreambuf_iterator<char>());
-  file.close();
-  return source;
-}
+std::string
+read(const std::string & filename);
 
 }; // namespace gl
 

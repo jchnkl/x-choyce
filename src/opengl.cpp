@@ -2,6 +2,16 @@
 
 #include <iomanip> // setw()
 
+std::string
+gl::read(const std::string & filename)
+{
+  std::fstream file(filename);
+  std::string source((std::istreambuf_iterator<char>(file)),
+                      std::istreambuf_iterator<char>());
+  file.close();
+  return source;
+}
+
 std::ostream &
 operator<<(std::ostream & os, const GLXFBConfigPrintAdapter & a)
 {
