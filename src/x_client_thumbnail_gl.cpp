@@ -107,23 +107,38 @@ x_client_thumbnail::select(void)
 thumbnail_t &
 x_client_thumbnail::update(void)
 {
-  configure_thumbnail_window();
+  if (m_rectangle_update) configure_thumbnail();
 
-  if (m_update_name_window_pixmap) {
-    update_name_window_pixmap();
-    m_update_name_window_pixmap = false;
-  }
-
-  if (m_update_title_pixmap) {
-    update_title_pixmap();
-    m_update_title_pixmap = false;
-  }
-
-  m_gl_ctx.run([this](gl::context &)
+  m_gl_ctx.run([&](gl::context & ctx)
   {
-    configure_highlight();
+    if (m_rectangle_update) {
+      update_uniforms(ctx.program(m_highlight ? "focused" : "unfocused"));
+    }
+
+    if (m_icon_update) {
+      update_icon_pixmap();
+    }
+
+    if (m_title_update || m_rectangle_update) {
+      update_title_pixmap();
+    }
+
+    if (m_name_window_update) {
+      update_name_window_pixmap();
+    }
+
+    if (m_highlight_update) {
+      update_highlight();
+    }
+
     update(0, 0, m_rectangle.width(), m_rectangle.height());
   });
+
+  m_icon_update = false;
+  m_title_update = false;
+  m_rectangle_update = false;
+  m_highlight_update = false;
+  m_name_window_update = false;
 
   return *this;
 }
