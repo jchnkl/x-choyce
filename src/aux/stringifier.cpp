@@ -40,7 +40,7 @@ int main(int argc, char ** argv)
                      line.substr(LINE_WIDTH, line.length()).c_str());
       }
 
-      std::cout << "\"" << buffer << "\"" << std::endl;
+      std::cout << "\"" << buffer << "\\n\"" << std::endl;
     }
 
     std::cout << ";" << std::endl;
