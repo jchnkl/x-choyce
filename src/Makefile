@@ -59,6 +59,8 @@ shader/%.hpp.gch:
 	${CXX} ${CXXFLAGS} -c $<
 
 version: ${LIBS}
+	@echo -e "\nGCC version:"
+	@gcc -v 2>&1
 
 ${LIBS}:
 	@printf "%-20s" "$@:"
