@@ -160,7 +160,7 @@ x_client_thumbnail::update(const rectangle & r)
   m_rectangle.x() = r.x() + (r.width() - m_rectangle.width()) / 2;
   m_rectangle.y() = r.y() + (r.height() - m_rectangle.height()) / 2;
 
-  m_x_client_name.title_width(m_rectangle.width());
+  m_x_client_name.title_width(m_rectangle.width() - 2 * m_border_width);
   m_x_client_name.title_height(m_icon_size + m_border_width);
 
   m_icon_scale.first  = m_icon_size / (double)m_rectangle.width();
