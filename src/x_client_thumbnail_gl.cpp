@@ -226,19 +226,28 @@ x_client_thumbnail::update_uniforms(const GLuint & program)
 }
 
 void
+x_client_thumbnail::update_icon_pixmap(void)
+{
+  m_gl_ctx.load("icon", m_x_client_icon.icon(), GLX_TEXTURE_FORMAT_RGBA_EXT);
+  m_gl_ctx.bind(2, "icon");
+  m_gl_ctx.active_texture(2);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+}
+
+void
 x_client_thumbnail::update_title_pixmap(void)
 {
   m_x_client_name.make_title();
-  m_gl_ctx.run([this](gl::context & ctx)
-  {
-    ctx.load("title", m_x_client_name.title(), GLX_TEXTURE_FORMAT_RGBA_EXT);
-    ctx.bind(1, "title");
-    m_gl_ctx.active_texture(1);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-  });
+  m_gl_ctx.load("title", m_x_client_name.title(), GLX_TEXTURE_FORMAT_RGBA_EXT);
+  m_gl_ctx.bind(1, "title");
+  m_gl_ctx.active_texture(1);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 }
 
 void
@@ -246,16 +255,13 @@ x_client_thumbnail::update_name_window_pixmap(void)
 {
   m_x_client.update_parent_window();
   m_x_client.update_name_window_pixmap();
-  m_gl_ctx.run([this](gl::context & ctx)
-  {
-    ctx.load("window", m_x_client.name_window_pixmap(), GLX_TEXTURE_FORMAT_RGB_EXT);
-    ctx.bind(0, "window");
-    m_gl_ctx.active_texture(0);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-  });
+  m_gl_ctx.load("window", m_x_client.name_window_pixmap(), GLX_TEXTURE_FORMAT_RGB_EXT);
+  m_gl_ctx.bind(0, "window");
+  m_gl_ctx.active_texture(0);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 }
 
 const xcb_window_t &

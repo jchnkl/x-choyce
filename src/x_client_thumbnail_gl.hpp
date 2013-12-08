@@ -109,6 +109,7 @@ class x_client_thumbnail : public x_event_handler_t
 
     void update(int x, int y, unsigned int width, unsigned int height);
     void update_uniforms(const GLuint & program);
+    void update_icon_pixmap(void);
     void update_title_pixmap(void);
     void update_name_window_pixmap(void);
     void configure_highlight(bool now = false);
