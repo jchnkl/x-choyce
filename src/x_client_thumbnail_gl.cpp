@@ -26,8 +26,6 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
   m_x_client.attach(this);
   m_x_client_name.attach(this);
 
-  m_damage = xcb_generate_id(m_c());
-
   m_thumbnail_window = xcb_generate_id(m_c());
 
   uint32_t valuemask = XCB_CW_BACK_PIXEL
@@ -96,6 +94,8 @@ x_client_thumbnail::show(void)
   if (m_visible) return *this;
 
   m_visible = true;
+
+  m_damage = xcb_generate_id(m_c());
   xcb_damage_create(m_c(), m_damage, m_x_client.window(),
                     XCB_DAMAGE_REPORT_LEVEL_NON_EMPTY);
 
