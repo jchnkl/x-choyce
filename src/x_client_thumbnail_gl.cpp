@@ -131,7 +131,7 @@ x_client_thumbnail::update(void)
 thumbnail_t &
 x_client_thumbnail::update(const rectangle & r)
 {
-  m_configure_thumbnail = true;
+  m_rectangle_update = true;
 
   m_scale = std::min((double)r.width() / m_x_client.rect().width(),
                     (double)r.height() / m_x_client.rect().height());
@@ -161,15 +161,6 @@ x_client_thumbnail::update(const rectangle & r)
   m_title_offset.first  = 0.0;
   m_title_offset.second = (double)m_rectangle.height()
                         / m_x_client_name.title_height() - 1.0;
-
-  if (m_visible) {
-    update_title_pixmap();
-    configure_thumbnail_window(true);
-
-  } else {
-    m_update_title_pixmap = true;
-    m_configure_thumbnail = true;
-  }
 
   return *this;
 }
