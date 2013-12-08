@@ -249,7 +249,7 @@ class context {
 
     const GLuint & program(const std::string & name)
     {
-      return m_programs.at(name).first;
+      return m_programs.at(name);
     }
 
     const GLuint & texture(unsigned int id)
@@ -308,64 +308,48 @@ class context {
     }
 
     // load shader
-    context & load(const std::string & p_name,
-                   const std::string & v_file,
-                   const std::string & f_file)
+    template<GLenum ST>
+    context & load(const std::string & name, const std::string & shader)
     {
-      std::ifstream file(v_file);
-      std::string v_source((std::istreambuf_iterator<char>(file)),
-                            std::istreambuf_iterator<char>());
-      file.close();
+      m_shader[name] = m_api.glCreateShader(ST);
 
-      file.open(f_file);
-      std::string f_source((std::istreambuf_iterator<char>(file)),
-                            std::istreambuf_iterator<char>());
-      file.close();
+      const GLchar * str[] = { shader.c_str() };
+      const GLint len[] = { (GLint)shader.length() };
+      m_api.glShaderSource(m_shader[name], 1, str, len);
 
-      shader_t v = m_api.glCreateShader(GL_VERTEX_SHADER);
-      shader_t f = m_api.glCreateShader(GL_FRAGMENT_SHADER);
-
-      {
-        const GLchar * v_c_str[] = { v_source.c_str() };
-        const GLint v_c_len[] = { (GLint)v_source.length() };
-        const GLchar * f_c_str[] = { f_source.c_str() };
-        const GLint f_c_len[] = { (GLint)f_source.length() };
-        m_api.glShaderSource(v, 1, v_c_str, v_c_len);
-        m_api.glShaderSource(f, 1, f_c_str, f_c_len);
-      }
-
-      m_api.glCompileShader(v);
-      m_api.glCompileShader(f);
+      m_api.glCompileShader(m_shader[name]);
 
       GLsizei log_length = 0, max_len = 1024;
       GLchar log_buffer[max_len];
+      m_api.glGetShaderInfoLog(m_shader[name], max_len, &log_length, log_buffer);
 
-
-      m_api.glGetShaderInfoLog(v, max_len, &log_length, log_buffer);
       if (log_length > 0) {
-        std::cerr << "Shader compilation for " << p_name << " failed:"
+        std::cerr << "Shader compilation for " << name << " failed:"
                   << std::endl << log_buffer << std::endl;
       }
 
-      m_api.glGetShaderInfoLog(f, max_len, &log_length, log_buffer);
+      return *this;
+    }
+
+    // name: name of program
+    // shaders: const std::string & shader_name_1, shader_name_2, etc.
+    template<typename ... SHADERS>
+    context & compile(const std::string & name, SHADERS ... shaders)
+    {
+      m_programs[name] = m_api.glCreateProgram();
+
+      attach(m_programs[name], shaders ...);
+
+      m_api.glLinkProgram(m_programs[name]);
+
+      GLsizei log_length = 0, max_len = 1024;
+      GLchar log_buffer[max_len];
+      m_api.glGetProgramInfoLog(m_programs[name], max_len, &log_length, log_buffer);
+
       if (log_length > 0) {
-        std::cerr << "Shader compilation for " << p_name << " failed:"
-                  << std::endl << log_buffer << std::endl;
-      }
-
-      program_t p = m_api.glCreateProgram();
-
-      m_api.glAttachShader(p, v);
-      m_api.glAttachShader(p, f);
-      m_api.glLinkProgram(p);
-
-      m_api.glGetProgramInfoLog(p, max_len, &log_length, log_buffer);
-      if (log_length > 0) {
-        std::cerr << "Program creation for " << p_name << " failed:" << std::endl
+        std::cerr << "Program creation for " << name << " failed:" << std::endl
                   << log_buffer << std::endl;
       }
-
-      m_programs[p_name] = { p, 0 };
 
       return *this;
     }
@@ -406,9 +390,6 @@ class context {
     }
 
   private:
-    typedef GLuint shader_t;
-    typedef GLuint program_t;
-
     const config & m_config;
     const api & m_api;
     Display * m_dpy;
@@ -418,7 +399,8 @@ class context {
     std::unordered_map<unsigned int, GLuint> m_textures;
     std::unordered_map<unsigned int, GLXPixmap> m_pixmaps;
 
-    std::unordered_map<std::string, std::pair<program_t, shader_t>> m_programs;
+    std::unordered_map<std::string, GLuint> m_shader;
+    std::unordered_map<std::string, GLuint> m_programs;
 
     template<typename A, typename F, typename ... FS>
     void unfold(A&& a, F f, FS ... fs)
@@ -433,10 +415,35 @@ class context {
       f(std::forward<A>(a));
     }
 
+    template<typename P, typename S, typename ... SS>
+    void attach(P&& p, S s, SS ... ss)
+    {
+      m_api.glAttachShader(p, m_shader[s]);
+      attach(p, ss ...);
+    }
+
+    template<typename P, typename S>
+    void attach(P&& p, S s)
+    {
+      m_api.glAttachShader(p, m_shader[s]);
+    }
+
 }; // class context
 
-}; // namespace gl
+// helper for reading shaders from a file
+// use with load:
+// load("my_shader", read("/path/to/my_shader_src.txt"));
+static std::string
+read(const std::string & filename)
+{
+  std::fstream file(filename);
+  std::string source((std::istreambuf_iterator<char>(file)),
+                      std::istreambuf_iterator<char>());
+  file.close();
+  return source;
+}
 
+}; // namespace gl
 
 std::ostream &
 operator<<(std::ostream &, const GLXFBConfigPrintAdapter &);
