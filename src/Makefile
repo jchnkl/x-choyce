@@ -3,10 +3,6 @@ LIBS=xcb xcb-atom xcb-keysyms xcb-composite xcb-damage xcb-xinerama \
 CXXFLAGS=-g -std=c++11 -Wall -O3 $(shell pkg-config --cflags ${LIBS})
 LDFLAGS=$(shell pkg-config --libs ${LIBS})
 
-ifneq (${SHADER_PATH},)
-	CXXFLAGS+=-DSHADER_PATH='"${SHADER_PATH}"'
-endif
-
 CPPSRCS=main.cpp \
 				opengl.cpp \
 				data_types.cpp \

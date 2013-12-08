@@ -467,7 +467,6 @@ x_client_thumbnail::load_config(void)
 {
   m_icon_size    = m_xrm["iconsize"].v.num;
   m_border_width = m_xrm["borderwidth"].v.num;
-  m_shader_path  = *m_xrm["shaderpath"].v.str;
 
   // #xxxxxx: r: [1,2]; g: [3,4], b: [5,6]
   // 0123456

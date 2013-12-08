@@ -102,7 +102,6 @@ class x_client_thumbnail : public x_event_handler_t
 
     unsigned int m_icon_size;
     unsigned int m_border_width;
-    std::string m_shader_path;
 
     // red, green, blue, alpha
     std::tuple<double, double, double, double> m_focused_border_color;
