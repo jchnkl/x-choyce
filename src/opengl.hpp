@@ -257,7 +257,7 @@ class context {
       return m_textures.at(id);
     }
 
-    const GLXPixmap & pixmap(unsigned int id)
+    const GLXPixmap & pixmap(const std::string & id)
     {
       return m_pixmaps.at(id);
     }
@@ -288,7 +288,7 @@ class context {
     }
 
     template<typename ... FS>
-    context & pixmap(unsigned int id, FS ... fs)
+    context & pixmap(const std::string & id, FS ... fs)
     {
       try {
         unfold(m_pixmaps.at(id), fs ...);
@@ -358,14 +358,12 @@ class context {
     // depth: one of GLX_TEXTURE_FORMAT_RGB_EXT,
     //               GLX_TEXTURE_FORMAT_RGBA_EXT
     //            or GLX_TEXTURE_FORMAT_NONE_EXT
-    context & load(unsigned int id, const Pixmap & pixmap, int depth)
+    context & load(const std::string & id, const Pixmap & pixmap, int depth)
     {
       try {
         m_api.glXReleaseTexImageEXT(m_dpy, m_pixmaps.at(id), GLX_FRONT_EXT);
         glXDestroyGLXPixmap(m_dpy, m_pixmaps.at(id));
         m_pixmaps.erase(id);
-        glDeleteTextures(1, &m_textures.at(id));
-        m_textures.erase(id);
       } catch (...) {}
 
       if (pixmap == None) return *this;
@@ -377,13 +375,23 @@ class context {
         None
       };
 
-      glGenTextures(1, &m_textures[id]);
-
       m_pixmaps[id] = glXCreatePixmap(m_dpy, m_config.fb_config(), pixmap, attrs);
 
-      texture(id, [&, this](const GLuint &)
+      return *this;
+    }
+
+    context & bind(unsigned int texture_id, const std::string & pixmap_id)
+    {
+      try {
+        glDeleteTextures(1, &m_textures.at(texture_id));
+        m_textures.erase(texture_id);
+      } catch (...) {}
+
+      glGenTextures(1, &m_textures[texture_id]);
+
+      texture(texture_id, [&, this](const GLuint &)
       {
-        m_api.glXBindTexImageEXT(m_dpy, m_pixmaps[id], GLX_FRONT_EXT, NULL);
+        m_api.glXBindTexImageEXT(m_dpy, m_pixmaps[pixmap_id], GLX_FRONT_EXT, NULL);
       });
 
       return *this;
@@ -396,11 +404,11 @@ class context {
     Drawable m_drawable;
 
     GLXContext m_context = None;
-    std::unordered_map<unsigned int, GLuint> m_textures;
-    std::unordered_map<unsigned int, GLXPixmap> m_pixmaps;
 
+    std::unordered_map<unsigned int, GLuint> m_textures;
     std::unordered_map<std::string, GLuint> m_shader;
     std::unordered_map<std::string, GLuint> m_programs;
+    std::unordered_map<std::string, GLXPixmap> m_pixmaps;
 
     template<typename A, typename F, typename ... FS>
     void unfold(A&& a, F f, FS ... fs)

@@ -48,7 +48,6 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
   m_x_client_name.make_title();
 
   m_gl_ctx.drawable(m_thumbnail_window);
-    // load("my_shader", read("/path/to/my_shader_src.txt"));
 
   m_gl_ctx.run([&](gl::context & ctx)
   {
@@ -62,9 +61,12 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
     ctx.compile("focused", "position", "focused");
     ctx.compile("unfocused", "position", "unfocused");
 
-    ctx.load(0, m_x_client.name_window_pixmap(), GLX_TEXTURE_FORMAT_RGB_EXT);
-    ctx.load(1, m_x_client_name.title(), GLX_TEXTURE_FORMAT_RGBA_EXT);
-    ctx.load(2, m_x_client_icon.icon(), GLX_TEXTURE_FORMAT_RGBA_EXT);
+    ctx.load("window", m_x_client.name_window_pixmap(), GLX_TEXTURE_FORMAT_RGB_EXT);
+    ctx.bind(0, "window");
+    ctx.load("title", m_x_client_name.title(), GLX_TEXTURE_FORMAT_RGBA_EXT);
+    ctx.bind(1, "title");
+    ctx.load("icon", m_x_client_icon.icon(), GLX_TEXTURE_FORMAT_RGBA_EXT);
+    ctx.bind(2, "icon");
 
     for (auto & t : { 0, 1, 2 }) {
       ctx.active_texture(t);
@@ -256,7 +258,8 @@ x_client_thumbnail::update_title_pixmap(void)
   m_x_client_name.make_title();
   m_gl_ctx.run([this](gl::context & ctx)
   {
-    ctx.load(1, m_x_client_name.title(), GLX_TEXTURE_FORMAT_RGBA_EXT);
+    ctx.load("title", m_x_client_name.title(), GLX_TEXTURE_FORMAT_RGBA_EXT);
+    ctx.bind(1, "title");
     m_gl_ctx.active_texture(1);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -272,7 +275,8 @@ x_client_thumbnail::update_name_window_pixmap(void)
   m_x_client.update_name_window_pixmap();
   m_gl_ctx.run([this](gl::context & ctx)
   {
-    ctx.load(0, m_x_client.name_window_pixmap(), GLX_TEXTURE_FORMAT_RGB_EXT);
+    ctx.load("window", m_x_client.name_window_pixmap(), GLX_TEXTURE_FORMAT_RGB_EXT);
+    ctx.bind(0, "window");
     m_gl_ctx.active_texture(0);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -315,7 +319,7 @@ x_client_thumbnail::handle(xcb_generic_event_t * ge)
       {
         if (m_highlight) {
           m_gl_ctx.active_texture(0);
-          m_gl_ctx.pixmap(0, [&](const GLXPixmap & p)
+          m_gl_ctx.pixmap("window", [&](const GLXPixmap & p)
           {
             m_gl_api.glXReleaseTexImageEXT(m_c.dpy(), p, GLX_FRONT_EXT);
             m_gl_api.glXBindTexImageEXT(m_c.dpy(), p, GLX_FRONT_EXT, NULL);
@@ -389,7 +393,7 @@ x_client_thumbnail::configure_highlight(bool now)
   } else {
     use_program("unfocused");
     m_gl_ctx.active_texture(0);
-    m_gl_ctx.pixmap(0, [this](const GLXPixmap & p)
+    m_gl_ctx.pixmap("window", [this](const GLXPixmap & p)
     {
       m_gl_api.glXReleaseTexImageEXT(m_c.dpy(), p, GLX_FRONT_EXT);
       m_gl_api.glXBindTexImageEXT(m_c.dpy(), p, GLX_FRONT_EXT, NULL);
