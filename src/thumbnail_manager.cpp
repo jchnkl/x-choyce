@@ -143,9 +143,7 @@ thumbnail_manager::handle(xcb_generic_event_t * ge)
     if (m_active) {
       auto rects = m_layout->arrange(query_current_screen(), m_windows.size());
       for (size_t i = 0; i < m_windows.size(); ++i) {
-        try {
-          m_thumbnails.at(m_windows[i])->update(rects[i]).update();
-        } catch (...) {}
+        m_thumbnails.at(m_windows[i])->update(rects[i]).update();
       }
     }
 
