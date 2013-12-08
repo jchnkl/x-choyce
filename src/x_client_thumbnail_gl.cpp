@@ -48,23 +48,24 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
   m_x_client_name.make_title();
 
   m_gl_ctx.drawable(m_thumbnail_window);
+    // load("my_shader", read("/path/to/my_shader_src.txt"));
 
-  m_gl_ctx.run([this](x::gl::context &)
+  m_gl_ctx.run([&](x::gl::context & ctx)
   {
-    m_gl_ctx.load("focused",
+    ctx.load("focused",
                   m_shader_path + "/shader/position.vert",
                   m_shader_path + "/shader/focused.frag");
 
-    m_gl_ctx.load("unfocused",
+    ctx.load("unfocused",
                   m_shader_path + "/shader/position.vert",
                   m_shader_path + "/shader/unfocused.frag");
 
-    m_gl_ctx.load(0, m_x_client.name_window_pixmap(), GLX_TEXTURE_FORMAT_RGB_EXT);
-    m_gl_ctx.load(1, m_x_client_name.title(), GLX_TEXTURE_FORMAT_RGBA_EXT);
-    m_gl_ctx.load(2, m_x_client_icon.icon(), GLX_TEXTURE_FORMAT_RGBA_EXT);
+    ctx.load(0, m_x_client.name_window_pixmap(), GLX_TEXTURE_FORMAT_RGB_EXT);
+    ctx.load(1, m_x_client_name.title(), GLX_TEXTURE_FORMAT_RGBA_EXT);
+    ctx.load(2, m_x_client_icon.icon(), GLX_TEXTURE_FORMAT_RGBA_EXT);
 
     for (auto & t : { 0, 1, 2 }) {
-      m_gl_ctx.active_texture(t);
+      ctx.active_texture(t);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
