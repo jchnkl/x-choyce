@@ -134,7 +134,10 @@ thumbnail_manager::handle(xcb_generic_event_t * ge)
     {
       update();
       reset();
-      foreach([](const thumbnail_t::ptr & t) { t->show().update(); });
+      foreach([&](const thumbnail_t::ptr & t)
+      {
+        t->highlight(m_current_window == t->window()).update().show();
+      });
     }
 
     return true;
