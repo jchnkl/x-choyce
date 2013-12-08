@@ -31,9 +31,7 @@ thumbnail_manager::show(void)
   m_next_window = *(m_cyclic_iterator + 1);
   m_current_window = *m_cyclic_iterator;
 
-  for (auto & item : m_thumbnails) {
-    item.second->show().update();
-  }
+  foreach([](const thumbnail_t::ptr & t) { t->show().update(); });
 }
 
 void
@@ -131,10 +129,7 @@ thumbnail_manager::handle(xcb_generic_event_t * ge)
     {
       update();
       reset();
-
-      try {
-        m_thumbnails.at(*m_cyclic_iterator)->highlight(true).update();
-      } catch (...) {}
+      foreach([](const thumbnail_t::ptr & t) { t->show().update(); });
     }
 
     return true;

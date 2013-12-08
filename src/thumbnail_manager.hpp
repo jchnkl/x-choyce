@@ -61,6 +61,16 @@ class thumbnail_manager : public chooser_t
     bool is_north(double);
     bool is_south(double);
     xcb_window_t nearest_thumbnail(const std::function<bool(double)> &);
+
+    thumbnail_manager &
+      foreach(std::function<void(const thumbnail_t::ptr &)> f)
+    {
+      for (auto & item : m_thumbnails) {
+        f(item.second);
+      }
+      return *this;
+    }
+
 };
 
 #endif
