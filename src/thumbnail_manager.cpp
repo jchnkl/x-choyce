@@ -31,7 +31,12 @@ thumbnail_manager::show(void)
   m_next_window = *(m_cyclic_iterator + 1);
   m_current_window = *m_cyclic_iterator;
 
-  foreach([](const thumbnail_t::ptr & t) { t->show().update(); });
+  // order is important: update() before show()!
+  // foreach([&](const thumbnail_t::ptr & t) { t->update().show(); });
+  foreach([&](const thumbnail_t::ptr & t)
+  {
+    t->highlight(m_current_window == t->window()).update().show();
+  });
 }
 
 void
