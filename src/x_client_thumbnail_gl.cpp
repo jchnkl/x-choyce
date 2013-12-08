@@ -51,11 +51,11 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
 
   m_gl_ctx.run([this](x::gl::context &)
   {
-    m_gl_ctx.load("normal_shader",
+    m_gl_ctx.load("focused",
                   m_shader_path + "/normal.vert",
                   m_shader_path + "/normal.frag");
 
-    m_gl_ctx.load("grayscale_shader",
+    m_gl_ctx.load("unfocused",
                   m_shader_path + "/normal.vert",
                   m_shader_path + "/grayscale.frag");
 
@@ -376,7 +376,7 @@ x_client_thumbnail::configure_highlight(bool now)
   };
 
   if (m_highlight) {
-    use_program("normal_shader");
+    use_program("focused");
     m_gl_ctx.active_texture(0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -384,7 +384,7 @@ x_client_thumbnail::configure_highlight(bool now)
     m_gl_api.glGenerateMipmap(GL_TEXTURE_2D);
 
   } else {
-    use_program("grayscale_shader");
+    use_program("unfocused");
     m_gl_ctx.active_texture(0);
     m_gl_ctx.pixmap(0, [this](const GLXPixmap & p)
     {
