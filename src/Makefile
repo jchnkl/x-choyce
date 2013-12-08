@@ -23,7 +23,8 @@ CPPSRCS=main.cpp \
 				x_client_thumbnail_gl.cpp \
 				grid.cpp
 
-HPPSRCS=chooser_t.hpp \
+HPPSRCS=shader/shader.hpp \
+				chooser_t.hpp \
 				opengl.hpp \
 				cyclic_iterator.hpp \
 				data_types.hpp \
@@ -52,6 +53,9 @@ EXE=x:choyce
 all: ${HPPOBJS} ${CPPOBJS}
 	${CXX} ${CXXFLAGS} ${LDFLAGS} ${CPPOBJS} -o ${EXE}
 
+shader/%.hpp.gch:
+	make -C shader
+
 %.o: %.cpp %.hpp
 	${CXX} ${CXXFLAGS} -c $<
 
@@ -65,6 +69,7 @@ ${LIBS}:
 	@pkg-config --modversion $@
 
 clean:
+	make -C shader clean
 	rm -f ${EXE} ${CPPOBJS} ${HPPOBJS}
 
 .PHONY: clean version

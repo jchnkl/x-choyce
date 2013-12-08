@@ -2,7 +2,9 @@
 
 #include <cmath>
 #include <xcb/composite.h>
+
 #include "x_connection.hpp"
+#include "shader/shader.hpp"
 
 x_client_thumbnail::x_client_thumbnail(x_connection & c,
                                        x::xrm & xrm,
@@ -51,12 +53,9 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
 
   m_gl_ctx.run([&](gl::context & ctx)
   {
-    ctx.load<GL_VERTEX_SHADER>(
-      "position", gl::read(m_shader_path + "/shader/position.vert"));
-    ctx.load<GL_FRAGMENT_SHADER>(
-      "focused", gl::read(m_shader_path + "/shader/focused.frag"));
-    ctx.load<GL_FRAGMENT_SHADER>(
-      "unfocused", gl::read(m_shader_path + "/shader/unfocused.frag"));
+    ctx.load<GL_VERTEX_SHADER>("position", position_src);
+    ctx.load<GL_FRAGMENT_SHADER>("focused", focused_src);
+    ctx.load<GL_FRAGMENT_SHADER>("unfocused", unfocused_src);
 
     ctx.compile("focused", "position", "focused");
     ctx.compile("unfocused", "position", "unfocused");
