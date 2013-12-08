@@ -6,7 +6,7 @@
 
 x_client_thumbnail::x_client_thumbnail(x_connection & c,
                                        x::xrm & xrm,
-                                       const x::gl::config & config,
+                                       const gl::config & config,
                                        const rectangle & rect,
                                        const xcb_window_t & window)
   : m_c(c), m_xrm(xrm), m_gl_api(config.api())
@@ -50,7 +50,7 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
   m_gl_ctx.drawable(m_thumbnail_window);
     // load("my_shader", read("/path/to/my_shader_src.txt"));
 
-  m_gl_ctx.run([&](x::gl::context & ctx)
+  m_gl_ctx.run([&](gl::context & ctx)
   {
     ctx.load("focused",
                   m_shader_path + "/shader/position.vert",
@@ -133,7 +133,7 @@ x_client_thumbnail::update(void)
 {
   configure_thumbnail_window();
 
-  m_gl_ctx.run([this](x::gl::context &)
+  m_gl_ctx.run([this](gl::context &)
   {
     configure_highlight();
     update(0, 0, m_rectangle.width(), m_rectangle.height());
@@ -252,7 +252,7 @@ void
 x_client_thumbnail::update_title_pixmap(void)
 {
   m_x_client_name.make_title();
-  m_gl_ctx.run([this](x::gl::context & ctx)
+  m_gl_ctx.run([this](gl::context & ctx)
   {
     ctx.load(1, m_x_client_name.title(), GLX_TEXTURE_FORMAT_RGBA_EXT);
     m_gl_ctx.active_texture(1);
@@ -268,7 +268,7 @@ x_client_thumbnail::update_name_window_pixmap(void)
 {
   m_x_client.update_parent_window();
   m_x_client.update_name_window_pixmap();
-  m_gl_ctx.run([this](x::gl::context & ctx)
+  m_gl_ctx.run([this](gl::context & ctx)
   {
     ctx.load(0, m_x_client.name_window_pixmap(), GLX_TEXTURE_FORMAT_RGB_EXT);
     m_gl_ctx.active_texture(0);
@@ -309,7 +309,7 @@ x_client_thumbnail::handle(xcb_generic_event_t * ge)
     if (e->drawable == m_x_client.window()) {
       xcb_damage_subtract(m_c(), e->damage, XCB_NONE, XCB_NONE);
 
-      m_gl_ctx.run([&](x::gl::context &)
+      m_gl_ctx.run([&](gl::context &)
       {
         if (m_highlight) {
           m_gl_ctx.active_texture(0);

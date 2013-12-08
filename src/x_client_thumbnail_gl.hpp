@@ -32,7 +32,7 @@ class x_client_thumbnail : public x_event_handler_t
 
     x_client_thumbnail(x_connection & c,
                        x::xrm & xrm,
-                       const x::gl::config & config,
+                       const gl::config & config,
                        const rectangle & rect,
                        const xcb_window_t & window = XCB_NONE);
 
@@ -67,14 +67,14 @@ class x_client_thumbnail : public x_event_handler_t
       private:
         x_connection & m_c;
         x::xrm & m_xrm;
-        x::gl::config m_gl_config;
+        gl::config m_gl_config;
     };
 
   private:
     x_connection & m_c;
     x::xrm & m_xrm;
-    const x::gl::api & m_gl_api;
-    x::gl::context m_gl_ctx;
+    const gl::api & m_gl_api;
+    gl::context m_gl_ctx;
     x_client m_x_client;
     x_client_icon m_x_client_icon;
     x_client_name m_x_client_name;
