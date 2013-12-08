@@ -111,14 +111,14 @@ class x_client_thumbnail : public x_event_handler_t
 
     // << config options
 
-    void update(int x, int y, unsigned int width, unsigned int height);
-    void update_uniforms(const GLuint & program);
+    void load_config(void);
     void update_highlight(void);
     void update_icon_pixmap(void);
     void update_title_pixmap(void);
     void configure_thumbnail(void);
     void update_name_window_pixmap(void);
-    void load_config(void);
+    void update_uniforms(const GLuint & program);
+    void update(int x, int y, unsigned int width, unsigned int height);
 };
 
 bool
