@@ -51,9 +51,9 @@ class thumbnail_manager : public chooser_t
     xcb_window_t m_next_window = XCB_NONE;
     xcb_window_t m_current_window = XCB_NONE;
 
-    void reset(void);
-    void update(void);
-    void next_or_prev(bool next);
+    thumbnail_manager & reset(void);
+    thumbnail_manager & update(void);
+    thumbnail_manager & next_or_prev(bool next);
     rectangle query_current_screen(void);
 
     bool is_east(double);

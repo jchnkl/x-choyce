@@ -155,7 +155,8 @@ thumbnail_manager::handle(xcb_generic_event_t * ge)
   return false;
 }
 
-inline void
+inline
+thumbnail_manager &
 thumbnail_manager::reset(void)
 {
   bool found = false;
@@ -186,9 +187,12 @@ thumbnail_manager::reset(void)
 
   m_next_window = *(m_cyclic_iterator + 1);
   m_current_window = *m_cyclic_iterator;
+
+  return *this;
 }
 
-inline void
+inline
+thumbnail_manager &
 thumbnail_manager::update(void)
 {
   auto windows = m_c.net_client_list_stacking();
@@ -216,9 +220,11 @@ thumbnail_manager::update(void)
       result->second->highlight(false).update(rects[i]).update();
     }
   }
+
+  return *this;
 }
 
-void
+thumbnail_manager &
 thumbnail_manager::next_or_prev(bool next)
 {
   try {
@@ -229,6 +235,8 @@ thumbnail_manager::next_or_prev(bool next)
 
   m_next_window = *(m_cyclic_iterator + 1);
   m_current_window = *m_cyclic_iterator;
+
+  return *this;
 }
 
 inline xcb_window_t
