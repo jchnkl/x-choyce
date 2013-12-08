@@ -52,12 +52,12 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
   m_gl_ctx.run([this](x::gl::context &)
   {
     m_gl_ctx.load("focused",
-                  m_shader_path + "/normal.vert",
-                  m_shader_path + "/normal.frag");
+                  m_shader_path + "/shader/position.vert",
+                  m_shader_path + "/shader/focused.frag");
 
     m_gl_ctx.load("unfocused",
-                  m_shader_path + "/normal.vert",
-                  m_shader_path + "/grayscale.frag");
+                  m_shader_path + "/shader/position.vert",
+                  m_shader_path + "/shader/unfocused.frag");
 
     m_gl_ctx.load(0, m_x_client.name_window_pixmap(), GLX_TEXTURE_FORMAT_RGB_EXT);
     m_gl_ctx.load(1, m_x_client_name.title(), GLX_TEXTURE_FORMAT_RGBA_EXT);
