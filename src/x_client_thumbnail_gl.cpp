@@ -92,24 +92,13 @@ thumbnail_t &
 x_client_thumbnail::show(void)
 {
   if (m_visible) return *this;
-
   m_visible = true;
 
   m_damage = xcb_generate_id(m_c());
   xcb_damage_create(m_c(), m_damage, m_x_client.window(),
                     XCB_DAMAGE_REPORT_LEVEL_NON_EMPTY);
 
-  configure_thumbnail_window(true);
-
-  if (m_update_name_window_pixmap) {
-    update_name_window_pixmap();
-    m_update_name_window_pixmap = false;
-  }
-
-  if (m_update_title_pixmap) {
-    update_title_pixmap();
-    m_update_title_pixmap = false;
-  }
+  xcb_map_window(m_c(), m_thumbnail_window);
 
   return *this;
 }
@@ -135,6 +124,16 @@ thumbnail_t &
 x_client_thumbnail::update(void)
 {
   configure_thumbnail_window();
+
+  if (m_update_name_window_pixmap) {
+    update_name_window_pixmap();
+    m_update_name_window_pixmap = false;
+  }
+
+  if (m_update_title_pixmap) {
+    update_title_pixmap();
+    m_update_title_pixmap = false;
+  }
 
   m_gl_ctx.run([this](gl::context &)
   {
@@ -459,7 +458,6 @@ x_client_thumbnail::configure_thumbnail_window(bool now)
                         XCB_STACK_MODE_ABOVE };
 
   xcb_configure_window(m_c(), m_thumbnail_window, mask, values);
-  xcb_map_window(m_c(), m_thumbnail_window);
 }
 
 void
