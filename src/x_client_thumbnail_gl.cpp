@@ -364,12 +364,8 @@ x_client_thumbnail::notify(x_client * c)
 void
 x_client_thumbnail::notify(x_client_name * c)
 {
-  if (m_visible) {
-    update_title_pixmap();
-    update();
-  } else {
-    m_update_title_pixmap = true;
-  }
+  m_title_update = true;
+  if (m_visible) update();
 }
 
 void

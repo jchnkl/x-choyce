@@ -89,8 +89,11 @@ class x_client_thumbnail : public x_event_handler_t
     bool m_visible = false;
     bool m_highlight = false;
 
+    bool m_icon_update = true;
+    bool m_title_update = true;
     bool m_rectangle_update = true;
     bool m_highlight_update = true;
+    bool m_name_window_update = true;
 
     rectangle m_rectangle;
 
