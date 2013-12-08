@@ -58,23 +58,7 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
     ctx.compile("focused", "position", "focused");
     ctx.compile("unfocused", "position", "unfocused");
 
-    ctx.load("window", m_x_client.name_window_pixmap(), GLX_TEXTURE_FORMAT_RGB_EXT);
-    ctx.bind(0, "window");
-    ctx.load("title", m_x_client_name.title(), GLX_TEXTURE_FORMAT_RGBA_EXT);
-    ctx.bind(1, "title");
-    ctx.load("icon", m_x_client_icon.icon(), GLX_TEXTURE_FORMAT_RGBA_EXT);
-    ctx.bind(2, "icon");
-
-    for (auto & t : { 0, 1, 2 }) {
-      ctx.active_texture(t);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-    }
-
     glEnable(GL_SCISSOR_TEST);
-    update(0, 0, m_rectangle.width(), m_rectangle.height());
   });
 }
 
