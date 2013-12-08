@@ -214,6 +214,7 @@ thumbnail_manager::update(void)
   return *this;
 }
 
+inline
 thumbnail_manager &
 thumbnail_manager::next_or_prev(bool next)
 {
