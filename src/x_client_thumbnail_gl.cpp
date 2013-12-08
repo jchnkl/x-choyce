@@ -373,17 +373,8 @@ x_client_thumbnail::notify(x_client_name * c)
 }
 
 void
+x_client_thumbnail::configure_thumbnail(void)
 {
-
-void
-x_client_thumbnail::configure_thumbnail_window(bool now)
-{
-  if (now || m_configure_thumbnail) {
-    m_configure_thumbnail = false;
-  } else {
-    return;
-  }
-
   xcb_xfixes_region_t region = xcb_generate_id(m_c());
   xcb_xfixes_create_region_from_window(m_c(), region, m_x_client.window(),
                                        XCB_SHAPE_SK_BOUNDING);

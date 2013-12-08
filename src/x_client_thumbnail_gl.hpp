@@ -113,8 +113,8 @@ class x_client_thumbnail : public x_event_handler_t
     void update_highlight(void);
     void update_icon_pixmap(void);
     void update_title_pixmap(void);
+    void configure_thumbnail(void);
     void update_name_window_pixmap(void);
-    void configure_thumbnail_window(bool now = false);
     void load_config(void);
 };
 
