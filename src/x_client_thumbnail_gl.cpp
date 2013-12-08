@@ -279,9 +279,40 @@ x_client_thumbnail::window(void)
 thumbnail_t &
 x_client_thumbnail::highlight(bool want_highlight)
 {
-  m_configure_highlight = m_highlight != want_highlight;
+  m_highlight_update = true;
   m_highlight = want_highlight;
   return *this;
+}
+
+void
+x_client_thumbnail::update_highlight(void)
+{
+  auto use_program = [this](const std::string & name)
+  {
+    auto & program = m_gl_ctx.program(name);
+    m_gl_api.glUseProgram(program);
+    update_uniforms(program);
+  };
+
+  if (m_highlight) {
+    use_program("focused");
+    m_gl_ctx.active_texture(0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+    m_gl_api.glGenerateMipmap(GL_TEXTURE_2D);
+
+  } else {
+    use_program("unfocused");
+    m_gl_ctx.active_texture(0);
+    m_gl_ctx.pixmap("window", [this](const GLXPixmap & p)
+    {
+      m_gl_api.glXReleaseTexImageEXT(m_c.dpy(), p, GLX_FRONT_EXT);
+      m_gl_api.glXBindTexImageEXT(m_c.dpy(), p, GLX_FRONT_EXT, NULL);
+    });
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  }
 }
 
 bool
@@ -326,12 +357,8 @@ x_client_thumbnail::notify(x::xrm *)
 void
 x_client_thumbnail::notify(x_client * c)
 {
-  if (m_visible) {
-    update_name_window_pixmap();
-    update();
-  } else {
-    m_update_name_window_pixmap = true;
-  }
+  m_name_window_update = true;
+  if (m_visible) update();
 }
 
 void
@@ -346,41 +373,7 @@ x_client_thumbnail::notify(x_client_name * c)
 }
 
 void
-x_client_thumbnail::configure_highlight(bool now)
 {
-  if (now || m_configure_highlight) {
-    m_configure_highlight = false;
-  } else {
-    return;
-  }
-
-  auto use_program = [this](const std::string & name)
-  {
-    auto & program = m_gl_ctx.program(name);
-    m_gl_api.glUseProgram(program);
-    update_uniforms(program);
-  };
-
-  if (m_highlight) {
-    use_program("focused");
-    m_gl_ctx.active_texture(0);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
-    m_gl_api.glGenerateMipmap(GL_TEXTURE_2D);
-
-  } else {
-    use_program("unfocused");
-    m_gl_ctx.active_texture(0);
-    m_gl_ctx.pixmap("window", [this](const GLXPixmap & p)
-    {
-      m_gl_api.glXReleaseTexImageEXT(m_c.dpy(), p, GLX_FRONT_EXT);
-      m_gl_api.glXBindTexImageEXT(m_c.dpy(), p, GLX_FRONT_EXT, NULL);
-    });
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  }
-}
 
 void
 x_client_thumbnail::configure_thumbnail_window(bool now)

@@ -90,6 +90,7 @@ class x_client_thumbnail : public x_event_handler_t
     bool m_highlight = false;
 
     bool m_rectangle_update = true;
+    bool m_highlight_update = true;
 
     rectangle m_rectangle;
 
@@ -109,10 +110,10 @@ class x_client_thumbnail : public x_event_handler_t
 
     void update(int x, int y, unsigned int width, unsigned int height);
     void update_uniforms(const GLuint & program);
+    void update_highlight(void);
     void update_icon_pixmap(void);
     void update_title_pixmap(void);
     void update_name_window_pixmap(void);
-    void configure_highlight(bool now = false);
     void configure_thumbnail_window(bool now = false);
     void load_config(void);
 };
