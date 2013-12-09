@@ -29,6 +29,7 @@ class thumbnail_manager : public chooser_t
     void west(void);
     void north(void);
     void south(void);
+    void raise(const xcb_window_t & window = XCB_NONE);
     void select(const xcb_window_t & window = XCB_NONE);
     void highlight(const unsigned int & window = XCB_NONE);
 

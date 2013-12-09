@@ -37,6 +37,7 @@ class x_client_chooser : public x_event_handler_t
     xcb_keycode_t m_north_keycode;
     xcb_keycode_t m_south_keycode;
     xcb_keycode_t m_quit_keycode;
+    xcb_keycode_t m_raise_keycode;
     xcb_keycode_t m_action_keycode;
     xcb_mod_mask_t m_action_modmask;
 

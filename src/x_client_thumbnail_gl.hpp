@@ -45,6 +45,7 @@ class x_client_thumbnail : public x_event_handler_t
 
     thumbnail_t & show(void);
     thumbnail_t & hide(void);
+    thumbnail_t & raise(void);
     thumbnail_t & select(void);
     thumbnail_t & update(void);
     thumbnail_t & update(const rectangle &);

@@ -15,6 +15,7 @@ class thumbnail_t {
     virtual thumbnail_t & update(void) = 0;
     virtual thumbnail_t & update(const rectangle &) = 0;
     virtual const rectangle & rect(void) = 0;
+    virtual thumbnail_t & raise(void) = 0;
     virtual thumbnail_t & select(void) = 0;
     virtual const unsigned int & id(void) = 0;
     virtual const unsigned int & window(void) = 0;

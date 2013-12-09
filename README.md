@@ -76,7 +76,10 @@ computer.
 After starting the program, hit `Super-Tab` and your window should appear in
 a grid like layout. Hit `Super-Tab` once more to select another window. Pressing
 `Super-Shift-Tab` reverts the direction. After releasing the `Super` key the
-selected window will be brought to focus.
+selected window will be brought to focus. Alternatively the `raise` key can be
+pressed. This will raise the currently selected window above all others, but not
+focus it. For example, this could be useful with a multi-monitor setup, where
+one wishes to view a different window on another monitor without focusing it.
 
 Alternatively try using the mouse pointer. Once the mouse pointer has been
 moved, the `Super` key can be released and a window can be chosen by clicking on
@@ -129,6 +132,9 @@ north:          string.  Key for moving north.
 south:          string.  Key for moving south.
 east:           string.  Key for moving east.
 west:           string.  Key for moving west.
+raise:          string.  Key for raising the selected window. The selected
+                         window will be raised above all others, but not focused
+                         (mainly for multi-monitor environments)
 action:         string.  Key for iteratively stepping through windows. Pressing
                          shift will reverse direction.
 escape:         string.  Key for stopping choosing without selecting a window.
@@ -155,6 +161,7 @@ north:          k
 south:          j
 east:           l
 west:           h
+raise:          space
 action:         Tab
 escape:         Escape
 mod:            mod4

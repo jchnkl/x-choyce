@@ -11,6 +11,7 @@ class chooser_t {
     virtual void west(void) = 0;
     virtual void north(void) = 0;
     virtual void south(void) = 0;
+    virtual void raise(const unsigned int & window = 0) = 0;
     virtual void select(const unsigned int & window = 0) = 0;
     virtual void highlight(const unsigned int & window = 0) = 0;
 };

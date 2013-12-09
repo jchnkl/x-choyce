@@ -97,6 +97,13 @@ x_client_thumbnail::hide(void)
 }
 
 thumbnail_t &
+x_client_thumbnail::raise(void)
+{
+  m_c.request_restack_window(m_x_client.window());
+  return *this;
+}
+
+thumbnail_t &
 x_client_thumbnail::select(void)
 {
   m_c.request_change_current_desktop(m_x_client.net_wm_desktop());

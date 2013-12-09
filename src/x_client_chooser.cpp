@@ -72,6 +72,10 @@ x_client_chooser::handle(xcb_generic_event_t * ge)
 
     } else if (e->detail == m_quit_keycode) {
       quit();
+
+    } else if (e->detail == m_raise_keycode) {
+      quit();
+      m_chooser->raise();
     }
 
   } else if (XCB_KEY_RELEASE == (ge->response_type & ~0x80)) {
@@ -146,6 +150,8 @@ x_client_chooser::load_config(void)
     m_c.keysym_to_keycode(XStringToKeysym(m_xrm["west"].v.str->c_str()));
   m_quit_keycode =
     m_c.keysym_to_keycode(XStringToKeysym(m_xrm["escape"].v.str->c_str()));
+  m_raise_keycode =
+    m_c.keysym_to_keycode(XStringToKeysym(m_xrm["raise"].v.str->c_str()));
 
   m_action_keysym = XStringToKeysym(m_xrm["action"].v.str->c_str());
   m_action_keycode = m_c.keysym_to_keycode(m_action_keysym);

@@ -56,6 +56,14 @@ void
 thumbnail_manager::prev(void) { next_or_prev(false); }
 
 void
+thumbnail_manager::raise(const xcb_window_t & window)
+{
+  try {
+    m_thumbnails.at(*m_cyclic_iterator)->raise();
+  } catch (...) {}
+}
+
+void
 thumbnail_manager::select(const xcb_window_t & window)
 {
   if (window == XCB_NONE) {

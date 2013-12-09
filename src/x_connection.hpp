@@ -58,6 +58,7 @@ class x_connection : public x_event_handler_t
     xcb_window_t net_active_window(void) const;
     void request_change_current_desktop(unsigned int desktop_id);
     void request_change_active_window(xcb_window_t window);
+    void request_restack_window(xcb_window_t window);
     // root, window; XCB_NONE ^= use root_window
     std::pair<position, position> query_pointer(const xcb_window_t & window = XCB_NONE) const;
     // XCB_NONE ^= use root_window

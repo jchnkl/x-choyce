@@ -388,6 +388,28 @@ x_connection::request_change_active_window(xcb_window_t window)
   xcb_send_event(m_c, false, m_root_window, mask, (const char *)&event);
 }
 
+void
+x_connection::request_restack_window(xcb_window_t window)
+{
+  xcb_client_message_event_t event;
+  memset(&event, 0, sizeof(xcb_client_message_event_t));
+
+  event.response_type = XCB_CLIENT_MESSAGE;
+  event.format = 32;
+  event.window = window;
+  event.type = intern_atom("_NET_RESTACK_WINDOW");
+
+  // source indication; 1 == application, 2 == pagers and other clients
+  event.data.data32[0] = 2;
+  event.data.data32[1] = XCB_NONE;
+  event.data.data32[2] = XCB_NONE;
+
+  uint32_t mask = XCB_EVENT_MASK_SUBSTRUCTURE_REDIRECT
+                | XCB_EVENT_MASK_SUBSTRUCTURE_NOTIFY;
+
+  xcb_send_event(m_c, false, m_root_window, mask, (const char *)&event);
+}
+
 // root, window
 std::pair<position, position>
 x_connection::query_pointer(const xcb_window_t & window) const

@@ -63,6 +63,8 @@ int main(int argc, char ** argv)
     , { .type = x::xrm::str, .v = { .str = new std::string("l")              } }
     // west
     , { .type = x::xrm::str, .v = { .str = new std::string("h")              } }
+    // raise
+    , { .type = x::xrm::str, .v = { .str = new std::string("space")          } }
     // action
     , { .type = x::xrm::str, .v = { .str = new std::string("Tab")            } }
     // escape
@@ -88,6 +90,7 @@ int main(int argc, char ** argv)
       , { "south",          options[o++] }
       , { "east",           options[o++] }
       , { "west",           options[o++] }
+      , { "raise",          options[o++] }
       , { "action",         options[o++] }
       , { "escape",         options[o++] }
       , { "mod",            options[o++] }
