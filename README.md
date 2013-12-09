@@ -13,16 +13,16 @@ idea to prefix applications written for X with an identifier or namespace.
 The `choyce` part is a portmanteau of choice and joy. Go figure.
 
 ### Features ###
-* Light-weight: No additional libraries except core XCB and OpenGL libraries
+* Light-weight: No additional libraries except XCB, Xft and OpenGL
 * Exposé-like: Shows thumbnails of all your windows for selection
-* Shows window icons from _NET_WM_ICON or WM_HINTS are drawn
-* Shows window titles from _NET_WM_NAME and/or WM_NAME & WM_CLASS are drawn
-* Unfocused windows are black and white, slightly blurred & transparent
+* Draws window icons from `_NET_WM_ICON` or `WM_HINTS`
+* Draws window titles from `_NET_WM_NAME` and/or `WM_NAME` & `WM_CLASS`
+* Unfocused windows are black and white & slightly blurred
 * Entirely configurable through Xresources (`man 1 xrdb`)
-* Automatic configuration reload (e.g. after `xrdb -load`): no restart required
-* OpenGL is used for fast and appealing graphical effects
-* OpenGL shader is an external file, can be customized by users
-* Written in modern C++11 with a modular OO oriented approach
+* Automatic configuration reload (e.g. after `xrdb -load`) without restart
+* Makes use of OpenGL for fast and appealing graphical effects
+* GLSL shaders in external file, stringified at compile time
+* Written in modern C++11 with a modular object oriented approach
 
 ### Compilation
 Clone the repository and type `make`.
