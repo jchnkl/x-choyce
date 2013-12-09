@@ -1,9 +1,8 @@
 # Maintainer: Jochen Keil jrk+x:choyce@sternenrei.ch
 
 pkgname=x-choyce
-_gitname="x-choyce"
 pkgver=2013.12.09
-pkgrel=0
+pkgrel=1
 pkgdesc="A light-weight, Exposé-like window switcher for X (feat. OpenGL)."
 arch=('i686' 'x86_64')
 url="https://github.com/jrk-/x-choyce"
@@ -22,5 +21,7 @@ build() {
 
 package() {
 	cd "$srcdir/x-choyce-master"
+	install -D -m644 "$srcdir/x-choyce-master/LICENSE" \
+	                 "$pkgdir/usr/share/licenses/x:choyce/LICENSE"
 	make install PREFIX=$pkgdir/usr
 }
