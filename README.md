@@ -159,3 +159,8 @@ action:         Tab
 escape:         Escape
 mod:            mod4
 ```
+
+#### Contributors
+
+* [SanskritFritz](https://github.com/SanskritFritz) helped a lot to
+[indentify and resolve multiple issues](https://github.com/jrk-/x-choyce/issues/1)
