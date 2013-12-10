@@ -332,8 +332,15 @@ thumbnail_manager::query_current_screen(void)
   rectangle screen = { 0, 0, 800, 600 };
 
   try {
-    auto pos = m_c.query_pointer();
-    screen = m_c.current_screen(pos.first);
+    std::function<rectangle(x_connection & c)> query = pointer_screen;
+
+    if ("active" == *m_xrm["screen"].v.str) {
+      query = active_window_screen;
+    } else if ("primary" == *m_xrm["screen"].v.str) {
+      query = primary_output_screen;
+    }
+
+    screen = query(m_c);
   } catch (...) {}
 
   return screen;
