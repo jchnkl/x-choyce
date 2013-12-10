@@ -370,7 +370,7 @@ class context {
 
       const int attrs[] = {
         GLX_TEXTURE_TARGET_EXT, GLX_TEXTURE_2D_EXT,
-        GLX_MIPMAP_TEXTURE_EXT, GL_TRUE,
+        // GLX_MIPMAP_TEXTURE_EXT, GL_TRUE,
         GLX_TEXTURE_FORMAT_EXT, depth,
         None
       };
