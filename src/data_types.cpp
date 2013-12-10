@@ -39,6 +39,15 @@ rectangle::height(void) { return m_dimension.height; }
 unsigned int const &
 rectangle::height(void) const { return m_dimension.height; }
 
+bool
+operator==(const rectangle & r1, const rectangle & r2)
+{
+  return r1.m_position.x == r2.m_position.x
+    && r1.m_position.y == r2.m_position.y
+    && r1.m_dimension.width == r2.m_dimension.width
+    && r1.m_dimension.height == r2.m_dimension.height;
+}
+
 std::ostream & operator<<(std::ostream & os, const rectangle & rect)
 {
   return os << rect.x() << "x" << rect.y() << "+"

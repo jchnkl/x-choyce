@@ -33,6 +33,9 @@ struct rectangle {
   dimension m_dimension;
 };
 
+bool
+operator==(const rectangle & r1, const rectangle & r2);
+
 std::ostream & operator<<(std::ostream & os, const rectangle & rect);
 
 namespace x {
