@@ -4,6 +4,7 @@
 #include <deque>
 #include <unordered_map>
 
+#include "x_xrm.hpp"
 #include "cyclic_iterator.hpp"
 #include "layout_t.hpp"
 #include "chooser_t.hpp"
@@ -16,6 +17,7 @@ class thumbnail_manager : public chooser_t
 {
   public:
     thumbnail_manager(x_connection &,
+                      x::xrm & xrm,
                       const layout_t *,
                       const thumbnail_t::factory *);
 
@@ -40,6 +42,7 @@ class thumbnail_manager : public chooser_t
     typedef const_cyclic_iterator<window_list_t> window_cyclic_iterator;
 
     x_connection & m_c;
+    x::xrm & m_xrm;
     const layout_t * m_layout;
     const thumbnail_t::factory * m_factory;
 

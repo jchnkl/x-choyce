@@ -5,9 +5,10 @@
 #include "algorithm.hpp"
 
 thumbnail_manager::thumbnail_manager(x_connection & c,
+                                     x::xrm & xrm,
                                      const layout_t * layout,
                                      const thumbnail_t::factory * factory)
-  : m_c(c), m_layout(layout), m_factory(factory)
+  : m_c(c), m_xrm(xrm), m_layout(layout), m_factory(factory)
 {
   m_c.attach(0, XCB_PROPERTY_NOTIFY, this);
   m_c.attach(20, XCB_CONFIGURE_NOTIFY, this);

@@ -71,6 +71,8 @@ int main(int argc, char ** argv)
     , { .type = x::xrm::str, .v = { .str = new std::string("Escape")         } }
     // mod
     , { .type = x::xrm::str, .v = { .str = new std::string("mod4")           } }
+    // screen
+    , { .type = x::xrm::str, .v = { .str = new std::string("pointer")        } }
     };
 
   int o = 0;
@@ -94,13 +96,14 @@ int main(int argc, char ** argv)
       , { "action",         options[o++] }
       , { "escape",         options[o++] }
       , { "mod",            options[o++] }
+      , { "screen",         options[o++] }
       });
 
   grid_t grid;
 
   x_client_thumbnail::factory factory(c, xrm);
 
-  thumbnail_manager tm(c, &grid, &factory);
+  thumbnail_manager tm(c, xrm, &grid, &factory);
   x_client_chooser cp(c, xrm, &tm);
 
   c.run_event_loop();
