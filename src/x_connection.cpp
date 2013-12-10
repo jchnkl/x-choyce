@@ -444,10 +444,17 @@ x_connection::get_geometry(const xcb_window_t & window) const
     delete error;
     if (r) delete r;
     throw "get_geometry failed";
+
   } else {
+    xcb_translate_coordinates_cookie_t tc_c =
+      xcb_translate_coordinates(m_c, window, m_root_window, r->x, r->y);
+    xcb_translate_coordinates_reply_t * tc_r =
+      xcb_translate_coordinates_reply(m_c, tc_c, NULL);
+
     rectangle rect;
-    rect.m_position = { r->x, r->y };
+    rect.m_position = { tc_r->dst_x, tc_r->dst_y };
     rect.m_dimension = { r->width, r->height };
+    delete tc_r;
     delete r;
     return rect;
   }
