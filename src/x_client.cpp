@@ -130,12 +130,14 @@ x_client::update_net_wm_desktop(void)
 void
 x_client::update_parent_window(void)
 {
-  xcb_window_t next_parent = m_window;
+  xcb_translate_coordinates_cookie_t c =
+    xcb_translate_coordinates(m_c(), m_window, m_c.root_window(), 0, 0);
+  xcb_translate_coordinates_reply_t * r =
+    xcb_translate_coordinates_reply(m_c(), c, NULL);
 
-  while (next_parent != m_c.root_window() && next_parent != XCB_NONE) {
-    m_parent = next_parent;
-    next_parent = std::get<0>(m_c.query_tree(next_parent));
-  }
+  m_parent = r->child;
+
+  delete r;
 }
 
 void
