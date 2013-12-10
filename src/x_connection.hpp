@@ -64,6 +64,7 @@ class x_connection : public x_event_handler_t
     // XCB_NONE ^= use root_window
     rectangle get_geometry(const xcb_window_t & window = XCB_NONE) const;
     rectangle current_screen(const position & p) const;
+    rectangle get_primary_screen(void) const;
     bool handle(xcb_generic_event_t * ge);
 
     // ugly :(

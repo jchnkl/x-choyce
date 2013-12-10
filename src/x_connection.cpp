@@ -2,6 +2,7 @@
 
 #include <climits>
 #include <cstring>
+#include <xcb/randr.h>
 #include <xcb/damage.h>
 #include <xcb/xfixes.h>
 #include <xcb/xinerama.h>
@@ -465,6 +466,39 @@ x_connection::current_screen(const position & p) const
   }
 
   throw "no screens available";
+}
+
+rectangle
+x_connection::get_primary_screen(void) const
+{
+  rectangle result;
+
+  xcb_randr_get_crtc_info_reply_t * ci_r;
+  xcb_randr_get_output_info_reply_t * oi_r;
+  xcb_randr_get_output_primary_reply_t * po_r;
+
+  // primary output
+  xcb_randr_get_output_primary_cookie_t po_c =
+    xcb_randr_get_output_primary(m_c, m_root_window);
+  po_r = xcb_randr_get_output_primary_reply(m_c, po_c, NULL);
+
+  // output info
+  xcb_randr_get_output_info_cookie_t oi_c =
+    xcb_randr_get_output_info(m_c, po_r->output, XCB_TIME_CURRENT_TIME);
+  oi_r = xcb_randr_get_output_info_reply(m_c, oi_c, NULL);
+
+  // crtc info
+  xcb_randr_get_crtc_info_cookie_t ci_c =
+    xcb_randr_get_crtc_info(m_c, oi_r->crtc, XCB_TIME_CURRENT_TIME);
+  ci_r = xcb_randr_get_crtc_info_reply(m_c, ci_c, NULL);
+
+  result = rectangle(ci_r->x, ci_r->y, ci_r->width, ci_r->height);
+
+  delete po_r;
+  delete ci_r;
+  delete oi_r;
+
+  return result;
 }
 
 bool
