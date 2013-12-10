@@ -1,6 +1,7 @@
 #include "x_xrm.hpp"
 
 #include <climits>
+#include <algorithm>
 
 using namespace x;
 
@@ -60,9 +61,13 @@ xrm::update_db(void)
     if (XrmGetResource(m_database, n.c_str(), c.c_str(), &type, &value)) {
       switch (item.second.type) {
         case str:
+          {
           if (item.second.v.str != NULL) delete item.second.v.str;
-          item.second.v.str = new std::string(value.addr, value.size);
+          std::string * s = new std::string(value.addr, value.size);
+          s->erase(std::find_if_not(s->begin(), s->end(), ::isprint), s->end());
+          item.second.v.str = s;
           break;
+          }
 
         case num:
           item.second.v.num = std::stoi(std::string(value.addr, value.size));

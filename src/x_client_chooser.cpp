@@ -1,6 +1,5 @@
 #include "x_client_chooser.hpp"
 
-#include <algorithm>
 #include <sstream>
 #include <X11/keysym.h>
 
@@ -160,8 +159,6 @@ x_client_chooser::load_config(void)
   std::stringstream ss(*m_xrm["mod"].v.str);
   std::string m;
   while (std::getline(ss, m, '+')) {
-
-    m.erase(std::find_if_not(m.begin(), m.end(), ::isalnum), m.end());
 
          if ("mod1"    == m) mask |= XCB_MOD_MASK_1;
     else if ("mod2"    == m) mask |= XCB_MOD_MASK_2;
