@@ -12,6 +12,15 @@
 #include "x_event_handler_t.hpp"
 #include "x_connection.hpp"
 
+rectangle
+pointer_screen(x_connection & c);
+
+rectangle
+active_window_screen(x_connection & c);
+
+rectangle
+primary_output_screen(x_connection & c);
+
 class thumbnail_manager : public chooser_t
                         , public x_event_handler_t
 {

@@ -338,3 +338,29 @@ thumbnail_manager::query_current_screen(void)
 
   return screen;
 }
+
+// free functions
+
+inline
+rectangle
+pointer_screen(x_connection & c)
+{
+  return c.current_screen(c.query_pointer().first);
+}
+
+inline
+rectangle
+active_window_screen(x_connection & c)
+{
+  rectangle r = c.get_geometry(c.net_active_window());
+  auto s = c.current_screen(
+      position(r.x() + r.width() / 2, r.y() + r.height() / 2));
+  return s;
+}
+
+inline
+rectangle
+primary_output_screen(x_connection & c)
+{
+  return c.get_primary_screen();
+}
