@@ -13,4 +13,7 @@ void main(void)
   gl_FragColor = mix(t0, t1, t1.a);
   gl_FragColor = mix(gl_FragColor, t2, t2.a);
   gl_FragColor.a = 1.0;
+
+  gl_FragColor = t0;
+  gl_FragColor.a = 1.0;
 }

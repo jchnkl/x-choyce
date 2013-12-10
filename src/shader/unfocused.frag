@@ -33,4 +33,7 @@ void main(void)
   gl_FragColor = mix(vec4(grey), t1, t1.a);
   gl_FragColor = mix(gl_FragColor, t2, t2.a);
   gl_FragColor.a = 1.0;
+
+  gl_FragColor = grey;
+  gl_FragColor.a = 1.0;
 }
