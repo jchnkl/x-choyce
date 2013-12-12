@@ -8,14 +8,15 @@
 
 x_client_thumbnail::x_client_thumbnail(x_connection & c,
                                        x::xrm & xrm,
-                                       const gl::config & config,
+                                       const gl::config & gl_config,
                                        const rectangle & rect,
                                        const xcb_window_t & window)
-  : m_c(c), m_xrm(xrm), m_gl_api(config.api())
-  , m_gl_ctx(config)
+  : m_c(c), m_xrm(xrm), m_gl_api(gl_config.api())
+  , m_gl_ctx(gl_config)
   , m_x_client(m_c, window)
   , m_x_client_icon(m_c, m_x_client)
-  , m_x_client_name(m_c, m_xrm, m_x_client, config.visual_info(), config.colormap())
+  , m_x_client_name(m_c, m_xrm, m_x_client,
+                    gl_config.visual_info(), gl_config.colormap())
 {
   load_config();
   update(rect);
@@ -34,15 +35,15 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
                      | XCB_CW_COLORMAP
                      ;
 
-  uint32_t valuelist[] = { 0, 0, 1, (uint32_t)config.colormap() };
+  uint32_t valuelist[] = { 0, 0, 1, (uint32_t)gl_config.colormap() };
 
   xcb_create_window(m_c(),
-                    config.visual_info()->depth,
+                    gl_config.visual_info()->depth,
                     m_thumbnail_window,
                     m_c.root_window(), 0, 0,
                     m_x_client.rect().width(), m_x_client.rect().height(),
                     0, XCB_WINDOW_CLASS_INPUT_OUTPUT,
-                    config.visual_info()->visualid,
+                    gl_config.visual_info()->visualid,
                     valuemask, valuelist);
 
   m_x_client_name.make_title();

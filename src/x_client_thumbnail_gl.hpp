@@ -32,7 +32,7 @@ class x_client_thumbnail : public x_event_handler_t
 
     x_client_thumbnail(x_connection & c,
                        x::xrm & xrm,
-                       const gl::config & config,
+                       const gl::config & gl_config,
                        const rectangle & rect,
                        const xcb_window_t & window = XCB_NONE);
 
