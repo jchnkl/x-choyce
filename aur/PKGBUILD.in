@@ -2,7 +2,7 @@
 
 pkgname=x-choyce
 pkgver=VERSION
-pkgrel=1
+pkgrel=0
 pkgdesc="A light-weight, Exposé-like window switcher for X (feat. OpenGL)."
 arch=('i686' 'x86_64')
 url="https://github.com/jrk-/x-choyce"
