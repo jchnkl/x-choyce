@@ -94,6 +94,10 @@ The program can be configured (even at run time) using Xresources. You can read
 more about this [here](http://tronche.com/gui/x/xlib/resource-manager/) or in
 the `xrdb` manpage.
 
+All options listed below can also be given on the command line. For example, run
+`x:choyce --titlebgalpha 1.0` for a fully opaque title strip. If an option is
+set on the commandline it cannot be changed during runtime via Xresources.
+
 #### Quick start
 
 Put this in your `~/.Xresources` file:
