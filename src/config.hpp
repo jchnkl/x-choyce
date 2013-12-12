@@ -66,7 +66,7 @@ class config : public config_t
     unfold_attach(config_t * c)
     {
       c->attach(this);
-      m_configs.push_front(c);
+      m_configs.push_back(c);
     }
 
     void
