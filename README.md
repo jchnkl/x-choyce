@@ -4,7 +4,7 @@ x:choyce
 #### A light-weight, Exposé-like window switcher for X (feat. OpenGL) ####
 
 ### Version ###
-2013-12-09T12:42+0100
+2013.12.12
 
 ### About the name ####
 The `x` stands (obviously) for X Window System. I thought it might be a good
