@@ -221,11 +221,12 @@ x_client_name::make_title(void)
     m_reset_xft = false;
     m_xft = std::shared_ptr<x::xft>(new x::xft(
           m_c.dpy(), m_visual_info, m_colormap, m_title_width, m_title_height));
-
-    m_xft->foreground(m_fg_color).background(m_bg_color).bg_alpha(m_bg_alpha);
   }
 
-  m_xft->fill();
+  m_xft->foreground(m_fg_color)
+        .background(m_bg_color)
+        .bg_alpha(m_bg_alpha)
+        .fill();
 
   std::string pname = m_class_name;
   std::string title = m_net_wm_name.empty() ? m_wm_name : m_net_wm_name;
