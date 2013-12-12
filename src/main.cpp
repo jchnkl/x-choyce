@@ -33,47 +33,47 @@ int main(int argc, char ** argv)
 
   generic::config_t::option options[] =
     // focusedalpha
-    { { .type = x::xrm::dbl, .v = { .dbl = 0.75                              } }
+    { { .type = generic::config_t::dbl, .v = { .dbl = 0.75                       } }
     // focusedcolor: goldenrod
-    , { .type = x::xrm::str, .v = { .str = new std::string("#daa520")        } }
+    , { .type = generic::config_t::str, .v = { .str = new std::string("#daa520") } }
     // unfocusedalpha
-    , { .type = x::xrm::dbl, .v = { .dbl = 0.5                               } }
+    , { .type = generic::config_t::dbl, .v = { .dbl = 0.5                        } }
     // unfocusedcolor
-    , { .type = x::xrm::str, .v = { .str = new std::string("#404040")        } }
+    , { .type = generic::config_t::str, .v = { .str = new std::string("#404040") } }
     // iconsize
-    , { .type = x::xrm::num, .v = { .num = 64                                } }
+    , { .type = generic::config_t::num, .v = { .num = 64                         } }
     // borderwidth
-    , { .type = x::xrm::num, .v = { .num =  4                                } }
+    , { .type = generic::config_t::num, .v = { .num =  4                         } }
     // titlefont
-    , { .type = x::xrm::str,
-      .v = { .str = new std::string("Sans:bold:pixelsize=26:antialias=true") } }
+    , { .type = generic::config_t::str,
+      .v = { .str = new std::string("Sans:bold:pixelsize=26:antialias=true")     } }
     // subtitlefont
-    , { .type = x::xrm::str,
-      .v = { .str = new std::string("Sans:bold:pixelsize=16:antialias=true") } }
+    , { .type = generic::config_t::str,
+      .v = { .str = new std::string("Sans:bold:pixelsize=16:antialias=true")     } }
     // titlefgcolor
-    , { .type = x::xrm::str, .v = { .str = new std::string("#616161")        } }
+    , { .type = generic::config_t::str, .v = { .str = new std::string("#616161") } }
     // titlebgalpha
-    , { .type = x::xrm::dbl, .v = { .dbl = 0.25                              } }
+    , { .type = generic::config_t::dbl, .v = { .dbl = 0.25                       } }
     // titlebgcolor
-    , { .type = x::xrm::str, .v = { .str = new std::string("#292929")        } }
+    , { .type = generic::config_t::str, .v = { .str = new std::string("#292929") } }
     // north
-    , { .type = x::xrm::str, .v = { .str = new std::string("k")              } }
+    , { .type = generic::config_t::str, .v = { .str = new std::string("k")       } }
     // south
-    , { .type = x::xrm::str, .v = { .str = new std::string("j")              } }
+    , { .type = generic::config_t::str, .v = { .str = new std::string("j")       } }
     // east
-    , { .type = x::xrm::str, .v = { .str = new std::string("l")              } }
+    , { .type = generic::config_t::str, .v = { .str = new std::string("l")       } }
     // west
-    , { .type = x::xrm::str, .v = { .str = new std::string("h")              } }
+    , { .type = generic::config_t::str, .v = { .str = new std::string("h")       } }
     // raise
-    , { .type = x::xrm::str, .v = { .str = new std::string("space")          } }
+    , { .type = generic::config_t::str, .v = { .str = new std::string("space")   } }
     // action
-    , { .type = x::xrm::str, .v = { .str = new std::string("Tab")            } }
+    , { .type = generic::config_t::str, .v = { .str = new std::string("Tab")     } }
     // escape
-    , { .type = x::xrm::str, .v = { .str = new std::string("Escape")         } }
+    , { .type = generic::config_t::str, .v = { .str = new std::string("Escape")  } }
     // mod
-    , { .type = x::xrm::str, .v = { .str = new std::string("mod4")           } }
+    , { .type = generic::config_t::str, .v = { .str = new std::string("mod4")    } }
     // screen
-    , { .type = x::xrm::str, .v = { .str = new std::string("pointer")        } }
+    , { .type = generic::config_t::str, .v = { .str = new std::string("pointer") } }
     };
 
   int o = 0;
