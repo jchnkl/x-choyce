@@ -224,8 +224,23 @@ class context {
     context(const config & config)
       : m_config(config), m_api(config.api()), m_dpy(config.dpy())
     {
-      m_context = glXCreateNewContext(
-          m_dpy, config.fb_config(), GLX_RGBA_TYPE, 0, True);
+      // > https://www.opengl.org/registry/specs/ARB/glx_create_context.txt
+
+      const int context_attribs[] =
+      {
+        GLX_RENDER_TYPE,               GLX_RGBA_TYPE,
+        GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
+        GLX_CONTEXT_MINOR_VERSION_ARB, 0,
+          // forward compatibility: must not support functionality marked
+          //                        as <deprecated> by that version of the API
+        // GLX_CONTEXT_FLAGS_ARB,         GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,
+          // profile mask is ignored for < 3.2
+        // GLX_CONTEXT_PROFILE_MASK_ARB,  GLX_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB,
+        None
+      };
+
+      m_context = m_api.glXCreateContextAttribsARB(m_dpy, config.fb_config(),
+                                                   0, True, context_attribs);
     }
 
     ~context(void)
