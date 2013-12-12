@@ -2,6 +2,7 @@
 #include <X11/keysym.h>
 
 #include "config.hpp"
+#include "getopt.hpp"
 #include "x_xrm.hpp"
 #include "grid.hpp"
 #include "thumbnail_manager.hpp"
@@ -77,7 +78,7 @@ int main(int argc, char ** argv)
     };
 
   int o = 0;
-  x::xrm xrm(c, "xchoyce", "XChoyce",
+  std::unordered_map<std::string, generic::config_t::option> default_options =
       { { "focusedalpha",   options[o++] }
       , { "focusedcolor",   options[o++] }
       , { "unfocusedalpha", options[o++] }
@@ -98,9 +99,13 @@ int main(int argc, char ** argv)
       , { "escape",         options[o++] }
       , { "mod",            options[o++] }
       , { "screen",         options[o++] }
-      });
+      };
 
-  generic::config config(&xrm);
+  x::xrm xrm(c, "xchoyce", "XChoyce", default_options);
+
+  generic::getopt getopt(argc, argv, default_options);
+
+  generic::config config(&getopt, &xrm);
 
   grid_t grid;
 
