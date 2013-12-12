@@ -5,30 +5,17 @@
 #include <unordered_set>
 #include <X11/Xresource.h>
 
+#include "config_t.hpp"
 #include "observer.hpp"
 #include "x_connection.hpp"
 
 namespace x {
 
-class xrm : public x_event_handler_t
-          , public observable<xrm>
+class xrm : public generic::config_t
+          , public x_event_handler_t
 {
   public:
-    struct option;
     typedef std::unordered_map<std::string, option> options;
-
-    enum { str, num, dbl };
-
-    union value {
-      int num;
-      double dbl;
-      std::string * str;
-    };
-
-    struct option {
-      int type;
-      value v;
-    };
 
     xrm(x_connection & c,
         const std::string & name,
@@ -37,7 +24,8 @@ class xrm : public x_event_handler_t
 
     ~xrm(void);
 
-    const option & operator[](const std::string & name)
+    const option &
+      operator[](const std::string & name)
     {
       return m_options.at(name);
     }
@@ -54,7 +42,8 @@ class xrm : public x_event_handler_t
     void update_db(void);
     void release_db(void);
     std::string resource_manager_string(void);
-};
+
+}; // class xrm
 
 }; // namespace x
 

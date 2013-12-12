@@ -7,7 +7,7 @@
 #include <xcb/damage.h>
 
 #include "opengl.hpp"
-#include "x_xrm.hpp"
+#include "config_t.hpp"
 #include "observer.hpp"
 #include "thumbnail_t.hpp"
 #include "x_event_handler_t.hpp"
@@ -22,7 +22,7 @@ class x_connection;
 
 class x_client_thumbnail : public x_event_handler_t
                          , public thumbnail_t
-                         , public observer<x::xrm>
+                         , public observer<generic::config_t>
                          , public observer<x_client>
                          , public observer<x_client_name>
 {
@@ -31,7 +31,7 @@ class x_client_thumbnail : public x_event_handler_t
     friend bool operator==(const xcb_window_t &, const x_client_thumbnail &);
 
     x_client_thumbnail(x_connection & c,
-                       x::xrm & xrm,
+                       generic::config_t & config,
                        const gl::config & gl_config,
                        const rectangle & rect,
                        const xcb_window_t & window = XCB_NONE);
@@ -55,25 +55,25 @@ class x_client_thumbnail : public x_event_handler_t
     thumbnail_t & highlight(bool want_highlight);
 
     bool handle(xcb_generic_event_t * ge);
-    void notify(x::xrm *);
+    void notify(generic::config_t *);
     void notify(x_client *);
     void notify(x_client_name *);
 
     class factory : public thumbnail_t::factory {
       public:
-        factory(x_connection & c, x::xrm & xrm);
+        factory(x_connection & c, generic::config_t & config);
         thumbnail_t::ptr
           make(const xcb_window_t &, const rectangle &) const;
 
       private:
         x_connection & m_c;
-        x::xrm & m_xrm;
+        generic::config_t & m_config;
         gl::config m_gl_config;
     };
 
   private:
     x_connection & m_c;
-    x::xrm & m_xrm;
+    generic::config_t & m_config;
     const gl::api & m_gl_api;
     gl::context m_gl_ctx;
     x_client m_x_client;

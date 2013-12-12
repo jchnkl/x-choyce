@@ -2,19 +2,23 @@
 #define X_CLIENT_NAME_HPP
 
 #include "observer.hpp"
-#include "x_xrm.hpp"
+#include "config_t.hpp"
 #include "x_xft.hpp"
 #include "x_client.hpp"
 #include "x_connection.hpp"
 
 class x_client_name : public x_event_handler_t
-                    , public observer<x::xrm>
+                    , public observer<generic::config_t>
                     , public observer<x_client>
                     , public observable<x_client_name>
 {
   public:
-    x_client_name(x_connection & c, x::xrm & xrm, x_client & x_client,
-                  XVisualInfo * const visual_info, const Colormap & colormap);
+    x_client_name(x_connection & c,
+                  generic::config_t & config,
+                  x_client & x_client,
+                  XVisualInfo * const visual_info,
+                  const Colormap & colormap);
+
     ~x_client_name(void);
 
     const std::string & net_wm_name(void) const;
@@ -43,12 +47,12 @@ class x_client_name : public x_event_handler_t
 
     x_client_name & make_title(void);
     bool handle(xcb_generic_event_t *);
-    void notify(x::xrm *);
+    void notify(generic::config_t *);
     void notify(x_client *);
 
   private:
     x_connection & m_c;
-    x::xrm & m_xrm;
+    generic::config_t & m_config;
     x_client & m_x_client;
     XVisualInfo * m_visual_info;
     Colormap m_colormap;

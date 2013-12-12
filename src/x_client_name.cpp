@@ -4,17 +4,17 @@
 #include <xcb/xcb_icccm.h>
 
 x_client_name::x_client_name(x_connection & c,
-                             x::xrm & xrm,
+                             generic::config_t & config,
                              x_client & x_client,
                              XVisualInfo * const visual_info,
                              const Colormap & colormap)
-  : m_c(c), m_xrm(xrm), m_x_client(x_client),
+  : m_c(c), m_config(config), m_x_client(x_client),
     m_visual_info(visual_info), m_colormap(colormap)
 {
   m_c.attach(10, XCB_PROPERTY_NOTIFY, this);
   m_c.update_input(m_x_client.window(), XCB_EVENT_MASK_PROPERTY_CHANGE);
 
-  m_xrm.attach(this);
+  m_config.attach(this);
   m_x_client.attach(this);
 
   load_config();
@@ -27,7 +27,7 @@ x_client_name::x_client_name(x_connection & c,
 x_client_name::~x_client_name(void)
 {
   m_c.detach(XCB_PROPERTY_NOTIFY, this);
-  m_xrm.detach(this);
+  m_config.detach(this);
   m_x_client.detach(this);
 }
 
@@ -98,7 +98,7 @@ x_client_name::handle(xcb_generic_event_t * ge)
 }
 
 void
-x_client_name::notify(x::xrm *)
+x_client_name::notify(generic::config_t *)
 {
   load_config();
   // TODO: cause clang to crash, FILE A BUG REPORT
@@ -125,15 +125,15 @@ x_client_name::notify(x_client *)
 void
 x_client_name::load_config(void)
 {
-  m_icon_size    = m_xrm["iconsize"].v.num;
-  m_border_width = m_xrm["borderwidth"].v.num;
+  m_icon_size    = m_config["iconsize"].v.num;
+  m_border_width = m_config["borderwidth"].v.num;
 
-  m_pnamefont    = *m_xrm["titlefont"].v.str;
-  m_titlefont    = *m_xrm["subtitlefont"].v.str;
+  m_pnamefont    = *m_config["titlefont"].v.str;
+  m_titlefont    = *m_config["subtitlefont"].v.str;
 
-  m_bg_alpha     = m_xrm["titlebgalpha"].v.dbl;
-  m_fg_color     = *m_xrm["titlefgcolor"].v.str;
-  m_bg_color     = *m_xrm["titlebgcolor"].v.str;
+  m_bg_alpha     = m_config["titlebgalpha"].v.dbl;
+  m_fg_color     = *m_config["titlefgcolor"].v.str;
+  m_bg_color     = *m_config["titlebgcolor"].v.str;
 }
 
 void

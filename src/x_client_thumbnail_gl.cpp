@@ -7,15 +7,15 @@
 #include "shader/shader.hpp"
 
 x_client_thumbnail::x_client_thumbnail(x_connection & c,
-                                       x::xrm & xrm,
+                                       generic::config_t & config,
                                        const gl::config & gl_config,
                                        const rectangle & rect,
                                        const xcb_window_t & window)
-  : m_c(c), m_xrm(xrm), m_gl_api(gl_config.api())
+  : m_c(c), m_config(config), m_gl_api(gl_config.api())
   , m_gl_ctx(gl_config)
   , m_x_client(m_c, window)
   , m_x_client_icon(m_c, m_x_client)
-  , m_x_client_name(m_c, m_xrm, m_x_client,
+  , m_x_client_name(m_c, m_config, m_x_client,
                     gl_config.visual_info(), gl_config.colormap())
 {
   load_config();
@@ -23,7 +23,7 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
 
   m_c.attach(0, m_c.damage_event_id(), this);
 
-  m_xrm.attach(this);
+  m_config.attach(this);
   m_x_client.attach(this);
   m_x_client_name.attach(this);
 
@@ -66,7 +66,7 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
 x_client_thumbnail::~x_client_thumbnail(void)
 {
   m_c.detach(m_c.damage_event_id(), this);
-  m_xrm.detach(this);
+  m_config.detach(this);
   m_x_client.detach(this);
   m_x_client_name.detach(this);
   xcb_damage_destroy(m_c(), m_damage);
@@ -372,7 +372,7 @@ x_client_thumbnail::handle(xcb_generic_event_t * ge)
 }
 
 void
-x_client_thumbnail::notify(x::xrm *)
+x_client_thumbnail::notify(generic::config_t *)
 {
   load_config();
 }
@@ -447,19 +447,19 @@ x_client_thumbnail::configure_thumbnail(void)
 void
 x_client_thumbnail::load_config(void)
 {
-  m_icon_size    = m_xrm["iconsize"].v.num;
-  m_border_width = m_xrm["borderwidth"].v.num;
+  m_icon_size    = m_config["iconsize"].v.num;
+  m_border_width = m_config["borderwidth"].v.num;
 
   // #xxxxxx: r: [1,2]; g: [3,4], b: [5,6]
   // 0123456
-  auto fa = m_xrm["focusedalpha"].v.dbl;
-  auto fc = m_xrm["focusedcolor"].v.str;
+  auto fa = m_config["focusedalpha"].v.dbl;
+  auto fc = m_config["focusedcolor"].v.str;
   auto fr = std::strtol(fc->substr(1,2).c_str(), NULL, 16) / (double)0xff;
   auto fg = std::strtol(fc->substr(3,2).c_str(), NULL, 16) / (double)0xff;
   auto fb = std::strtol(fc->substr(5,2).c_str(), NULL, 16) / (double)0xff;
 
-  auto ua = m_xrm["unfocusedalpha"].v.dbl;
-  auto uc = m_xrm["unfocusedcolor"].v.str;
+  auto ua = m_config["unfocusedalpha"].v.dbl;
+  auto uc = m_config["unfocusedcolor"].v.str;
   auto ur = std::strtol(uc->substr(1,2).c_str(), NULL, 16) / (double)0xff;
   auto ug = std::strtol(uc->substr(3,2).c_str(), NULL, 16) / (double)0xff;
   auto ub = std::strtol(uc->substr(5,2).c_str(), NULL, 16) / (double)0xff;
@@ -478,8 +478,8 @@ bool operator==(const xcb_window_t & window, const x_client_thumbnail & thumbnai
   return thumbnail == window;
 }
 
-x_client_thumbnail::factory::factory(x_connection & c, x::xrm & xrm)
-  : m_c(c), m_xrm(xrm), m_gl_config(c.dpy())
+x_client_thumbnail::factory::factory(x_connection & c, generic::config_t & config)
+  : m_c(c), m_config(config), m_gl_config(c.dpy())
 {}
 
 thumbnail_t::ptr
@@ -487,5 +487,5 @@ x_client_thumbnail::factory::
 make(const xcb_window_t & w, const rectangle & r) const
 {
   return thumbnail_t::ptr(
-      new x_client_thumbnail(m_c, m_xrm, m_gl_config, r, w));
+      new x_client_thumbnail(m_c, m_config, m_gl_config, r, w));
 }

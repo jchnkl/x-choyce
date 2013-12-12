@@ -4,15 +4,15 @@
 #include <X11/keysym.h>
 
 x_client_chooser::x_client_chooser(x_connection & c,
-                                   x::xrm & xrm,
+                                   generic::config_t & config,
                                    chooser_t * chooser)
-  : m_c(c), m_xrm(xrm), m_chooser(chooser)
+  : m_c(c), m_config(config), m_chooser(chooser)
 {
   m_c.attach(0, XCB_KEY_PRESS, this);
   m_c.attach(0, XCB_KEY_RELEASE, this);
   m_c.attach(0, XCB_BUTTON_PRESS, this);
   m_c.attach(0, XCB_MOTION_NOTIFY, this);
-  m_xrm.attach(this);
+  m_config.attach(this);
   load_config();
   m_modifier_map = m_c.modifier_mapping();
 }
@@ -23,7 +23,7 @@ x_client_chooser::~x_client_chooser(void)
   m_c.detach(XCB_KEY_RELEASE, this);
   m_c.detach(XCB_BUTTON_PRESS, this);
   m_c.detach(XCB_MOTION_NOTIFY, this);
-  m_xrm.detach(this);
+  m_config.detach(this);
 }
 
 bool
@@ -120,7 +120,7 @@ x_client_chooser::handle(xcb_generic_event_t * ge)
 }
 
 void
-x_client_chooser::notify(x::xrm *)
+x_client_chooser::notify(generic::config_t *)
 {
   load_config();
 }
@@ -140,23 +140,23 @@ x_client_chooser::load_config(void)
   m_c.ungrab_key(m_action_modmask, m_action_keysym);
 
   m_north_keycode =
-    m_c.keysym_to_keycode(XStringToKeysym(m_xrm["north"].v.str->c_str()));
+    m_c.keysym_to_keycode(XStringToKeysym(m_config["north"].v.str->c_str()));
   m_south_keycode =
-    m_c.keysym_to_keycode(XStringToKeysym(m_xrm["south"].v.str->c_str()));
+    m_c.keysym_to_keycode(XStringToKeysym(m_config["south"].v.str->c_str()));
   m_east_keycode =
-    m_c.keysym_to_keycode(XStringToKeysym(m_xrm["east"].v.str->c_str()));
+    m_c.keysym_to_keycode(XStringToKeysym(m_config["east"].v.str->c_str()));
   m_west_keycode =
-    m_c.keysym_to_keycode(XStringToKeysym(m_xrm["west"].v.str->c_str()));
+    m_c.keysym_to_keycode(XStringToKeysym(m_config["west"].v.str->c_str()));
   m_quit_keycode =
-    m_c.keysym_to_keycode(XStringToKeysym(m_xrm["escape"].v.str->c_str()));
+    m_c.keysym_to_keycode(XStringToKeysym(m_config["escape"].v.str->c_str()));
   m_raise_keycode =
-    m_c.keysym_to_keycode(XStringToKeysym(m_xrm["raise"].v.str->c_str()));
+    m_c.keysym_to_keycode(XStringToKeysym(m_config["raise"].v.str->c_str()));
 
-  m_action_keysym = XStringToKeysym(m_xrm["action"].v.str->c_str());
+  m_action_keysym = XStringToKeysym(m_config["action"].v.str->c_str());
   m_action_keycode = m_c.keysym_to_keycode(m_action_keysym);
 
   int mask = 0;
-  std::stringstream ss(*m_xrm["mod"].v.str);
+  std::stringstream ss(*m_config["mod"].v.str);
   std::string m;
   while (std::getline(ss, m, '+')) {
 

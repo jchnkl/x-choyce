@@ -7,17 +7,17 @@
 #include "chooser_t.hpp"
 #include "x_event_handler_t.hpp"
 #include "x_connection.hpp"
-#include "x_xrm.hpp"
+#include "config_t.hpp"
 
 class x_client_chooser : public x_event_handler_t
-                       , public observer<x::xrm> {
+                       , public observer<generic::config_t> {
   public:
-    x_client_chooser(x_connection & c, x::xrm & xrm, chooser_t * chooser);
+    x_client_chooser(x_connection & c, generic::config_t & config, chooser_t * chooser);
 
     ~x_client_chooser(void);
 
     bool handle(xcb_generic_event_t * ge);
-    void notify(x::xrm *);
+    void notify(generic::config_t *);
 
   private:
     bool m_active = false;
@@ -26,7 +26,7 @@ class x_client_chooser : public x_event_handler_t
     xcb_window_t m_last_motion = XCB_NONE;
 
     x_connection & m_c;
-    x::xrm & m_xrm;
+    generic::config_t & m_config;
     chooser_t * m_chooser;
     x_connection::modifier_map m_modifier_map;
 

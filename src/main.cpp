@@ -1,6 +1,7 @@
 #include <signal.h>
 #include <X11/keysym.h>
 
+#include "config.hpp"
 #include "x_xrm.hpp"
 #include "grid.hpp"
 #include "thumbnail_manager.hpp"
@@ -30,7 +31,7 @@ int main(int argc, char ** argv)
   signal(SIGINT,  sig_handler);
   signal(SIGTERM, sig_handler);
 
-  x::xrm::option options[] =
+  generic::config_t::option options[] =
     // focusedalpha
     { { .type = x::xrm::dbl, .v = { .dbl = 0.75                              } }
     // focusedcolor: goldenrod
@@ -99,12 +100,14 @@ int main(int argc, char ** argv)
       , { "screen",         options[o++] }
       });
 
+  generic::config config(&xrm);
+
   grid_t grid;
 
-  x_client_thumbnail::factory factory(c, xrm);
+  x_client_thumbnail::factory factory(c, config);
 
-  thumbnail_manager tm(c, xrm, &grid, &factory);
-  x_client_chooser cp(c, xrm, &tm);
+  thumbnail_manager tm(c, config, &grid, &factory);
+  x_client_chooser cp(c, config, &tm);
 
   c.run_event_loop();
 

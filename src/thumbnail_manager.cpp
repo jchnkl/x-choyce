@@ -5,10 +5,10 @@
 #include "algorithm.hpp"
 
 thumbnail_manager::thumbnail_manager(x_connection & c,
-                                     x::xrm & xrm,
+                                     generic::config_t & config,
                                      const layout_t * layout,
                                      const thumbnail_t::factory * factory)
-  : m_c(c), m_xrm(xrm), m_layout(layout), m_factory(factory)
+  : m_c(c), m_config(config), m_layout(layout), m_factory(factory)
 {
   m_c.attach(0, XCB_PROPERTY_NOTIFY, this);
   m_c.attach(20, XCB_CONFIGURE_NOTIFY, this);
@@ -334,9 +334,9 @@ thumbnail_manager::query_current_screen(void)
   try {
     std::function<rectangle(x_connection & c)> query = pointer_screen;
 
-    if ("active" == *m_xrm["screen"].v.str) {
+    if ("active" == *m_config["screen"].v.str) {
       query = active_window_screen;
-    } else if ("primary" == *m_xrm["screen"].v.str) {
+    } else if ("primary" == *m_config["screen"].v.str) {
       query = primary_output_screen;
     }
 
