@@ -62,11 +62,27 @@ class config : public config_t
   private:
     std::deque<config_t *> m_configs;
 
+    template<typename ... CS>
+    void
+    unfold_attach(config_t * c, CS ... cs)
+    {
+      unfold_attach(c);
+      unfold_attach(cs ...);
+    }
+
     void
     unfold_attach(config_t * c)
     {
       c->attach(this);
       m_configs.push_back(c);
+    }
+
+    template<typename ... CS>
+    void
+    unfold_detach(config_t * c, CS ... cs)
+    {
+      unfold_detach(c);
+      unfold_detach(cs ...);
     }
 
     void
