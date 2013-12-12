@@ -24,6 +24,15 @@ The `choyce` part is a portmanteau of choice and joy. Go figure.
 * GLSL shaders in external file, stringified at compile time
 * Written in modern C++11 with a modular object oriented approach
 
+### OpenGL Version
+<font color="red">
+This is important: The minimum required **OpenGL** version is **3.0**
+</font>
+
+You can check your driver's version with `glxinfo`. Currently, there are no
+runtime checks, so `x:choyce` might behave oddly or just crash with version
+lower than 3.0.
+
 ### Compilation
 Clone the repository and type `make`.
 If this fails, check if the [required
