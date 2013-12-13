@@ -5,6 +5,8 @@
 #include <xcb/xcb_icccm.h>
 #include <xcb/xcb_image.h>
 
+#include "default_icon/default_application_icon_argb.c"
+
 x_client_icon::x_client_icon(x_connection & c, x_client & x_client)
   : m_c(c), m_x_client(x_client)
 {
@@ -12,9 +14,8 @@ x_client_icon::x_client_icon(x_connection & c, x_client & x_client)
   m_c.update_input(m_x_client.window(), XCB_EVENT_MASK_PROPERTY_CHANGE);
 
   update_net_wm_icon();
-  if (m_net_wm_icon == XCB_NONE) {
-    update_wm_hints_icon();
-  }
+  if (m_net_wm_icon   == XCB_NONE) update_wm_hints_icon();
+  if (m_wm_hints_icon == XCB_NONE) update_default_icon();
 }
 
 x_client_icon::~x_client_icon(void)
@@ -22,6 +23,7 @@ x_client_icon::~x_client_icon(void)
   m_c.detach(XCB_PROPERTY_NOTIFY, this);
   xcb_free_pixmap(m_c(), m_net_wm_icon);
   xcb_free_pixmap(m_c(), m_wm_hints_icon);
+  xcb_free_pixmap(m_c(), m_default_icon);
 }
 
 bool
@@ -193,6 +195,36 @@ x_client_icon::update_wm_hints_icon(void)
   }
 
   if (r) delete r;
+}
+
+void
+x_client_icon::update_default_icon(void)
+{
+  xcb_free_pixmap(m_c(), m_default_icon);
+  m_default_icon = XCB_NONE;
+
+  const uint32_t width = default_application_icon.width;
+  const uint32_t height = default_application_icon.width;
+
+  m_icon_geometry.first = width;
+  m_icon_geometry.second = height;
+
+  m_default_icon = xcb_generate_id(m_c());
+  xcb_create_pixmap(
+      m_c(), 32, m_default_icon, m_c.root_window(), width, height);
+
+  xcb_image_t * image = xcb_image_create_native(
+      m_c(), width, height, XCB_IMAGE_FORMAT_Z_PIXMAP, 32, NULL, 0, NULL);
+
+  image->data = (uint8_t *)default_application_icon.pixel_data;;
+
+  xcb_gcontext_t gc = xcb_generate_id(m_c());
+  xcb_create_gc(m_c(), gc, m_default_icon, 0, NULL);
+
+  xcb_image_put(m_c(), m_default_icon, gc, image, 0, 0, 0);
+
+  xcb_image_destroy(image);
+  xcb_free_gc(m_c(), gc);
 }
 
 // stolen from openbox: tests/icons.c

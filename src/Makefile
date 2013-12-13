@@ -20,6 +20,7 @@ CPPSRCS=main.cpp \
 				grid.cpp
 
 HPPSRCS=shader/shader.hpp \
+	default_icon/default_application_icon_argb.c \
 				chooser_t.hpp \
 				opengl.hpp \
 				cyclic_iterator.hpp \
@@ -51,6 +52,9 @@ all: ${HPPOBJS} ${CPPOBJS}
 
 shader/%.hpp.gch:
 	make -C shader
+
+default_icon/%.c:
+	make -C default_icon
 
 %.o: %.cpp %.hpp
 	${CXX} ${CXXFLAGS} -c $<

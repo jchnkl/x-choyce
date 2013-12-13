@@ -21,6 +21,7 @@ class x_client_icon : public x_event_handler_t {
 
     xcb_pixmap_t m_net_wm_icon = XCB_NONE;
     xcb_pixmap_t m_wm_hints_icon = XCB_NONE;
+    xcb_pixmap_t m_default_icon = XCB_NONE;
 
     std::pair<unsigned int, unsigned int> m_icon_geometry;
 
@@ -29,6 +30,7 @@ class x_client_icon : public x_event_handler_t {
 
     void update_net_wm_icon(void);
     void update_wm_hints_icon(void);
+    void update_default_icon(void);
     void alpha_transform(uint8_t * data, unsigned int w, unsigned int h);
 };
 
@@ -37,11 +39,9 @@ class x_client_icon : public x_event_handler_t {
 inline const xcb_pixmap_t &
 x_client_icon::icon(void) const
 {
-  if (m_net_wm_icon == XCB_NONE) {
-    return m_wm_hints_icon;
-  } else {
-    return m_net_wm_icon;
-  }
+  if (m_net_wm_icon   != XCB_NONE) return m_net_wm_icon;
+  if (m_wm_hints_icon != XCB_NONE) return m_wm_hints_icon;
+  return m_default_icon;
 }
 
 inline const xcb_pixmap_t &
