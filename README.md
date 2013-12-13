@@ -30,8 +30,8 @@ This is important: The minimum required **OpenGL** version is **3.0**
 </font>
 
 You can check your driver's version with `glxinfo`. Currently, there are no
-runtime checks, so `x:choyce` might behave oddly or just crash with version
-lower than 3.0.
+runtime checks, so `x:choyce` might behave oddly or just crash with versions
+below 3.0.
 
 ### Compilation
 Clone the repository and type `make`.
