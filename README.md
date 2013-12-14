@@ -3,6 +3,8 @@ x:choyce
 
 #### A light-weight, Exposé-like window switcher for X (feat. OpenGL) ####
 
+See it in [action](http://i.imgur.com/LR0qN9O.gif)!
+
 ### Version ###
 2013.12.13
 
