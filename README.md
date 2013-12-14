@@ -15,6 +15,7 @@ The `choyce` part is a portmanteau of choice and joy. Go figure.
 ### Features ###
 * Light-weight: No additional libraries except XCB, Xft and OpenGL
 * Exposé-like: Shows thumbnails of all your windows for selection
+* Window selection with keyboard and mouse
 * Draws window icons from `_NET_WM_ICON` or `WM_HINTS`
 * Draws window titles from `_NET_WM_NAME` and/or `WM_NAME` & `WM_CLASS`
 * Unfocused windows are black and white & slightly blurred
