@@ -5,6 +5,9 @@ LDFLAGS=$(shell pkg-config --libs ${LIBS})
 
 EXE=x:choyce
 
+DIRS=shader default_icon
+CLEANDIRS=$(DIRS:%=clean-%)
+
 CPPSRCS=main.cpp \
 	opengl.cpp \
 	data_types.cpp \
@@ -26,12 +29,6 @@ CPPOBJS=$(CPPSRCS:%.cpp=%.o)
 all: ${DIRS} ${CPPOBJS}
 	${CXX} ${CXXFLAGS} ${LDFLAGS} ${CPPOBJS} -o ${EXE}
 
-shader/%.hpp.gch:
-	make -C shader
-
-default_icon/%.c:
-	make -C default_icon
-
 %.o: %.cpp %.hpp
 	${CXX} ${CXXFLAGS} -c $<
 
@@ -46,8 +43,13 @@ ${LIBS}:
 	@printf "%-20s" "$@:"
 	@pkg-config --modversion $@
 
-clean:
-	make -C shader clean
+${DIRS}:
+	make -C $@
+
+clean: ${CLEANDIRS}
 	rm -f ${EXE} ${CPPOBJS}
 
-.PHONY: clean version
+clean-%:
+	make -C $(@:clean-%=%) clean
+
+.PHONY: ${DIRS} ${CLEANDIRS} clean version
