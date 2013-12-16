@@ -3,26 +3,26 @@ LIBS=xft xcb xcb-atom xcb-keysyms xcb-composite xcb-damage xcb-xinerama \
 CXXFLAGS=-g -std=c++11 -Wall -O3 $(shell pkg-config --cflags ${LIBS})
 LDFLAGS=$(shell pkg-config --libs ${LIBS})
 
+
+
 CPPSRCS=main.cpp \
-				opengl.cpp \
-				data_types.cpp \
-				cyclic_iterator.cpp \
-				thumbnail_manager.cpp \
-				x_xrm.cpp \
-				x_connection.cpp \
-				x_event_source.cpp \
-				x_ewmh.cpp \
-				x_client.cpp \
-				x_client_icon.cpp \
-				x_client_name.cpp \
-				x_client_chooser.cpp \
-				x_client_thumbnail_gl.cpp \
-				grid.cpp
-
-
-CPPOBJS=$(CPPSRCS:%.cpp=%.o)
+	opengl.cpp \
+	data_types.cpp \
+	cyclic_iterator.cpp \
+	thumbnail_manager.cpp \
+	x_xrm.cpp \
+	x_connection.cpp \
+	x_event_source.cpp \
+	x_ewmh.cpp \
+	x_client.cpp \
+	x_client_icon.cpp \
+	x_client_name.cpp \
+	x_client_chooser.cpp \
+	x_client_thumbnail_gl.cpp \
+	grid.cpp
 
 EXE=x:choyce
+CPPOBJS=$(CPPSRCS:%.cpp=%.o)
 
 all: ${DIRS} ${CPPOBJS}
 	${CXX} ${CXXFLAGS} ${LDFLAGS} ${CPPOBJS} -o ${EXE}
