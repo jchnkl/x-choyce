@@ -12,6 +12,5 @@ stringifier:
 
 clean:
 	rm -f shader.hpp
-	touch shader.hpp
 
 .PHONY: clean
