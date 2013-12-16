@@ -32,8 +32,6 @@ all: ${DIRS} ${CPPOBJS}
 %.o: %.cpp %.hpp
 	${CXX} ${CXXFLAGS} -c $<
 
-%.hpp: %.cpp
-	${CXX} ${CXXFLAGS} -c $<
 
 version: ${LIBS}
 	@echo -e "\nGCC version:"
