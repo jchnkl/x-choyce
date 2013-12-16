@@ -3,7 +3,7 @@ LIBS=xft xcb xcb-atom xcb-keysyms xcb-composite xcb-damage xcb-xinerama \
 CXXFLAGS=-g -std=c++11 -Wall -O3 $(shell pkg-config --cflags ${LIBS})
 LDFLAGS=$(shell pkg-config --libs ${LIBS})
 
-
+EXE=x:choyce
 
 CPPSRCS=main.cpp \
 	opengl.cpp \
@@ -21,7 +21,6 @@ CPPSRCS=main.cpp \
 	x_client_thumbnail_gl.cpp \
 	grid.cpp
 
-EXE=x:choyce
 CPPOBJS=$(CPPSRCS:%.cpp=%.o)
 
 all: ${DIRS} ${CPPOBJS}
