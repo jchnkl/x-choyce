@@ -19,35 +19,12 @@ CPPSRCS=main.cpp \
 				x_client_thumbnail_gl.cpp \
 				grid.cpp
 
-HPPSRCS=shader/shader.hpp \
-	default_icon/default_application_icon_argb.c \
-				chooser_t.hpp \
-				opengl.hpp \
-				cyclic_iterator.hpp \
-				data_types.hpp \
-				grid.hpp \
-				layout_t.hpp \
-				thumbnail_manager.hpp \
-				thumbnail_t.hpp \
-				x_client_chooser.hpp \
-				x_client.hpp \
-				x_client_icon.hpp \
-				x_client_name.hpp \
-				x_client_thumbnail_gl.hpp \
-				x_xft.hpp \
-				x_xrm.hpp \
-				x_connection.hpp \
-				x_event_handler_t.hpp \
-				x_event_source.hpp \
-				x_event_source_t.hpp \
-				x_ewmh.hpp
 
 CPPOBJS=$(CPPSRCS:%.cpp=%.o)
-HPPOBJS=$(HPPSRCS:%.hpp=%.hpp.gch)
 
 EXE=x:choyce
 
-all: ${HPPOBJS} ${CPPOBJS}
+all: ${DIRS} ${CPPOBJS}
 	${CXX} ${CXXFLAGS} ${LDFLAGS} ${CPPOBJS} -o ${EXE}
 
 shader/%.hpp.gch:
@@ -59,7 +36,7 @@ default_icon/%.c:
 %.o: %.cpp %.hpp
 	${CXX} ${CXXFLAGS} -c $<
 
-%.hpp.gch: %.hpp
+%.hpp: %.cpp
 	${CXX} ${CXXFLAGS} -c $<
 
 version: ${LIBS}
@@ -72,6 +49,6 @@ ${LIBS}:
 
 clean:
 	make -C shader clean
-	rm -f ${EXE} ${CPPOBJS} ${HPPOBJS}
+	rm -f ${EXE} ${CPPOBJS}
 
 .PHONY: clean version
