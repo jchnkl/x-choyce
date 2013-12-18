@@ -228,7 +228,7 @@ x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height
   glEnd();
   glPopMatrix();
 
-  glXSwapBuffers(m_c.dpy(), m_thumbnail_window);
+  glXSwapBuffers(m_c.dpy(), m_gl_ctx.drawable());
 }
 
 void
