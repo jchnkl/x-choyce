@@ -125,6 +125,10 @@ x_client_thumbnail::update(void)
   m_gl_ctx.run([&](gl::context & ctx)
   {
     if (m_rectangle_update) {
+      glViewport(m_border_width, m_border_width,
+                 m_rectangle.width() - 2 * m_border_width,
+                 m_rectangle.height() - 2 * m_border_width);
+
       update_uniforms(ctx.program(m_highlight ? "focused" : "unfocused"));
     }
 
@@ -204,9 +208,6 @@ x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height
 {
   glScissor(x, y, width, height);
 
-  glViewport(m_border_width, m_border_width,
-             m_rectangle.width() - 2 * m_border_width,
-             m_rectangle.height() - 2 * m_border_width);
 
   auto * bc = m_highlight ? &m_focused_border_color : &m_unfocused_border_color;
 
