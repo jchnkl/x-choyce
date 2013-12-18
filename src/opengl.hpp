@@ -245,6 +245,23 @@ class context {
 
     ~context(void)
     {
+      for (auto & item : m_pixmaps) {
+        m_api.glXReleaseTexImageEXT(m_dpy, item.second, GLX_FRONT_EXT);
+        glXDestroyGLXPixmap(m_dpy, item.second);
+      }
+
+      for (auto & item : m_textures) {
+        glDeleteTextures(1, &item.second);
+      }
+
+      for (auto & item : m_shader) {
+        m_api.glDeleteShader(item.second);
+      }
+
+      for (auto & item : m_programs) {
+        m_api.glDeleteProgram(item.second);
+      }
+
       glXDestroyContext(m_dpy, m_context);
     }
 
