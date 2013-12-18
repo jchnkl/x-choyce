@@ -74,6 +74,10 @@ x_client_thumbnail::show(void)
 
   xcb_map_window(m_c(), m_thumbnail_window);
 
+  if (m_rectangle_update) {
+    configure_thumbnail();
+  }
+
   if (m_init_ctx) {
     m_init_ctx = false;
     m_gl_ctx.drawable(m_thumbnail_window);
@@ -118,8 +122,6 @@ x_client_thumbnail::select(void)
 thumbnail_t &
 x_client_thumbnail::update(void)
 {
-  if (m_rectangle_update) configure_thumbnail();
-
   m_gl_ctx.run([&](gl::context & ctx)
   {
     if (m_rectangle_update) {
