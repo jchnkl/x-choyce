@@ -48,8 +48,6 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
                     valuemask, valuelist);
 
   m_x_client_name.make_title();
-
-
 }
 
 x_client_thumbnail::~x_client_thumbnail(void)
@@ -205,7 +203,6 @@ void
 x_client_thumbnail::update(int x, int y, unsigned int width, unsigned int height)
 {
   glScissor(x, y, width, height);
-
 
   auto * bc = m_highlight ? &m_focused_border_color : &m_unfocused_border_color;
 
