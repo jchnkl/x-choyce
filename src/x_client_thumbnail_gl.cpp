@@ -49,19 +49,7 @@ x_client_thumbnail::x_client_thumbnail(x_connection & c,
 
   m_x_client_name.make_title();
 
-  m_gl_ctx.drawable(m_thumbnail_window);
 
-  m_gl_ctx.run([&](gl::context & ctx)
-  {
-    ctx.load<GL_VERTEX_SHADER>("position", position_src);
-    ctx.load<GL_FRAGMENT_SHADER>("focused", focused_src);
-    ctx.load<GL_FRAGMENT_SHADER>("unfocused", unfocused_src);
-
-    ctx.compile("focused", "position", "focused");
-    ctx.compile("unfocused", "position", "unfocused");
-
-    glEnable(GL_SCISSOR_TEST);
-  });
 }
 
 x_client_thumbnail::~x_client_thumbnail(void)
@@ -85,6 +73,20 @@ x_client_thumbnail::show(void)
                     XCB_DAMAGE_REPORT_LEVEL_NON_EMPTY);
 
   xcb_map_window(m_c(), m_thumbnail_window);
+
+  if (m_init_ctx) {
+    m_init_ctx = false;
+    m_gl_ctx.drawable(m_thumbnail_window);
+    m_gl_ctx.run([&](gl::context & ctx)
+    {
+      glEnable(GL_SCISSOR_TEST);
+      ctx.load<GL_VERTEX_SHADER>("position", position_src);
+      ctx.load<GL_FRAGMENT_SHADER>("focused", focused_src);
+      ctx.load<GL_FRAGMENT_SHADER>("unfocused", unfocused_src);
+      ctx.compile("focused", "position", "focused");
+      ctx.compile("unfocused", "position", "unfocused");
+    });
+  }
 
   return *this;
 }
