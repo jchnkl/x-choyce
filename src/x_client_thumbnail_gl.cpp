@@ -116,7 +116,9 @@ x_client_thumbnail::select(void)
 thumbnail_t &
 x_client_thumbnail::update(void)
 {
-  if (m_rectangle_update) configure_thumbnail();
+  if (m_rectangle_update) {
+    configure_thumbnail();
+  }
 
   m_gl_ctx.run([&](gl::context & ctx)
   {
