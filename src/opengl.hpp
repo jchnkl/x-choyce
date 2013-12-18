@@ -332,9 +332,9 @@ class context {
     context & run(FS ...  fs)
     {
       if (m_drawable != None) {
-        glXMakeCurrent(m_dpy, m_drawable, m_context);
+        glXMakeContextCurrent(m_dpy, m_drawable, m_drawable, m_context);
         unfold(*this, fs ...);
-        glXMakeCurrent(m_dpy, None, NULL);
+        glXMakeContextCurrent(m_dpy, None, None, NULL);
       }
       return *this;
     }
