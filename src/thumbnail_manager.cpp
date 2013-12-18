@@ -32,11 +32,12 @@ thumbnail_manager::show(void)
   m_next_window = *(m_cyclic_iterator + 1);
   m_current_window = *m_cyclic_iterator;
 
-  // order is important: update() before show()!
-  // foreach([&](const thumbnail_t::ptr & t) { t->update().show(); });
+  // order is important: show() before update()!
+  // Reason: show does gl::context initialization which must happen before
+  // calling the GL drawing functions in update()
   foreach([&](const thumbnail_t::ptr & t)
   {
-    t->highlight(m_current_window == t->window()).update().show();
+    t->highlight(m_current_window == t->window()).show().update();
   });
 }
 
@@ -145,7 +146,7 @@ thumbnail_manager::handle(xcb_generic_event_t * ge)
       reset();
       foreach([&](const thumbnail_t::ptr & t)
       {
-        t->highlight(m_current_window == t->window()).update().show();
+        t->highlight(m_current_window == t->window()).show().update();
       });
     }
 
