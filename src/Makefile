@@ -29,9 +29,10 @@ CPPOBJS=$(CPPSRCS:%.cpp=%.o)
 all: ${DIRS} ${CPPOBJS}
 	${CXX} ${CXXFLAGS} ${LDFLAGS} ${CPPOBJS} -o ${EXE}
 
-%.o: %.cpp %.hpp
-	${CXX} ${CXXFLAGS} -c $<
+%.o: %.cpp
+	${CXX} ${CXXFLAGS} -MMD -c $<
 
+-include $(CPPSRCS:%.cpp=%.d)
 
 version: ${LIBS}
 	@echo -e "\nGCC version:"
