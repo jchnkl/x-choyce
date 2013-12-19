@@ -1,4 +1,4 @@
-all: abgr2argb
+default_application_icon_argb.c: default_application_icon_abgr.c abgr2argb
 	./abgr2argb > default_application_icon_argb.c
 
 abgr2argb:
