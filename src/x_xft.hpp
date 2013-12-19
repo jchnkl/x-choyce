@@ -1,7 +1,6 @@
 #ifndef X_XFT_HPP
 #define X_XFT_HPP
 
-#include <iostream>
 #include <unordered_map>
 
 #include <X11/Xft/Xft.h>
