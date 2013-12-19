@@ -320,22 +320,22 @@ x_client_thumbnail::update_highlight(void)
 
   if (m_highlight) {
     use_program("focused");
-    m_gl_ctx.active_texture(0);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
-    m_gl_api.glGenerateMipmap(GL_TEXTURE_2D);
+    // m_gl_ctx.active_texture(0);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1);
+    // glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    // glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+    // m_gl_api.glGenerateMipmap(GL_TEXTURE_2D);
 
   } else {
     use_program("unfocused");
-    m_gl_ctx.active_texture(0);
-    m_gl_ctx.pixmap("window", [this](const GLXPixmap & p)
-    {
-      m_gl_api.glXReleaseTexImageEXT(m_c.dpy(), p, GLX_FRONT_EXT);
-      m_gl_api.glXBindTexImageEXT(m_c.dpy(), p, GLX_FRONT_EXT, NULL);
-    });
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    // m_gl_ctx.active_texture(0);
+    // m_gl_ctx.pixmap("window", [this](const GLXPixmap & p)
+    // {
+    //   m_gl_api.glXReleaseTexImageEXT(m_c.dpy(), p, GLX_FRONT_EXT);
+    //   m_gl_api.glXBindTexImageEXT(m_c.dpy(), p, GLX_FRONT_EXT, NULL);
+    // });
+    // glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    // glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   }
 }
 
@@ -351,15 +351,15 @@ x_client_thumbnail::handle(xcb_generic_event_t * ge)
 
       m_gl_ctx.run([&](gl::context &)
       {
-        if (m_highlight) {
-          m_gl_ctx.active_texture(0);
-          m_gl_ctx.pixmap("window", [&](const GLXPixmap & p)
-          {
-            m_gl_api.glXReleaseTexImageEXT(m_c.dpy(), p, GLX_FRONT_EXT);
-            m_gl_api.glXBindTexImageEXT(m_c.dpy(), p, GLX_FRONT_EXT, NULL);
-          });
-          m_gl_api.glGenerateMipmap(GL_TEXTURE_2D);
-        }
+        // if (m_highlight) {
+        //   m_gl_ctx.active_texture(0);
+        //   m_gl_ctx.pixmap("window", [&](const GLXPixmap & p)
+        //   {
+        //     m_gl_api.glXReleaseTexImageEXT(m_c.dpy(), p, GLX_FRONT_EXT);
+        //     m_gl_api.glXBindTexImageEXT(m_c.dpy(), p, GLX_FRONT_EXT, NULL);
+        //   });
+        //   m_gl_api.glGenerateMipmap(GL_TEXTURE_2D);
+        // }
 
         update(e->area.x * m_scale, e->area.y * m_scale,
                e->area.width * m_scale, e->area.height * m_scale);
