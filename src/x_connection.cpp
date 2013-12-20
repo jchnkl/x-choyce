@@ -324,7 +324,7 @@ x_connection::net_client_list_stacking(void) const
 std::vector<xcb_atom_t>
 x_connection::net_wm_window_type(const xcb_window_t & window)
 {
-  xcb_get_property_cookie_t c = xcb_get_property(m_c, false, m_root_window,
+  xcb_get_property_cookie_t c = xcb_get_property(m_c, false, window,
                                                  intern_atom("_NET_WINDOW_TYPE"),
                                                  XCB_ATOM_ATOM, 0, UINT_MAX);
 
