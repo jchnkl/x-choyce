@@ -223,7 +223,34 @@ thumbnail_manager::update(void)
     auto result = m_thumbnails.find(m_windows[i]);
 
     if (result == m_thumbnails.end()) {
-      m_thumbnails[m_windows[i]] = m_factory->make(m_windows[i], rects[i]);
+      bool ignore = false;
+
+      for (auto & atom : m_c.net_wm_window_type(m_windows[i])) {
+        ignore =
+             atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_DESKTOP")
+          || atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_DOCK")
+          || atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_TOOLBAR")
+          || atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_DROPDOWN_MENU")
+          || atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_POPUP_MENU")
+          || atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_TOOLTIP")
+          || atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_NOTIFICATION")
+          || atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_COMBO")
+          || atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_DND")
+          ;
+
+        // atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_MENU")
+        // atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_UTILITY")
+        // atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_SPLASH")
+        // atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_DIALOG")
+        // atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_NORMAL")
+
+        if (ignore) break;
+      }
+
+      if (! ignore) {
+        m_thumbnails[m_windows[i]] = m_factory->make(m_windows[i], rects[i]);
+      }
+
     } else {
       result->second->update(rects[i]);
     }
