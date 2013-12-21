@@ -140,7 +140,9 @@ thumbnail_manager::handle(xcb_generic_event_t * ge)
     xcb_property_notify_event_t * e = (xcb_property_notify_event_t *)ge;
     if (m_active
         && e->window == m_c.root_window()
-        && e->atom == m_c.intern_atom("_NET_CLIENT_LIST_STACKING"))
+        && ( e->atom == m_c.intern_atom("_NET_CLIENT_LIST_STACKING")
+          || e->atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE")
+          || e->atom == m_c.intern_atom("_NET_WM_STATE")))
     {
       update();
       reset();
