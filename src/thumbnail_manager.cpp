@@ -209,7 +209,7 @@ thumbnail_manager::update(void)
   auto windows = m_c.net_client_list_stacking();
 
   for (auto wit = windows.begin(); wit != windows.end(); ) {
-    if (! is_valid(*wit)) {
+    if (! is_valid(*wit) || do_skip(*wit)) {
       wit = windows.erase(wit);
     } else {
       ++wit;
@@ -333,6 +333,35 @@ thumbnail_manager::is_south(double angle)
 {
   // >=225° && <= 315°
   return angle >= 5*M_PI/4 && angle <= 7*M_PI/4;
+}
+
+inline
+bool
+thumbnail_manager::do_skip(const xcb_window_t & window)
+{
+  for (auto & atom : m_c.net_wm_state(window)) {
+    if (   atom == m_c.intern_atom("_NET_WM_STATE_SKIP_TASKBAR")
+        || atom == m_c.intern_atom("_NET_WM_STATE_SKIP_PAGER")
+       )
+    {
+      return true;
+    }
+  }
+
+  // || atom == m_c.intern_atom("_NET_WM_STATE_MODAL")
+  // || atom == m_c.intern_atom("_NET_WM_STATE_STICKY")
+  // || atom == m_c.intern_atom("_NET_WM_STATE_MAXIMIZED_VERT")
+  // || atom == m_c.intern_atom("_NET_WM_STATE_MAXIMIZED_HORZ")
+  // || atom == m_c.intern_atom("_NET_WM_STATE_SHADED")
+  // || atom == m_c.intern_atom("_NET_WM_STATE_HIDDEN")
+  // || atom == m_c.intern_atom("_NET_WM_STATE_FULLSCREEN")
+  // || atom == m_c.intern_atom("_NET_WM_STATE_ABOVE")
+  // || atom == m_c.intern_atom("_NET_WM_STATE_BELOW")
+  // || atom == m_c.intern_atom("_NET_WM_STATE_DEMANDS_ATTENTION")
+  // || atom == m_c.intern_atom("_NET_WM_STATE_FOCUSED")
+
+  // default to false, also valid for an emtpy list!
+  return false;
 }
 
 inline

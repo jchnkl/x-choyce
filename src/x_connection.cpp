@@ -322,6 +322,22 @@ x_connection::net_client_list_stacking(void) const
 }
 
 std::vector<xcb_atom_t>
+x_connection::net_wm_state(const xcb_window_t & window)
+{
+  xcb_atom_t atom = intern_atom("_NET_WM_STATE");
+  xcb_get_property_cookie_t c =
+    xcb_get_property(m_c, false, window, atom, XCB_ATOM_ATOM, 0, UINT_MAX);
+  xcb_get_property_reply_t * r = xcb_get_property_reply(m_c, c, NULL);
+
+  size_t length = xcb_get_property_value_length(r) / sizeof(xcb_atom_t);
+  xcb_atom_t * atoms = (xcb_atom_t *)xcb_get_property_value(r);
+  std::vector<xcb_atom_t> result(atoms, atoms + length);
+
+  delete r;
+  return result;
+}
+
+std::vector<xcb_atom_t>
 x_connection::net_wm_window_type(const xcb_window_t & window)
 {
   xcb_atom_t atom = intern_atom("_NET_WM_WINDOW_TYPE");

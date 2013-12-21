@@ -54,6 +54,7 @@ class x_connection : public x_event_handler_t
     std::string keysym_to_string(xcb_keysym_t keysym) const;
     std::tuple<xcb_window_t, std::vector<xcb_window_t>> query_tree(xcb_window_t parent);
     std::vector<xcb_window_t> net_client_list_stacking(void) const;
+    std::vector<xcb_atom_t> net_wm_state(const xcb_window_t & window);
     std::vector<xcb_atom_t> net_wm_window_type(const xcb_window_t & window);
     xcb_atom_t intern_atom(const std::string & name);
     xcb_window_t net_active_window(void) const;
