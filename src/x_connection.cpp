@@ -336,6 +336,7 @@ x_connection::net_wm_window_type(const xcb_window_t & window)
   delete r;
   return result;
 }
+
 xcb_atom_t
 x_connection::intern_atom(const std::string & name)
 {

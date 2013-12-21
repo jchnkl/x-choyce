@@ -208,39 +208,11 @@ thumbnail_manager::update(void)
 {
   auto windows = m_c.net_client_list_stacking();
 
-  //     || atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_DESKTOP")
-  //     || atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_DOCK")
-  //     || atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_TOOLBAR")
-  //     || atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_DROPDOWN_MENU")
-  //     || atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_POPUP_MENU")
-  //     || atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_TOOLTIP")
-  //     || atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_NOTIFICATION")
-  //     || atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_COMBO")
-  //     || atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_DND")
-
   for (auto wit = windows.begin(); wit != windows.end(); ) {
-    auto atoms = m_c.net_wm_window_type(*wit);
-
-    if (atoms.empty()) {
-      ++wit;
-
+    if (! is_valid(*wit)) {
+      wit = windows.erase(wit);
     } else {
-      for (auto & atom : m_c.net_wm_window_type(*wit)) {
-        if (   atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_MENU")
-            || atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_UTILITY")
-            || atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_SPLASH")
-            || atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_DIALOG")
-            || atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_NORMAL")
-           ) {
-          ++wit;
-          break;
-
-        } else {
-
-          wit = windows.erase(wit);
-          break;
-        }
-      }
+      ++wit;
     }
   }
 
@@ -361,6 +333,37 @@ thumbnail_manager::is_south(double angle)
 {
   // >=225° && <= 315°
   return angle >= 5*M_PI/4 && angle <= 7*M_PI/4;
+}
+
+inline
+bool
+thumbnail_manager::is_valid(const xcb_window_t & window)
+{
+  for (auto & atom : m_c.net_wm_window_type(window)) {
+    if (   atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_DESKTOP")
+        || atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_DOCK")
+        || atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_TOOLBAR")
+        || atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_DROPDOWN_MENU")
+        || atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_POPUP_MENU")
+        || atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_TOOLTIP")
+        || atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_NOTIFICATION")
+        || atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_COMBO")
+        || atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_DND")
+       )
+    {
+      return false;
+    }
+  }
+
+  // if (   atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_MENU")
+  //     || atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_UTILITY")
+  //     || atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_SPLASH")
+  //     || atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_DIALOG")
+  //     || atom == m_c.intern_atom("_NET_WM_WINDOW_TYPE_NORMAL")
+  //    )
+
+  // default to true, also valid for an emtpy list!
+  return true;
 }
 
 rectangle
