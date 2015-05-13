@@ -147,7 +147,7 @@ x_client_name::update_net_wm_name(void)
   xcb_get_property_reply_t * r = xcb_get_property_reply(m_c(), c, &error);
 
   if (error) {
-    delete error;
+    std::free(error);
 
   } else {
     xcb_ewmh_get_utf8_strings_reply_t net_wm_name;
@@ -158,7 +158,7 @@ x_client_name::update_net_wm_name(void)
     }
   }
 
-  if (r) delete r;
+  if (r) std::free(r);
 }
 
 void
@@ -207,7 +207,7 @@ x_client_name::update_wm_class(void)
   xcb_get_property_reply_t * r = xcb_get_property_reply(m_c(), c, &error);
 
   if (error) {
-    delete error;
+    std::free(error);
 
   } else if (r) {
     xcb_icccm_get_wm_class_reply_t wm_class;

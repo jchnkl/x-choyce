@@ -66,7 +66,7 @@ x_client_icon::update_net_wm_icon(void)
   xcb_ewmh_get_wm_icon_reply(m_c.ewmh(), c, &wm_icon, &error);
 
   if (error) {
-    delete error;
+    std::free(error);
 
   } else if (0 < xcb_ewmh_get_wm_icon_length(&wm_icon)) {
 
@@ -122,7 +122,7 @@ x_client_icon::update_wm_hints_icon(void)
   xcb_get_property_reply_t * r = xcb_get_property_reply(m_c(), c, &error);
 
   if (error) {
-    delete error;
+    std::free(error);
 
   } else {
     xcb_icccm_wm_hints_t wm_hints;
@@ -194,7 +194,7 @@ x_client_icon::update_wm_hints_icon(void)
     }
   }
 
-  if (r) delete r;
+  if (r) std::free(r);
 }
 
 void
