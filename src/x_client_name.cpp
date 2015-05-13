@@ -166,20 +166,28 @@ x_client_name::update_wm_name(void)
 {
   m_wm_name.clear();
 
-  xcb_generic_error_t * error;
-  xcb_icccm_get_text_property_reply_t wm_name;
+  std::shared_ptr<xcb_icccm_get_text_property_reply_t>
+    wm_name(
+        reinterpret_cast<xcb_icccm_get_text_property_reply_t *>(
+          std::calloc(1, sizeof(xcb_icccm_get_text_property_reply_t))),
+        [](xcb_icccm_get_text_property_reply_t * r)
+        {
+          xcb_icccm_get_text_property_reply_wipe(r);
+        });
+
   xcb_get_property_cookie_t c =
-    xcb_icccm_get_wm_name(m_c(), m_x_client.window());
-  xcb_icccm_get_wm_name_reply(m_c(), c, &wm_name, &error);
+    xcb_icccm_get_wm_name_unchecked(m_c(), m_x_client.window());
+
+  xcb_generic_error_t * error = NULL;
+  bool success = xcb_icccm_get_wm_name_reply(m_c(), c, wm_name.get(), &error);
 
   // TODO: cause clang to crash, FILE A BUG REPORT
 #if defined  __GNUC__
   if (error) {
-    delete error;
+    std::free(error);
 
-  } else {
-    m_wm_name = std::string(wm_name.name, wm_name.name_len);
-    xcb_icccm_get_text_property_reply_wipe(&wm_name);
+  } else if (success) {
+    m_wm_name = std::string(wm_name->name);
   }
 
 #else
@@ -193,25 +201,24 @@ x_client_name::update_wm_class(void)
   m_class_name.clear();
   m_instance_name.clear();
 
-  xcb_generic_error_t * error;
+  xcb_generic_error_t * error = NULL;
   xcb_get_property_cookie_t c =
-    xcb_icccm_get_wm_class(m_c(), m_x_client.window());
+    xcb_icccm_get_wm_class_unchecked(m_c(), m_x_client.window());
   xcb_get_property_reply_t * r = xcb_get_property_reply(m_c(), c, &error);
 
   if (error) {
     delete error;
 
-  } else {
+  } else if (r) {
     xcb_icccm_get_wm_class_reply_t wm_class;
     if (xcb_icccm_get_wm_class_from_reply(&wm_class, r)) {
-      m_class_name = wm_class.class_name;
-      m_instance_name = wm_class.instance_name;
+      m_class_name = std::string(wm_class.class_name);
+      m_instance_name = std::string(wm_class.instance_name);
       xcb_icccm_get_wm_class_reply_wipe(&wm_class);
-      r = NULL;
+    } else {
+      std::free(r);
     }
   }
-
-  if (r) delete r;
 }
 
 x_client_name &
