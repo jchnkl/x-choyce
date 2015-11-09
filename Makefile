@@ -2,7 +2,7 @@
 
 VERSION=$(shell date +%Y.%m.%d)
 
-PREFIX=/usr
+PREFIX ?= /usr
 
 DIRS = src
 
