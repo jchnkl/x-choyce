@@ -27,7 +27,7 @@ CPPSRCS=main.cpp \
 CPPOBJS=$(CPPSRCS:%.cpp=%.o)
 
 all: ${DIRS} ${CPPOBJS}
-	${CXX} ${CXXFLAGS} ${LDFLAGS} ${CPPOBJS} -o ${EXE}
+	${CXX} ${CXXFLAGS} ${CPPOBJS} ${LDFLAGS} -o ${EXE}
 
 %.o: %.cpp %.hpp
 	${CXX} ${CXXFLAGS} -c $<
