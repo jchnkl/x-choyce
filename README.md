@@ -1,3 +1,9 @@
+### THIS PROJECT IS UNMAINTAINED.
+### THERE WON'T BE ANY BUGFIXES.
+### USE AT YOUR OWN RISK OR FORK.
+
+However, thank you for your interest. :)
+
 x:choyce
 ===
 
