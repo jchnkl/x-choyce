@@ -3,6 +3,7 @@
 
 #include <deque>
 #include <unordered_map>
+#include <functional>
 
 #include "config_t.hpp"
 #include "cyclic_iterator.hpp"
